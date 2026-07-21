@@ -28,10 +28,10 @@
 - [x] E · D-012 collision fixed → bar-setter's entry renumbered to D-012B.
 
 ## F0.7 — Provider, generator, cache
-- [ ] 0.7.1 · LLMProvider interface + smoke test
-- [ ] 0.7.2 · Offline night generator (gen:nights)
-- [ ] 0.7.3 · Fixture replay in runner
-- [ ] 0.7.4 · Trace cache + DEMO=1
+- [x] 0.7.1 · LLMProvider interface. — DeepSeek/OpenAI/Anthropic implementations. Two-tier routing config. Cost accounting with abort at AGENT_MAX_USD_PER_RUN. Smoke test skips gracefully when no key set.
+- [x] 0.7.2 · Night generator. — `npm run gen:nights` produces 30 train + 10 holdout fixtures. Deterministic from seeds 100-139. Generator unreachable from runtime (verified by grep).
+- [x] 0.7.3 · Fixture format. — NightManifest with events, scenarioMeta (trueEvidenceLevel), labelDistribution. JSON files committed.
+- [x] 0.7.4 · Trace cache. — File-based, keyed on policy+model+prompt+incident hash. DEMO=1 errors loudly on miss. `assertCacheHit()` throws with explicit message.
 
 ## F0.8 — Loop machinery (no agent)
 - [ ] 0.8.1 · Incident working state

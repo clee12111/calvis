@@ -10,6 +10,7 @@
     "seed": "tsx scripts/seed.ts",
     "sim": "tsx scripts/sim.ts",
     "eval": "tsx scripts/eval.ts",
+    "gen:nights": "tsx scripts/gen-nights.ts",
     "test": "vitest run --config config/vitest.config.ts",
     "test:watch": "vitest --config config/vitest.config.ts"
   },
