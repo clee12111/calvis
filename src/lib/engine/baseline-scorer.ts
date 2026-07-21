@@ -1,7 +1,31 @@
 import { siteRepo, decisionRepo, eventRepo, incidentRepo } from "../db/repository";
-import type { Incident, Site } from "../db/schema";
+import type { Incident, Site, Event } from "../db/schema";
 import { EVENT_SEVERITY, type EventType } from "./scenarios";
 import crypto from "crypto";
+
+// --- Caches for eval performance ---
+let _eventCache: Map<string, Event> | null = null;
+let _siteCache: Map<string, Site> | null = null;
+
+export function setEventCache(events: Event[]): void {
+  _eventCache = new Map(events.map((e) => [e.id, e]));
+}
+export function setSiteCache(sites: Site[]): void {
+  _siteCache = new Map(sites.map((s) => [s.id, s]));
+}
+export function clearCaches(): void {
+  _eventCache = null;
+  _siteCache = null;
+}
+
+async function getEvent(id: string): Promise<Event | undefined> {
+  if (_eventCache) return _eventCache.get(id);
+  return eventRepo.getById(id);
+}
+async function getSite(id: string): Promise<Site | undefined> {
+  if (_siteCache) return _siteCache.get(id);
+  return siteRepo.getById(id);
+}
 
 /**
  * Per-event-type prior: P(real | event_type).
@@ -57,7 +81,7 @@ async function getMaxSeverity(eventIdsJson: string): Promise<number> {
   const eventIds: string[] = JSON.parse(eventIdsJson);
   let maxSev = 1;
   for (const eid of eventIds) {
-    const event = await eventRepo.getById(eid);
+    const event = await getEvent(eid);
     if (event) {
       maxSev = Math.max(maxSev, event.severity);
     }
@@ -85,7 +109,7 @@ export interface ScoringResult {
 }
 
 export async function scoreIncident(incident: Incident): Promise<ScoringResult> {
-  const site = await siteRepo.getById(incident.siteId);
+  const site = await getSite(incident.siteId);
   if (!site) {
     return {
       priority: 0,
@@ -149,12 +173,11 @@ export async function scoreIncident(incident: Incident): Promise<ScoringResult> 
 function priorityToTier(priority: number, pReal: number): number {
   const GUARD_RATE = 0.75;
   const OPERATOR_RATE = 0.58;
-  const C_HARM = 500;
+  const HARM_PER_LEVEL = [0, 50, 200, 2000, 10000]; // D-019 convex harm
   const GUARD_MIN = [0, 0, 0.5, 10, 30];
   const OP_MIN = [0, 0.5, 1, 3, 10];
 
-  // Expected true level if incident IS real, estimated from priority
-  // More aggressive mapping: even moderate priority suggests level 2-3
+  // Estimated true level if real, from priority signal
   const estTrueIfReal = priority < 5 ? 1 : priority < 12 ? 2 : priority < 30 ? 3 : 4;
 
   let bestTier = 0;
@@ -163,7 +186,8 @@ function priorityToTier(priority: number, pReal: number): number {
   for (let tier = 0; tier <= 4; tier++) {
     const respCost = GUARD_MIN[tier] * GUARD_RATE + OP_MIN[tier] * OPERATOR_RATE;
     const gap = Math.max(0, estTrueIfReal - tier);
-    const expectedHarm = pReal * C_HARM * gap;
+    const harmPerLevel = HARM_PER_LEVEL[estTrueIfReal] ?? 0;
+    const expectedHarm = pReal * harmPerLevel * gap;
     const totalExpected = respCost + expectedHarm;
 
     if (totalExpected < bestCost) {
@@ -187,7 +211,7 @@ async function computeConfidence(eventIdsJson: string): Promise<number> {
   let pAllFalse = 1.0;
 
   for (const eid of eventIds) {
-    const event = await eventRepo.getById(eid);
+    const event = await getEvent(eid);
     if (!event) continue;
 
     // Only count each event type once (correlated duplicates don't add info)

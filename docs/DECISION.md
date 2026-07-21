@@ -6,6 +6,60 @@ where they conflict with the advisor's; reconcile at the next commit.
 
 ---
 
+## 2026-07-21 — F0.6.5 cost model repair (engineer)
+
+### D-019 · Convex harm, operator attention, and flood penalty — cost model v2
+**Decision:** Three changes to the cost model, written and justified before re-running any arm.
+
+**(1) Convex per-level harm replaces flat $500 × gap.**
+AVS-01 treats evidence levels as qualitatively different categories, not units of one thing.
+Missing E1 (something happened, intent unknown) is a paperwork failure.
+Missing E3 (confirmed property threat) is a burglary loss.
+Missing E4 (confirmed life threat) is potential liability for injury or death.
+A linear function erases this distinction.
+
+| Gap | From | To | Harm $ | Anchor |
+|-----|------|----|--------|--------|
+| Miss E1 | 1 | 0 | $50 | Paperwork/compliance cost of undocumented event. Stated judgment. |
+| Miss E2 | 2 | 0-1 | $200/level | Coverage gap cost: overtime to backfill a no-show shift (~4h × $50/h). Derived from guard hourly rate. |
+| Miss E3 | 3 | 0-2 | $2,000/level | Average US commercial burglary loss ~$8k (FBI UCR 2023), discounted by recovery rate and insurance. Stated judgment anchored to FBI data. |
+| Miss E4 | 4 | 0-3 | $10,000/level | Liability floor for workplace injury. No defensible public anchor; $10k is a stated judgment representing the minimum credible harm from a missed threat-to-life, not a damage estimate. |
+
+Harm function: `HARM_PER_LEVEL[trueLevel] × max(0, trueLevel − respondedTier)`.
+The convexity comes from the per-level cost increasing, not from the gap being raised to a power.
+
+**(2) Operator attention priced on every surfaced item.**
+Every incident surfaced to the operator (tier ≥ 1) costs operator-minutes at $0.58/min.
+Already present in TIER_OPERATOR_MINUTES but was folded into response cost.
+No code change needed — the existing structure already charges this. The decision makes it
+explicit: operator attention IS the thing being optimized, and it appears in the objective.
+
+**(3) Flood penalty — superlinear cost as surfacing rate rises.**
+EEMUA 191 Ed.4 and ISA-18.2 define:
+- ≤1 alarm/10min/operator: acceptable
+- 1–2/10min: manageable
+- >2/10min: overloaded — cognitive performance degrades, miss rate rises
+- >10/10min: alarm flood — operator effectively blind
+
+Penalty: after computing per-incident costs, add a flood surcharge.
+Compute the peak 10-minute window of operator-surfaced incidents (tier ≥ 1).
+If rate > 6/10min (EEMUA "overloaded" threshold, adapted from industrial to security):
+  surcharge = (rate − 6)² × $20 per 10-min window above threshold.
+The square penalises flood more than a bump. $20/unit² is a stated judgment.
+
+**Why (all three together):** The previous flat harm model made always-2 ($0.96/incident) cheaper
+than the baseline because missing an E3 cost only $500 more than the response. With convex harm,
+missing an E3 costs $2000/level — the baseline's selective high-tier responses now earn their keep
+on the incidents that matter, while always-2 pays massive harm on the E3/E4 incidents it under-covers.
+The flood penalty ensures that over-surfacing (the always-2 strategy of showing everything) has a
+real cost beyond just guard-minutes.
+**Precludes:** Interpreting the objective as guard-minutes alone. It is now a three-component cost:
+response (guard + operator time) + harm (convex, per-level) + flood (superlinear in surfacing rate).
+
+### ~~D-005~~ · ~~Primary metric is cost-weighted triage error~~ → **superseded by D-016/D-017, now D-019**
+
+---
+
 ## 2026-07-21 — F0.5 metric repair (engineer)
 
 ### D-018 · PGlite via Drizzle RC replaces better-sqlite3
@@ -60,7 +114,8 @@ where they conflict with the advisor's; reconcile at the next commit.
 
 ## 2026-07-20 — Frontier bar set (bar-setter, independent context)
 
-### D-012 · FRONTIER.md delivered — two axes tiered, state-vs-bar gap identified
+### D-012B · FRONTIER.md delivered — two axes tiered, state-vs-bar gap identified
+**Note:** Originally numbered D-012 in the bar-setter's context, colliding with the engineer's D-012 (better-sqlite3). Renumbered to D-012B for unambiguous reference. The strike-through on the engineer's D-012 refers to the SQLite decision, not this one.
 **Decision:** FRONTIER.md written with three tiers (median / industry / frontier) on two axes:
 (a) learning-loop mechanism, (b) evaluation design. No implementation read; bar set from live
 research only.

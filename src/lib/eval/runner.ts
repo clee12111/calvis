@@ -4,7 +4,7 @@ import { siteRepo, guardRepo, robotRepo, decisionRepo, incidentRepo, outcomeRepo
 import { generateEventStream, type SimEvent } from "../engine/scenarios";
 import { IngestionPipeline } from "../engine/ingestion";
 import { correlateEvents } from "../engine/correlator";
-import { scoreAndDecide, scoreIncident } from "../engine/baseline-scorer";
+import { scoreAndDecide, scoreIncident, setEventCache, setSiteCache, clearCaches } from "../engine/baseline-scorer";
 import { generateSimOutcomes } from "../engine/outcome-join";
 import { computeAllMetrics, type AllMetrics } from "./metrics";
 import type { Incident } from "../db/schema";
@@ -35,6 +35,10 @@ async function setupWorld(seed: number): Promise<{ events: SimEvent[]; incidents
   const events = generateEventStream({ seed, sites, guards, robots });
   const pipeline = new IngestionPipeline(events);
   await pipeline.ingestAll();
+  // Pre-populate caches to avoid per-row DB queries in scorer
+  const dbEvents = await eventRepo.getAll();
+  setEventCache(dbEvents);
+  setSiteCache(sites);
   const incidents = await correlateEvents(events);
   return { events, incidents };
 }
@@ -157,6 +161,7 @@ function meanMetrics(metricsList: AllMetrics[]): AllMetrics {
       totalCostUsd: avg(metricsList.map((m) => m.cost.totalCostUsd)),
       responseCostUsd: avg(metricsList.map((m) => m.cost.responseCostUsd)),
       harmCostUsd: avg(metricsList.map((m) => m.cost.harmCostUsd)),
+      floodPenaltyUsd: avg(metricsList.map((m) => m.cost.floodPenaltyUsd)),
       missCount: avg(metricsList.map((m) => m.cost.missCount)),
       overResponseCount: avg(metricsList.map((m) => m.cost.overResponseCount)),
       totalDecisions: avg(metricsList.map((m) => m.cost.totalDecisions)),
@@ -194,6 +199,7 @@ function spreadMetrics(metricsList: AllMetrics[]): Partial<AllMetrics> {
       totalCostUsd: std(metricsList.map((m) => m.cost.totalCostUsd)),
       responseCostUsd: std(metricsList.map((m) => m.cost.responseCostUsd)),
       harmCostUsd: std(metricsList.map((m) => m.cost.harmCostUsd)),
+      floodPenaltyUsd: std(metricsList.map((m) => m.cost.floodPenaltyUsd)),
       missCount: std(metricsList.map((m) => m.cost.missCount)),
       overResponseCount: std(metricsList.map((m) => m.cost.overResponseCount)),
       totalDecisions: std(metricsList.map((m) => m.cost.totalDecisions)),
@@ -242,6 +248,7 @@ export function formatMetricsTable(result: MultiRunResult): string {
     `  Total Cost (USD)        $${fmt(mean.cost.totalCostUsd, s.cost?.totalCostUsd)}`,
     `    Response cost          $${fmt(mean.cost.responseCostUsd, s.cost?.responseCostUsd)}`,
     `    Harm cost              $${fmt(mean.cost.harmCostUsd, s.cost?.harmCostUsd)}`,
+    `    Flood penalty          $${fmt(mean.cost.floodPenaltyUsd, s.cost?.floodPenaltyUsd)}`,
     `    Miss count             ${fmt(mean.cost.missCount, s.cost?.missCount)}`,
     `    Over-response count    ${fmt(mean.cost.overResponseCount, s.cost?.overResponseCount)}`,
     `  Brier Score              ${fmt(mean.brierScore, s.brierScore)}`,

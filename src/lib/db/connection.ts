@@ -127,22 +127,32 @@ export async function getDb(): Promise<ReturnType<typeof drizzle>> {
 }
 
 export async function createTestDb(): Promise<ReturnType<typeof drizzle>> {
-  if (_pglite) {
-    await _pglite.close();
-    _pglite = null;
+  if (_db) {
+    // Reuse existing instance — truncate all tables instead of re-creating
+    await truncateAll();
+    return _db;
   }
-  _db = null;
   const db = await createPgliteDb();
   await execCreateTables(db);
   return db;
 }
 
+async function truncateAll(): Promise<void> {
+  const db = _db!;
+  // Truncate in dependency order (children first) to respect FK constraints
+  await db.execute(sql.raw("TRUNCATE outcomes, decisions, events, shifts, incidents, robots, guards, sites CASCADE"));
+}
+
 export async function resetDb(): Promise<void> {
-  if (_pglite) {
-    await _pglite.close();
-    _pglite = null;
+  if (_db) {
+    // Reuse instance — just truncate tables
+    try {
+      await truncateAll();
+    } catch {
+      // Tables may not exist yet on first call — that's fine
+    }
+    return;
   }
-  _db = null;
 }
 
 async function execCreateTables(db: ReturnType<typeof drizzle>): Promise<void> {

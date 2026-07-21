@@ -7,7 +7,7 @@ import {
   computeAckRate,
   responseCostUsd,
   harmCostUsd,
-  C_HARM_PER_LEVEL,
+  HARM_AT_LEVEL,
   GUARD_RATE_PER_MIN,
   OPERATOR_RATE_PER_MIN,
   TIER_GUARD_MINUTES,
@@ -70,9 +70,9 @@ describe("metrics", () => {
     });
 
     it("charges C_HARM × gap for under-response to real", () => {
-      // true=3, responded=1, gap=2
-      expect(harmCostUsd(3, 1, true)).toBe(C_HARM_PER_LEVEL * 2);
-      expect(harmCostUsd(3, 1, true)).toBe(1000);
+      // true=3 (property threat, $2000/level), responded=1, gap=2
+      expect(harmCostUsd(3, 1, true)).toBe(HARM_AT_LEVEL[3] * 2);
+      expect(harmCostUsd(3, 1, true)).toBe(4000);
     });
   });
 
@@ -100,7 +100,8 @@ describe("metrics", () => {
       const outcomes = [makeOutcome({ id: "o1", decisionId: "d1", wasReal: true, correctTier: 3 })];
 
       const result = computeOperationalCost(decisions, outcomes);
-      expect(result.harmCostUsd).toBe(C_HARM_PER_LEVEL * 2);
+      // true=3, responded=1, gap=2 → $2000 × 2 = $4000
+      expect(result.harmCostUsd).toBe(HARM_AT_LEVEL[3] * 2);
       expect(result.missCount).toBe(1);
     });
 
@@ -121,7 +122,8 @@ describe("metrics", () => {
 
       const result = computeOperationalCost(decisions, outcomes);
       expect(result.responseCostUsd).toBe(responseCostUsd(0)); // 0
-      expect(result.harmCostUsd).toBe(C_HARM_PER_LEVEL * 4); // $2000
+      // true=4 (life threat, $10000/level), responded=0, gap=4 → $40,000
+      expect(result.harmCostUsd).toBe(HARM_AT_LEVEL[4] * 4);
       expect(result.totalCostUsd).toBe(result.responseCostUsd + result.harmCostUsd);
     });
   });

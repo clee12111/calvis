@@ -1,7 +1,7 @@
 import type { Decision, Outcome, Incident } from "../db/schema";
 
 // ═══════════════════════════════════════════════════════════════════════════
-// COST CONSTANTS — each with a one-line dollar rationale
+// COST CONSTANTS — D-019. Each anchored or marked as stated judgment.
 // ═══════════════════════════════════════════════════════════════════════════
 
 /** $/guard-minute. Industry average for contracted security in US metro. */
@@ -11,11 +11,6 @@ export const GUARD_RATE_PER_MIN = 0.75;
 export const OPERATOR_RATE_PER_MIN = 0.58;
 
 // Response cost per tier in guard-minutes + operator-minutes
-// Tier 0: suppress — 0 cost
-// Tier 1: log_and_watch — 0 guard-min, 0.5 operator-min (glance at recheck)
-// Tier 2: request_photo — 0.5 guard-min (~30s to snap photo), 1 operator-min
-// Tier 3: notify_guard / walk it — 10 guard-min, 3 operator-min (track dispatch)
-// Tier 4: dispatch_backup / escalate — 30 guard-min, 10 operator-min (coordinate)
 export const TIER_GUARD_MINUTES = [0, 0, 0.5, 10, 30] as const;
 export const TIER_OPERATOR_MINUTES = [0, 0.5, 1, 3, 10] as const;
 
@@ -27,40 +22,80 @@ export function responseCostUsd(tier: number): number {
 }
 
 /**
- * Cost of harm when under-responding to a real incident.
- * $500 per evidence-level gap — a missed break-in (true=3, responded=0) costs $1500.
- * Rationale: average burglary loss in commercial properties is ~$8k;
- * $500/level is conservative and makes the tradeoff legible.
+ * Convex per-level harm cost (D-019).
+ * Each level is qualitatively different, not a unit of one thing.
+ * HARM_AT_LEVEL[L] is the cost per level of gap when the true level is L.
  */
-export const C_HARM_PER_LEVEL = 500;
+export const HARM_AT_LEVEL: readonly number[] = [
+  0,       // E0: benign — no harm from missing it
+  50,      // E1: something happened — paperwork/compliance cost. Stated judgment.
+  200,     // E2: human presence confirmed — overtime to backfill (~4h × $50/h). Derived.
+  2_000,   // E3: property threat — avg commercial burglary ~$8k (FBI UCR 2023), discounted. Anchored.
+  10_000,  // E4: life threat — liability floor. No public anchor; stated judgment.
+];
 
 /**
- * harmCost: charges when the system under-responds to a real incident.
- * Zero when the incident is benign or when response meets/exceeds true level.
+ * harmCost: convex charge when under-responding to a real incident.
+ * Uses the TRUE level's per-level cost × gap.
  */
 export function harmCostUsd(trueLevel: number, respondedTier: number, wasReal: boolean): number {
   if (!wasReal) return 0;
   const gap = trueLevel - respondedTier;
-  if (gap <= 0) return 0; // met or exceeded — no harm
-  return C_HARM_PER_LEVEL * gap;
+  if (gap <= 0) return 0;
+  const perLevel = HARM_AT_LEVEL[Math.min(trueLevel, 4)] ?? 0;
+  return perLevel * gap;
+}
+
+/**
+ * Flood penalty (D-019, EEMUA 191).
+ * Superlinear surcharge when operator-surfaced rate exceeds threshold.
+ * Threshold: 6 items per 10-min window (adapted from EEMUA "overloaded" at >2/10min
+ * for industrial, scaled for security's higher baseline volume).
+ */
+export const FLOOD_THRESHOLD_PER_10MIN = 6;
+export const FLOOD_COST_PER_UNIT_SQ = 20; // $/unit² above threshold. Stated judgment.
+
+export function computeFloodPenalty(decisions: Decision[]): number {
+  // Only tier >= 1 items surface to the operator
+  const surfacedTimes = decisions
+    .filter((d) => d.chosenTier >= 1)
+    .map((d) => d.timestamp)
+    .sort((a, b) => a - b);
+
+  if (surfacedTimes.length === 0) return 0;
+
+  const WINDOW_MS = 10 * 60 * 1000; // 10 minutes
+  let totalPenalty = 0;
+
+  // Sliding window: check each 10-min window aligned to first event, stepping by 1 min
+  const start = surfacedTimes[0];
+  const end = surfacedTimes[surfacedTimes.length - 1];
+
+  for (let windowStart = start; windowStart <= end; windowStart += 60_000) {
+    const windowEnd = windowStart + WINDOW_MS;
+    const count = surfacedTimes.filter((t) => t >= windowStart && t < windowEnd).length;
+    if (count > FLOOD_THRESHOLD_PER_10MIN) {
+      const excess = count - FLOOD_THRESHOLD_PER_10MIN;
+      totalPenalty += excess * excess * FLOOD_COST_PER_UNIT_SQ;
+    }
+  }
+
+  // Normalize: don't double-count overlapping windows — take the average penalty per window
+  const numWindows = Math.max(1, Math.ceil((end - start) / 60_000));
+  return totalPenalty / numWindows;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// PRIMARY METRIC: operational cost in dollars
+// PRIMARY METRIC: operational cost in dollars (response + harm + flood)
 // ═══════════════════════════════════════════════════════════════════════════
 
 export interface CostResult {
-  /** Total operational cost: response + harm */
   totalCostUsd: number;
-  /** Sum of response costs (guard + operator time) */
   responseCostUsd: number;
-  /** Sum of harm costs from under-responding to real incidents */
   harmCostUsd: number;
-  /** Number of under-responded real incidents */
+  floodPenaltyUsd: number;
   missCount: number;
-  /** Number of over-responded benign incidents (tier > 0 on benign) */
   overResponseCount: number;
-  /** Total decisions evaluated */
   totalDecisions: number;
 }
 
@@ -79,7 +114,6 @@ export function computeOperationalCost(
   let overResponseCount = 0;
 
   for (const d of decisions) {
-    // Every decision incurs its response cost
     totalResponseCost += responseCostUsd(d.chosenTier);
 
     const outcome = outcomeByDecision.get(d.id);
@@ -89,18 +123,17 @@ export function computeOperationalCost(
     const harm = harmCostUsd(outcome.correctTier, d.chosenTier, wasReal);
     totalHarmCost += harm;
 
-    if (wasReal && d.chosenTier < outcome.correctTier) {
-      missCount++;
-    }
-    if (!wasReal && d.chosenTier > 0) {
-      overResponseCount++;
-    }
+    if (wasReal && d.chosenTier < outcome.correctTier) missCount++;
+    if (!wasReal && d.chosenTier > 0) overResponseCount++;
   }
 
+  const floodPenalty = computeFloodPenalty(decisions);
+
   return {
-    totalCostUsd: totalResponseCost + totalHarmCost,
+    totalCostUsd: totalResponseCost + totalHarmCost + floodPenalty,
     responseCostUsd: totalResponseCost,
     harmCostUsd: totalHarmCost,
+    floodPenaltyUsd: floodPenalty,
     missCount,
     overResponseCount,
     totalDecisions: decisions.length,
@@ -111,11 +144,6 @@ export function computeOperationalCost(
 // BRIER SCORE
 // ═══════════════════════════════════════════════════════════════════════════
 
-/**
- * Brier score: mean squared error of stated confidence vs actual outcome.
- * confidence → P(real), outcome → 1 if real, 0 if false
- * Lower is better. Perfect = 0, worst = 1.
- */
 export function computeBrierScore(
   decisions: Decision[],
   outcomes: Outcome[]
@@ -145,10 +173,6 @@ export function computeBrierScore(
 // DISPATCH QUALITY
 // ═══════════════════════════════════════════════════════════════════════════
 
-/**
- * Ack rate: fraction of dispatched incidents (tier >= 2) that got an ack.
- * Denominator = incidents actually dispatched, not all outcomes.
- */
 export function computeAckRate(
   decisions: Decision[],
   outcomes: Outcome[]
@@ -183,38 +207,33 @@ export function computeTimeToAck(
   }
 
   if (ackTimes.length === 0) return { median: 0, mean: 0, count: 0 };
-
   ackTimes.sort((a, b) => a - b);
-  const median = ackTimes[Math.floor(ackTimes.length / 2)];
-  const mean = ackTimes.reduce((s, t) => s + t, 0) / ackTimes.length;
-
-  return { median, mean, count: ackTimes.length };
+  return {
+    median: ackTimes[Math.floor(ackTimes.length / 2)],
+    mean: ackTimes.reduce((s, t) => s + t, 0) / ackTimes.length,
+    count: ackTimes.length,
+  };
 }
 
 export function computeTimeToResolution(
   incidents: Incident[]
 ): { median: number; mean: number; count: number } {
-  const resolved = incidents.filter(
-    (i) => i.resolvedAt !== null && i.resolvedAt !== undefined
-  );
-
-  if (resolved.length === 0) return { median: 0, mean: 0, count: 0 };
-
-  const times = resolved
+  const times = incidents
+    .filter((i) => i.resolvedAt != null)
     .map((i) => ((i.resolvedAt ?? 0) - i.createdAt) / 1000)
     .filter((t) => t > 0)
     .sort((a, b) => a - b);
 
   if (times.length === 0) return { median: 0, mean: 0, count: 0 };
-
-  const median = times[Math.floor(times.length / 2)];
-  const mean = times.reduce((s, t) => s + t, 0) / times.length;
-
-  return { median, mean, count: times.length };
+  return {
+    median: times[Math.floor(times.length / 2)],
+    mean: times.reduce((s, t) => s + t, 0) / times.length,
+    count: times.length,
+  };
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// GUARD-MINUTES (now derived from response cost)
+// GUARD-MINUTES
 // ═══════════════════════════════════════════════════════════════════════════
 
 export function computeGuardMinutes(decisions: Decision[]): number {

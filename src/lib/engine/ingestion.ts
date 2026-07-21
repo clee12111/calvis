@@ -46,42 +46,40 @@ export class IngestionPipeline {
   async ingestUpTo(simTimeMs: number): Promise<SimEvent[]> {
     const ingested: SimEvent[] = [];
 
+    // Collect events to ingest
     while (this._nextIndex < this._events.length) {
       const event = this._events[this._nextIndex];
       if (event.timestamp > simTimeMs) break;
-
-      // Dedup check
-      if (this._seenIds.has(event.id)) {
-        this._nextIndex++;
-        continue;
-      }
-
-      // Persist
-      await eventRepo.insert({
-        id: event.id,
-        type: event.type,
-        siteId: event.siteId,
-        zoneId: event.zoneId,
-        sourceType: event.sourceType,
-        sourceId: event.sourceId,
-        severity: event.severity,
-        timestamp: event.timestamp,
-        rawDataJson: event.rawDataJson,
-        groundTruthLabel: event.groundTruthLabel,
-        scenarioId: event.scenarioId,
-        createdAt: event.timestamp, // use sim time as created_at
-      });
-
+      if (this._seenIds.has(event.id)) { this._nextIndex++; continue; }
       this._seenIds.add(event.id);
       this._ingestedCount++;
       ingested.push(event);
-
-      // Publish to subscribers
-      for (const sub of this._subscribers) {
-        sub(event);
-      }
-
       this._nextIndex++;
+    }
+
+    // Batch persist
+    if (ingested.length > 0) {
+      await eventRepo.insertMany(
+        ingested.map((e) => ({
+          id: e.id,
+          type: e.type,
+          siteId: e.siteId,
+          zoneId: e.zoneId,
+          sourceType: e.sourceType,
+          sourceId: e.sourceId,
+          severity: e.severity,
+          timestamp: e.timestamp,
+          rawDataJson: e.rawDataJson,
+          groundTruthLabel: e.groundTruthLabel,
+          scenarioId: e.scenarioId,
+          createdAt: e.timestamp,
+        }))
+      );
+    }
+
+    // Notify subscribers
+    for (const event of ingested) {
+      for (const sub of this._subscribers) sub(event);
     }
 
     return ingested;

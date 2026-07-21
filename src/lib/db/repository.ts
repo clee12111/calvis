@@ -32,8 +32,8 @@ export const eventRepo = {
   async insertMany(rows: (typeof events.$inferInsert)[]) {
     if (rows.length === 0) return;
     const db = await getDb();
-    for (const row of rows) {
-      await db.insert(events).values(row);
+    for (let i = 0; i < rows.length; i += 50) {
+      await db.insert(events).values(rows.slice(i, i + 50));
     }
   },
   async getById(id: string): Promise<Event | undefined> {
@@ -145,7 +145,7 @@ export const siteRepo = {
   async insertMany(rows: (typeof sites.$inferInsert)[]) {
     if (rows.length === 0) return;
     const db = await getDb();
-    for (const row of rows) await db.insert(sites).values(row);
+    for (let i = 0; i < rows.length; i += 10) { await db.insert(sites).values(rows.slice(i, i + 10)); }
   },
   async getById(id: string) {
     const db = await getDb();
@@ -167,7 +167,7 @@ export const guardRepo = {
   async insertMany(rows: (typeof guards.$inferInsert)[]) {
     if (rows.length === 0) return;
     const db = await getDb();
-    for (const row of rows) await db.insert(guards).values(row);
+    for (let i = 0; i < rows.length; i += 10) { await db.insert(guards).values(rows.slice(i, i + 10)); }
   },
   async getById(id: string) {
     const db = await getDb();
@@ -193,7 +193,7 @@ export const robotRepo = {
   async insertMany(rows: (typeof robots.$inferInsert)[]) {
     if (rows.length === 0) return;
     const db = await getDb();
-    for (const row of rows) await db.insert(robots).values(row);
+    for (let i = 0; i < rows.length; i += 10) { await db.insert(robots).values(rows.slice(i, i + 10)); }
   },
   async getById(id: string) {
     const db = await getDb();
@@ -219,7 +219,7 @@ export const shiftRepo = {
   async insertMany(rows: (typeof shifts.$inferInsert)[]) {
     if (rows.length === 0) return;
     const db = await getDb();
-    for (const row of rows) await db.insert(shifts).values(row);
+    for (let i = 0; i < rows.length; i += 30) { await db.insert(shifts).values(rows.slice(i, i + 30)); }
   },
   async getAll() {
     const db = await getDb();

@@ -18,6 +18,15 @@
 - [x] 0.6.3 · Async cascade. — All repo methods async, all consumers awaited. 50+ call sites updated. Scripts wrapped in `async main()`.
 - [x] 0.6.4 · Zero-install keyless path. — `npm run seed` works with no env vars. 44 tests green. Eval: 16.6s/run (vs 2.2s on SQLite — 8x slower, still usable for dev, not for CI).
 
+## F0.6.5 — Cost model repair + performance
+- [x] A1 · D-019 written BEFORE re-running: convex harm ($50/$200/$2k/$10k per level), operator attention priced, EEMUA flood penalty.
+- [x] A2 · All arms re-run. always-2 no longer beats rules-only ($+16,782 CI [13755,19401]). No degenerate arm wins.
+- [x] A3 · N/A — baseline wins under corrected model.
+- [x] B · Test suite: 178s → 11.6s (shared PGlite, truncate-per-test, resetDb reuse). 44 tests green.
+- [x] C · Eval: 60-run comparison in 59s (was ~4 min). Event/site caches + batch inserts.
+- [x] D · Neon smoke test: script ready, skipped (DATABASE_URL not set). Install `@neondatabase/serverless` done.
+- [x] E · D-012 collision fixed → bar-setter's entry renumbered to D-012B.
+
 ## F0.7 — Provider, generator, cache
 - [ ] 0.7.1 · LLMProvider interface + smoke test
 - [ ] 0.7.2 · Offline night generator (gen:nights)
