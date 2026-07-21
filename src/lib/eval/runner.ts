@@ -1,0 +1,373 @@
+import seedrandom from "seedrandom";
+import { seedWorld } from "../engine/seed-world";
+import { siteRepo, guardRepo, robotRepo, decisionRepo, incidentRepo, outcomeRepo, eventRepo } from "../db/repository";
+import { generateEventStream, type SimEvent } from "../engine/scenarios";
+import { IngestionPipeline } from "../engine/ingestion";
+import { correlateEvents } from "../engine/correlator";
+import { scoreAndDecide, scoreIncident } from "../engine/baseline-scorer";
+import { generateSimOutcomes } from "../engine/outcome-join";
+import { computeAllMetrics, type AllMetrics } from "./metrics";
+import type { Incident } from "../db/schema";
+
+export type ArmFn = (seed: number) => AllMetrics;
+
+// --- Arm registry ---
+const arms = new Map<string, ArmFn>();
+
+function registerArm(name: string, fn: ArmFn) {
+  arms.set(name, fn);
+}
+
+export function getArm(name: string): ArmFn | undefined {
+  return arms.get(name);
+}
+
+export function listArms(): string[] {
+  return Array.from(arms.keys());
+}
+
+// --- Shared setup: seed → events → incidents (no scoring) ---
+function setupWorld(seed: number): { events: SimEvent[]; incidents: Incident[] } {
+  seedWorld({ seed });
+  const sites = siteRepo.getAll();
+  const guards = guardRepo.getAll();
+  const robots = robotRepo.getAll();
+  const events = generateEventStream({ seed, sites, guards, robots });
+  const pipeline = new IngestionPipeline(events);
+  pipeline.ingestAll();
+  const incidents = correlateEvents(events);
+  return { events, incidents };
+}
+
+function collectMetrics(events: SimEvent[], incidents: Incident[], startWall: number): AllMetrics {
+  const nightEndMs = 10 * 3600 * 1000;
+  generateSimOutcomes(incidents, events, nightEndMs);
+  return computeAllMetrics({
+    decisions: decisionRepo.getAll(),
+    outcomes: outcomeRepo.getAll(),
+    incidents: incidentRepo.getAll(),
+    totalEvents: events.length,
+    wallTimeMs: Date.now() - startWall,
+  });
+}
+
+// --- Constant-tier arm factory ---
+function constantTierArm(tier: number): ArmFn {
+  return (seed: number) => {
+    const startWall = Date.now();
+    const { events, incidents } = setupWorld(seed);
+    for (const incident of incidents) {
+      // Insert decision with fixed tier, confidence from priors
+      const result = scoreIncident(incident);
+      decisionRepo.insert({
+        id: `dec-${incident.id}`,
+        incidentId: incident.id,
+        inputsJson: JSON.stringify({ siteId: incident.siteId }),
+        factorsJson: JSON.stringify([{ name: "constant", value: tier, weight: 1 }]),
+        chosenTier: tier,
+        confidence: result.confidence,
+        autonomyGate: tier <= 2 ? "auto" : "propose",
+        policyVersionHash: `always-${tier}`,
+        rationaleJson: JSON.stringify({ method: `always-${tier}` }),
+        timestamp: incident.createdAt,
+        createdAt: incident.createdAt,
+      });
+      incidentRepo.update(incident.id, { priority: result.priority, tier, confidence: result.confidence });
+    }
+    return collectMetrics(events, incidents, startWall);
+  };
+}
+
+// --- Random-uniform arm ---
+function randomUniformArm(seed: number): AllMetrics {
+  const startWall = Date.now();
+  const { events, incidents } = setupWorld(seed);
+  const rng = seedrandom(`random-arm-${seed}`);
+  for (const incident of incidents) {
+    const tier = Math.floor(rng() * 5); // 0-4
+    const result = scoreIncident(incident);
+    decisionRepo.insert({
+      id: `dec-${incident.id}`,
+      incidentId: incident.id,
+      inputsJson: JSON.stringify({ siteId: incident.siteId }),
+      factorsJson: JSON.stringify([{ name: "random", value: tier, weight: 1 }]),
+      chosenTier: tier,
+      confidence: result.confidence,
+      autonomyGate: "propose",
+      policyVersionHash: "random-uniform",
+      rationaleJson: JSON.stringify({ method: "random-uniform" }),
+      timestamp: incident.createdAt,
+      createdAt: incident.createdAt,
+    });
+    incidentRepo.update(incident.id, { priority: result.priority, tier, confidence: result.confidence });
+  }
+  return collectMetrics(events, incidents, startWall);
+}
+
+// --- Rules-only arm ---
+function rulesOnlyArm(seed: number): AllMetrics {
+  const startWall = Date.now();
+  const { events, incidents } = setupWorld(seed);
+  for (const incident of incidents) {
+    scoreAndDecide(incident);
+  }
+  return collectMetrics(events, incidents, startWall);
+}
+
+// --- Register all arms ---
+registerArm("rules-only", rulesOnlyArm);
+registerArm("always-0", constantTierArm(0));
+registerArm("always-2", constantTierArm(2));
+registerArm("always-3", constantTierArm(3));
+registerArm("always-4", constantTierArm(4));
+registerArm("random-uniform", randomUniformArm);
+
+// Stub arms for future phases
+registerArm("agent-no-memory", (_seed: number) => {
+  throw new Error("agent-no-memory arm is not implemented (F1)");
+});
+registerArm("agent-with-memory", (_seed: number) => {
+  throw new Error("agent-with-memory arm is not implemented (F2)");
+});
+
+// --- Multi-run support ---
+export interface RunResult {
+  arm: string;
+  seed: number;
+  metrics: AllMetrics;
+}
+
+export interface MultiRunResult {
+  arm: string;
+  seeds: number[];
+  runs: RunResult[];
+  mean: AllMetrics;
+  spread: Partial<AllMetrics>;
+}
+
+function meanMetrics(metricsList: AllMetrics[]): AllMetrics {
+  const n = metricsList.length;
+  if (n === 0) throw new Error("No runs to average");
+  if (n === 1) return metricsList[0];
+
+  const avg = (arr: number[]) => arr.reduce((s, v) => s + v, 0) / arr.length;
+
+  return {
+    cost: {
+      totalCostUsd: avg(metricsList.map((m) => m.cost.totalCostUsd)),
+      responseCostUsd: avg(metricsList.map((m) => m.cost.responseCostUsd)),
+      harmCostUsd: avg(metricsList.map((m) => m.cost.harmCostUsd)),
+      missCount: avg(metricsList.map((m) => m.cost.missCount)),
+      overResponseCount: avg(metricsList.map((m) => m.cost.overResponseCount)),
+      totalDecisions: avg(metricsList.map((m) => m.cost.totalDecisions)),
+    },
+    brierScore: avg(metricsList.map((m) => m.brierScore)),
+    ackRate: avg(metricsList.map((m) => m.ackRate)),
+    timeToAck: {
+      median: avg(metricsList.map((m) => m.timeToAck.median)),
+      mean: avg(metricsList.map((m) => m.timeToAck.mean)),
+      count: avg(metricsList.map((m) => m.timeToAck.count)),
+    },
+    timeToResolution: {
+      median: avg(metricsList.map((m) => m.timeToResolution.median)),
+      mean: avg(metricsList.map((m) => m.timeToResolution.mean)),
+      count: avg(metricsList.map((m) => m.timeToResolution.count)),
+    },
+    guardMinutes: avg(metricsList.map((m) => m.guardMinutes)),
+    llmCalls: 0,
+    llmCostUsd: 0,
+    eventsPerSecond: avg(metricsList.map((m) => m.eventsPerSecond)),
+  };
+}
+
+function spreadMetrics(metricsList: AllMetrics[]): Partial<AllMetrics> {
+  const n = metricsList.length;
+  if (n <= 1) return {};
+
+  const std = (arr: number[]) => {
+    const m = arr.reduce((s, v) => s + v, 0) / arr.length;
+    return Math.sqrt(arr.reduce((s, v) => s + (v - m) ** 2, 0) / (arr.length - 1));
+  };
+
+  return {
+    cost: {
+      totalCostUsd: std(metricsList.map((m) => m.cost.totalCostUsd)),
+      responseCostUsd: std(metricsList.map((m) => m.cost.responseCostUsd)),
+      harmCostUsd: std(metricsList.map((m) => m.cost.harmCostUsd)),
+      missCount: std(metricsList.map((m) => m.cost.missCount)),
+      overResponseCount: std(metricsList.map((m) => m.cost.overResponseCount)),
+      totalDecisions: std(metricsList.map((m) => m.cost.totalDecisions)),
+    },
+    brierScore: std(metricsList.map((m) => m.brierScore)),
+    guardMinutes: std(metricsList.map((m) => m.guardMinutes)),
+  } as Partial<AllMetrics>;
+}
+
+export function runArm(armName: string, seed: number): RunResult {
+  const fn = getArm(armName);
+  if (!fn) throw new Error(`Unknown arm: ${armName}. Available: ${listArms().join(", ")}`);
+  return { arm: armName, seed, metrics: fn(seed) };
+}
+
+export function runMultiple(armName: string, baseSeed: number, runs: number): MultiRunResult {
+  const seeds = Array.from({ length: runs }, (_, i) => baseSeed + i);
+  const results: RunResult[] = [];
+
+  for (const seed of seeds) {
+    results.push(runArm(armName, seed));
+  }
+
+  return {
+    arm: armName,
+    seeds,
+    runs: results,
+    mean: meanMetrics(results.map((r) => r.metrics)),
+    spread: spreadMetrics(results.map((r) => r.metrics)),
+  };
+}
+
+// --- Formatting ---
+export function formatMetricsTable(result: MultiRunResult): string {
+  const { mean, spread } = result;
+  const s = spread as any;
+
+  const fmt = (val: number, std?: number) => {
+    const v = val.toFixed(2);
+    return std !== undefined && std > 0 ? `${v} ± ${std.toFixed(2)}` : v;
+  };
+
+  const lines = [
+    `Eval: ${result.arm} | ${result.runs.length} run(s) | seeds: [${result.seeds.join(", ")}]`,
+    "─".repeat(65),
+    `  Total Cost (USD)        $${fmt(mean.cost.totalCostUsd, s.cost?.totalCostUsd)}`,
+    `    Response cost          $${fmt(mean.cost.responseCostUsd, s.cost?.responseCostUsd)}`,
+    `    Harm cost              $${fmt(mean.cost.harmCostUsd, s.cost?.harmCostUsd)}`,
+    `    Miss count             ${fmt(mean.cost.missCount, s.cost?.missCount)}`,
+    `    Over-response count    ${fmt(mean.cost.overResponseCount, s.cost?.overResponseCount)}`,
+    `  Brier Score              ${fmt(mean.brierScore, s.brierScore)}`,
+    `  Ack Rate                 ${fmt(mean.ackRate)}`,
+    `  Guard-Minutes            ${fmt(mean.guardMinutes, s.guardMinutes)}`,
+    `  LLM Calls               ${mean.llmCalls}`,
+    `  Events/sec               ${fmt(mean.eventsPerSecond)}`,
+    `  Total Decisions          ${fmt(mean.cost.totalDecisions)}`,
+    "─".repeat(65),
+  ];
+
+  return lines.join("\n");
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// PAIRED COMPARISON with bootstrap CIs
+// ═══════════════════════════════════════════════════════════════════════
+
+export interface PairedResult {
+  arm: string;
+  meanCost: number;
+  /** Per-seed delta: arm_cost - baseline_cost (positive = worse than baseline) */
+  deltas: number[];
+  meanDelta: number;
+  /** Bootstrap 95% CI on the mean delta */
+  ci95: [number, number];
+  /** Does this arm beat the baseline? (meanDelta < 0 and CI excludes 0) */
+  beatsBaseline: boolean;
+}
+
+function bootstrapCI(
+  values: number[],
+  nBoot: number = 10000,
+  alpha: number = 0.05
+): [number, number] {
+  const rng = seedrandom("bootstrap");
+  const n = values.length;
+  const means: number[] = [];
+
+  for (let b = 0; b < nBoot; b++) {
+    let sum = 0;
+    for (let i = 0; i < n; i++) {
+      sum += values[Math.floor(rng() * n)];
+    }
+    means.push(sum / n);
+  }
+
+  means.sort((a, b) => a - b);
+  const lo = means[Math.floor((alpha / 2) * nBoot)];
+  const hi = means[Math.floor((1 - alpha / 2) * nBoot)];
+  return [lo, hi];
+}
+
+export function runAllArmsCompared(
+  baseSeed: number,
+  runs: number,
+  baselineArm: string = "rules-only"
+): { baseline: MultiRunResult; comparisons: PairedResult[] } {
+  const seeds = Array.from({ length: runs }, (_, i) => baseSeed + i);
+
+  // Run baseline first
+  const baselineResults: RunResult[] = [];
+  for (const seed of seeds) {
+    baselineResults.push(runArm(baselineArm, seed));
+  }
+  const baseline: MultiRunResult = {
+    arm: baselineArm,
+    seeds,
+    runs: baselineResults,
+    mean: meanMetrics(baselineResults.map((r) => r.metrics)),
+    spread: spreadMetrics(baselineResults.map((r) => r.metrics)),
+  };
+
+  // Run all other arms on the same seeds
+  const otherArms = listArms().filter(
+    (a) => a !== baselineArm && !a.startsWith("agent-")
+  );
+  const comparisons: PairedResult[] = [];
+
+  for (const armName of otherArms) {
+    const armResults: RunResult[] = [];
+    for (const seed of seeds) {
+      armResults.push(runArm(armName, seed));
+    }
+
+    // Paired deltas per seed
+    const deltas = armResults.map((r, i) =>
+      r.metrics.cost.totalCostUsd - baselineResults[i].metrics.cost.totalCostUsd
+    );
+    const meanDelta = deltas.reduce((s, d) => s + d, 0) / deltas.length;
+    const ci95 = bootstrapCI(deltas);
+
+    comparisons.push({
+      arm: armName,
+      meanCost: armResults.reduce((s, r) => s + r.metrics.cost.totalCostUsd, 0) / runs,
+      deltas,
+      meanDelta,
+      ci95,
+      beatsBaseline: ci95[1] < 0, // entire CI below 0 = significantly cheaper
+    });
+  }
+
+  return { baseline, comparisons };
+}
+
+export function formatComparisonTable(
+  baseline: MultiRunResult,
+  comparisons: PairedResult[]
+): string {
+  const lines = [
+    `Paired comparison vs ${baseline.arm} | ${baseline.runs.length} seeds`,
+    "═".repeat(80),
+    `${"Arm".padEnd(20)} ${"Mean $".padStart(10)} ${"Δ vs base".padStart(12)} ${"95% CI".padStart(22)} ${"Beats?".padStart(8)}`,
+    "─".repeat(80),
+    `${baseline.arm.padEnd(20)} ${("$" + baseline.mean.cost.totalCostUsd.toFixed(0)).padStart(10)} ${"(baseline)".padStart(12)} ${"—".padStart(22)} ${"—".padStart(8)}`,
+  ];
+
+  for (const c of comparisons) {
+    const delta = (c.meanDelta >= 0 ? "+" : "") + "$" + c.meanDelta.toFixed(0);
+    const ci = `[$${c.ci95[0].toFixed(0)}, $${c.ci95[1].toFixed(0)}]`;
+    const beats = c.beatsBaseline ? "YES" : c.ci95[0] > 0 ? "NO" : "~";
+    lines.push(
+      `${c.arm.padEnd(20)} ${("$" + c.meanCost.toFixed(0)).padStart(10)} ${delta.padStart(12)} ${ci.padStart(22)} ${beats.padStart(8)}`
+    );
+  }
+
+  lines.push("═".repeat(80));
+  return lines.join("\n");
+}
