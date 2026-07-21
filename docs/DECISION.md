@@ -8,6 +8,17 @@ where they conflict with the advisor's; reconcile at the next commit.
 
 ## 2026-07-21 — F0.5 metric repair (engineer)
 
+### D-018 · PGlite via Drizzle RC replaces better-sqlite3
+**Decision:** Migrated to `drizzle-orm@1.0.0-rc.4` with `@electric-sql/pglite@0.5.4`. All tables created through Drizzle's `sql.raw()` (not PGlite's `.exec()`) because the Drizzle wrapper doesn't see tables created via the raw PGlite interface. Timestamps changed from `INTEGER` to `BIGINT` (Postgres's `INTEGER` is 32-bit, overflows at Unix ms timestamps). Repository layer fully async.
+**Why:** Vercel has no persistent filesystem — SQLite cannot back a deployed demo. PGlite gives Postgres compatibility without requiring an external server. The 8x perf regression (16.6s vs 2.2s per eval run) is acceptable for dev; Neon will be added for production deployment.
+**Precludes:** Synchronous repository API (everything is now `async/await`). The eval harness is slower but still under 3 min for a full 10-seed, 6-arm comparison.
+
+### ~~D-012~~ · ~~better-sqlite3 over sql.js for SQLite driver~~ → **superseded by D-018**
+**Note:** Replaced by PGlite + Drizzle RC. The sync API advantage no longer applies — async cascade completed.
+
+### ~~D-010~~ · ~~Next.js + TypeScript + SQLite (Drizzle)~~ → **partially superseded by D-018**
+**Note:** SQLite replaced by PGlite (Postgres-compatible). Everything else (Next.js, TypeScript, Drizzle, SSE) remains.
+
 ### D-017 · Degenerate-arm result: always-2 beats rules-only baseline
 **Decision:** Accept the result and proceed. The metric is correct; the baseline's Bayes-optimal tier selector over-responds to most incidents (92%) while still missing some, making it more expensive than a flat tier-2 policy. The fix is F0.8's investigate/commit/defer loop — not constant-tuning.
 **Why:** The prompt explicitly says "do not adjust weights until the arms look right — tuning until the control arm fails is how you fake a result." The degenerate arm check validated the metric (it correctly prices guard-minutes and harm), but exposed that a one-shot scorer with only event-type priors cannot discriminate. A system that asks one free question (is this on the delivery schedule?) before committing would dominate always-2.

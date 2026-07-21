@@ -43,7 +43,7 @@ export class IngestionPipeline {
    * Process all events up to the given sim time.
    * Returns the events that were ingested.
    */
-  ingestUpTo(simTimeMs: number): SimEvent[] {
+  async ingestUpTo(simTimeMs: number): Promise<SimEvent[]> {
     const ingested: SimEvent[] = [];
 
     while (this._nextIndex < this._events.length) {
@@ -57,7 +57,7 @@ export class IngestionPipeline {
       }
 
       // Persist
-      eventRepo.insert({
+      await eventRepo.insert({
         id: event.id,
         type: event.type,
         siteId: event.siteId,
@@ -88,8 +88,8 @@ export class IngestionPipeline {
   }
 
   /** Ingest all remaining events at once (batch mode) */
-  ingestAll(): SimEvent[] {
-    return this.ingestUpTo(Infinity);
+  async ingestAll(): Promise<SimEvent[]> {
+    return await this.ingestUpTo(Infinity);
   }
 
   /** Reset for re-use */

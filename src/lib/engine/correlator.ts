@@ -19,7 +19,7 @@ interface EventCluster {
  * 2. Related event types (from the type graph)
  * 3. Same source (same robot spamming = same incident)
  */
-export function correlateEvents(events: SimEvent[]): Incident[] {
+export async function correlateEvents(events: SimEvent[]): Promise<Incident[]> {
   if (events.length === 0) return [];
 
   // Sort by timestamp
@@ -81,7 +81,7 @@ export function correlateEvents(events: SimEvent[]): Incident[] {
     };
 
     // Persist
-    incidentRepo.insert({
+    await incidentRepo.insert({
       ...incident,
       eventIds: incident.eventIds,
     });

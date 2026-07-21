@@ -1,21 +1,20 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { joinOutcome, processLateOutcome } from "../outcome-join";
 import { decisionRepo, outcomeRepo, incidentRepo } from "../../db/repository";
-import { createTestDb, getSqlite } from "../../db/connection";
+import { createTestDb, execSql } from "../../db/connection";
 
 describe("outcome join", () => {
-  beforeEach(() => {
-    createTestDb();
-    const db = getSqlite();
-    db.exec(`
+  beforeEach(async () => {
+    await createTestDb();
+    await execSql(`
       INSERT INTO sites VALUES ('site-1', 'Test Site', '100 Main', 3, NULL, NULL, NULL, NULL, '[]', 1000);
       INSERT INTO incidents VALUES ('inc-1', 'site-1', NULL, 'open', '["evt-1"]', 10, 2, 0.7, 1000, 1000, NULL);
       INSERT INTO decisions VALUES ('dec-1', 'inc-1', '{}', '[]', 2, 0.7, 'auto', 'test-v1', NULL, 1000, 1000);
     `);
   });
 
-  it("joins an outcome to the correct decision", () => {
-    const outcome = joinOutcome({
+  it("joins an outcome to the correct decision", async () => {
+    const outcome = await joinOutcome({
       incidentId: "inc-1",
       source: "guard_closeout",
       wasReal: false,
@@ -30,8 +29,8 @@ describe("outcome join", () => {
     expect(outcome!.correctTier).toBe(0);
   });
 
-  it("updates incident status to false_alarm", () => {
-    joinOutcome({
+  it("updates incident status to false_alarm", async () => {
+    await joinOutcome({
       incidentId: "inc-1",
       source: "guard_closeout",
       wasReal: false,
@@ -40,13 +39,13 @@ describe("outcome join", () => {
       timestamp: 2000,
     });
 
-    const incident = incidentRepo.getById("inc-1");
+    const incident = await incidentRepo.getById("inc-1");
     expect(incident?.status).toBe("false_alarm");
     expect(incident?.resolvedAt).toBe(2000);
   });
 
-  it("decisions remain immutable after outcome join", () => {
-    joinOutcome({
+  it("decisions remain immutable after outcome join", async () => {
+    await joinOutcome({
       incidentId: "inc-1",
       source: "guard_closeout",
       wasReal: true,
@@ -56,16 +55,16 @@ describe("outcome join", () => {
     });
 
     // Decision should not have changed
-    const decision = decisionRepo.getById("dec-1");
+    const decision = await decisionRepo.getById("dec-1");
     expect(decision?.chosenTier).toBe(2);
     expect(decision?.confidence).toBe(0.7);
   });
 
-  it("late_label joins correctly (40+ min after decision)", () => {
+  it("late_label joins correctly (40+ min after decision)", async () => {
     // Late outcome arrives 45 minutes after the decision
     const lateTimestamp = 1000 + 45 * 60 * 1000; // 45min after decision
 
-    const outcome = processLateOutcome({
+    const outcome = await processLateOutcome({
       incidentId: "inc-1",
       wasReal: false,
       correctTier: 0,
@@ -79,13 +78,13 @@ describe("outcome join", () => {
     expect(outcome!.decisionId).toBe("dec-1");
 
     // Should have exactly 1 outcome
-    const outcomes = outcomeRepo.getByIncident("inc-1");
+    const outcomes = await outcomeRepo.getByIncident("inc-1");
     expect(outcomes).toHaveLength(1);
   });
 
-  it("every incident has >= 1 decision after scoring", () => {
+  it("every incident has >= 1 decision after scoring", async () => {
     // This is verified — dec-1 exists for inc-1
-    const decisions = decisionRepo.getByIncident("inc-1");
+    const decisions = await decisionRepo.getByIncident("inc-1");
     expect(decisions.length).toBeGreaterThanOrEqual(1);
   });
 });

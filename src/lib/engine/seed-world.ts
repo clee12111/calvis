@@ -77,14 +77,14 @@ export interface SeedConfig {
   nightEndHour?: number;   // default 6 (6am)
 }
 
-export function seedWorld(config: SeedConfig) {
+export async function seedWorld(config: SeedConfig) {
   const { seed, nightStartHour = 20, nightEndHour = 6 } = config;
   const rng = seedrandom(String(seed));
   // Deterministic timestamp — seed day at midnight UTC
   const now = new Date("2026-01-01T00:00:00Z").getTime() + seed;
 
-  resetDb();
-  initSchema();
+  await resetDb();
+  await initSchema();
 
   // --- Generate sites (12) ---
   const siteRows: Parameters<typeof siteRepo.insertMany>[0] = [];
@@ -114,7 +114,7 @@ export function seedWorld(config: SeedConfig) {
       createdAt: now,
     });
   }
-  siteRepo.insertMany(siteRows);
+  await siteRepo.insertMany(siteRows);
 
   // --- Generate guards (30) — distributed across sites ---
   const guardRows: Parameters<typeof guardRepo.insertMany>[0] = [];
@@ -137,7 +137,7 @@ export function seedWorld(config: SeedConfig) {
       createdAt: now,
     });
   }
-  guardRepo.insertMany(guardRows);
+  await guardRepo.insertMany(guardRows);
 
   // --- Generate robots (8) — assigned to high-criticality sites ---
   const sortedSites = [...siteRows].sort((a, b) => b.criticalityTier - a.criticalityTier);
@@ -158,7 +158,7 @@ export function seedWorld(config: SeedConfig) {
       createdAt: now,
     });
   }
-  robotRepo.insertMany(robotRows);
+  await robotRepo.insertMany(robotRows);
 
   // --- Generate 24h shift schedule ---
   // Night sim: 20:00 to 06:00 next day
@@ -186,7 +186,7 @@ export function seedWorld(config: SeedConfig) {
       });
     }
   }
-  shiftRepo.insertMany(shiftRows);
+  await shiftRepo.insertMany(shiftRows);
 
   return {
     sites: siteRows.length,
@@ -197,11 +197,11 @@ export function seedWorld(config: SeedConfig) {
 }
 
 /** Compute a hash of all data for determinism verification */
-export function computeWorldHash(): string {
-  const sites = siteRepo.getAll();
-  const guards = guardRepo.getAll();
-  const robots = robotRepo.getAll();
-  const shifts = shiftRepo.getAll();
+export async function computeWorldHash(): Promise<string> {
+  const sites = await siteRepo.getAll();
+  const guards = await guardRepo.getAll();
+  const robots = await robotRepo.getAll();
+  const shifts = await shiftRepo.getAll();
 
   const data = JSON.stringify({ sites, guards, robots, shifts });
   return crypto.createHash("sha256").update(data).digest("hex");

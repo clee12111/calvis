@@ -1,13 +1,10 @@
-import Database from "better-sqlite3";
-import { drizzle } from "drizzle-orm/better-sqlite3";
+import { PGlite } from "@electric-sql/pglite";
+import { drizzle } from "drizzle-orm/pglite";
+import { sql } from "drizzle-orm";
 import * as schema from "./schema";
-import path from "path";
-import fs from "fs";
-
-const DB_PATH = path.resolve(process.cwd(), "data", "calvis.db");
 
 let _db: ReturnType<typeof drizzle> | null = null;
-let _sqlite: Database.Database | null = null;
+let _pglite: PGlite | null = null;
 
 const CREATE_TABLES_SQL = `
   CREATE TABLE IF NOT EXISTS sites (
@@ -20,21 +17,21 @@ const CREATE_TABLES_SQL = `
     client_contact_name TEXT,
     client_contact_phone TEXT,
     zones_json TEXT NOT NULL,
-    created_at INTEGER NOT NULL
+    created_at BIGINT NOT NULL
   );
 
   CREATE TABLE IF NOT EXISTS guards (
     id TEXT PRIMARY KEY,
     name TEXT NOT NULL,
     skills_json TEXT NOT NULL,
-    armed INTEGER NOT NULL,
+    armed BOOLEAN NOT NULL,
     languages_json TEXT NOT NULL,
     shift_start INTEGER NOT NULL,
     shift_end INTEGER NOT NULL,
     site_id TEXT REFERENCES sites(id),
     reliability_ack_rate REAL DEFAULT 0.9,
     reliability_avg_response REAL DEFAULT 300,
-    created_at INTEGER NOT NULL
+    created_at BIGINT NOT NULL
   );
 
   CREATE TABLE IF NOT EXISTS robots (
@@ -45,7 +42,7 @@ const CREATE_TABLES_SQL = `
     sensors_json TEXT NOT NULL,
     false_positive_rate REAL NOT NULL,
     battery_level REAL DEFAULT 1.0,
-    created_at INTEGER NOT NULL
+    created_at BIGINT NOT NULL
   );
 
   CREATE TABLE IF NOT EXISTS events (
@@ -56,11 +53,11 @@ const CREATE_TABLES_SQL = `
     source_type TEXT NOT NULL,
     source_id TEXT,
     severity INTEGER NOT NULL,
-    timestamp INTEGER NOT NULL,
+    timestamp BIGINT NOT NULL,
     raw_data_json TEXT,
     ground_truth_label TEXT,
     scenario_id TEXT,
-    created_at INTEGER NOT NULL
+    created_at BIGINT NOT NULL
   );
 
   CREATE TABLE IF NOT EXISTS incidents (
@@ -72,9 +69,9 @@ const CREATE_TABLES_SQL = `
     priority REAL,
     tier INTEGER,
     confidence REAL,
-    created_at INTEGER NOT NULL,
-    updated_at INTEGER NOT NULL,
-    resolved_at INTEGER
+    created_at BIGINT NOT NULL,
+    updated_at BIGINT NOT NULL,
+    resolved_at BIGINT
   );
 
   CREATE TABLE IF NOT EXISTS decisions (
@@ -87,8 +84,8 @@ const CREATE_TABLES_SQL = `
     autonomy_gate TEXT NOT NULL,
     policy_version_hash TEXT NOT NULL,
     rationale_json TEXT,
-    timestamp INTEGER NOT NULL,
-    created_at INTEGER NOT NULL
+    timestamp BIGINT NOT NULL,
+    created_at BIGINT NOT NULL
   );
 
   CREATE TABLE IF NOT EXISTS outcomes (
@@ -96,80 +93,89 @@ const CREATE_TABLES_SQL = `
     decision_id TEXT NOT NULL REFERENCES decisions(id),
     incident_id TEXT NOT NULL REFERENCES incidents(id),
     source TEXT NOT NULL,
-    was_real INTEGER,
+    was_real BOOLEAN,
     correct_tier INTEGER,
     notes TEXT,
-    timestamp INTEGER NOT NULL,
-    created_at INTEGER NOT NULL
+    timestamp BIGINT NOT NULL,
+    created_at BIGINT NOT NULL
   );
 
   CREATE TABLE IF NOT EXISTS shifts (
     id TEXT PRIMARY KEY,
     guard_id TEXT NOT NULL REFERENCES guards(id),
     site_id TEXT NOT NULL REFERENCES sites(id),
-    start_time INTEGER NOT NULL,
-    end_time INTEGER NOT NULL,
+    start_time BIGINT NOT NULL,
+    end_time BIGINT NOT NULL,
     status TEXT NOT NULL
   );
 `;
 
-function createFileDb() {
-  fs.mkdirSync(path.dirname(DB_PATH), { recursive: true });
-  const sqlite = new Database(DB_PATH);
-  sqlite.pragma("journal_mode = WAL");
-  sqlite.pragma("foreign_keys = ON");
-  _sqlite = sqlite;
-  return drizzle(sqlite, { schema });
-}
-
-function createMemoryDb() {
-  const sqlite = new Database(":memory:");
-  sqlite.pragma("foreign_keys = ON");
-  _sqlite = sqlite;
-  return drizzle(sqlite, { schema });
-}
-
-export function getDb() {
-  if (!_db) {
-    _db = createFileDb();
-  }
-  return _db;
-}
-
-/** Create a fresh in-memory database — used by tests */
-export function createTestDb() {
-  if (_sqlite) {
-    _sqlite.close();
-    _sqlite = null;
-  }
-  _db = createMemoryDb();
-  _sqlite!.exec(CREATE_TABLES_SQL);
-  return _db;
-}
-
-export function resetDb() {
-  if (_sqlite) {
-    _sqlite.close();
-    _sqlite = null;
-  }
-  _db = null;
-  fs.mkdirSync(path.dirname(DB_PATH), { recursive: true });
-  for (const suffix of ["", "-wal", "-shm", "-journal"]) {
-    const f = DB_PATH + suffix;
-    if (fs.existsSync(f)) {
-      try { fs.unlinkSync(f); } catch { /* ignore */ }
-    }
-  }
-}
-
-export function initSchema() {
-  const db = getDb();
-  if (!_sqlite) throw new Error("No sqlite instance");
-  _sqlite.exec(CREATE_TABLES_SQL);
+async function createPgliteDb(): Promise<ReturnType<typeof drizzle>> {
+  const pglite = new PGlite();
+  await pglite.waitReady;
+  _pglite = pglite;
+  const db = drizzle(pglite, { schema });
+  _db = db;
   return db;
 }
 
-export function getSqlite(): Database.Database {
-  if (!_sqlite) throw new Error("No sqlite instance — call getDb() or createTestDb() first");
-  return _sqlite;
+export async function getDb(): Promise<ReturnType<typeof drizzle>> {
+  if (!_db) {
+    return createPgliteDb();
+  }
+  return _db;
+}
+
+export async function createTestDb(): Promise<ReturnType<typeof drizzle>> {
+  if (_pglite) {
+    await _pglite.close();
+    _pglite = null;
+  }
+  _db = null;
+  const db = await createPgliteDb();
+  await execCreateTables(db);
+  return db;
+}
+
+export async function resetDb(): Promise<void> {
+  if (_pglite) {
+    await _pglite.close();
+    _pglite = null;
+  }
+  _db = null;
+}
+
+async function execCreateTables(db: ReturnType<typeof drizzle>): Promise<void> {
+  // Split and execute each statement through Drizzle (not raw PGlite)
+  // because Drizzle wraps PGlite in a way that raw .exec() tables aren't visible
+  const statements = CREATE_TABLES_SQL
+    .split(";")
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0);
+  for (const stmt of statements) {
+    await db.execute(sql.raw(stmt));
+  }
+}
+
+export async function initSchema(): Promise<ReturnType<typeof drizzle>> {
+  const db = await getDb();
+  await execCreateTables(db);
+  return db;
+}
+
+export function getPglite(): PGlite {
+  if (!_pglite) throw new Error("No pglite instance — call getDb() or createTestDb() first");
+  return _pglite;
+}
+
+/** Execute raw SQL through the Drizzle connection (needed because PGlite raw exec isn't visible to Drizzle) */
+export async function execSql(rawSql: string): Promise<void> {
+  const db = await getDb();
+  const statements = rawSql
+    .split(";")
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0);
+  for (const stmt of statements) {
+    await db.execute(sql.raw(stmt));
+  }
 }

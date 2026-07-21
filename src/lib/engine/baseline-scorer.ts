@@ -53,11 +53,11 @@ function getZoneExposure(site: Site, zoneId: string | null): number {
 }
 
 // Max severity from events in the incident
-function getMaxSeverity(eventIdsJson: string): number {
+async function getMaxSeverity(eventIdsJson: string): Promise<number> {
   const eventIds: string[] = JSON.parse(eventIdsJson);
   let maxSev = 1;
   for (const eid of eventIds) {
-    const event = eventRepo.getById(eid);
+    const event = await eventRepo.getById(eid);
     if (event) {
       maxSev = Math.max(maxSev, event.severity);
     }
@@ -84,8 +84,8 @@ export interface ScoringResult {
   autonomyGate: "auto" | "propose";
 }
 
-export function scoreIncident(incident: Incident): ScoringResult {
-  const site = siteRepo.getById(incident.siteId);
+export async function scoreIncident(incident: Incident): Promise<ScoringResult> {
+  const site = await siteRepo.getById(incident.siteId);
   if (!site) {
     return {
       priority: 0,
@@ -96,7 +96,7 @@ export function scoreIncident(incident: Incident): ScoringResult {
     };
   }
 
-  const severity = getMaxSeverity(incident.eventIds);
+  const severity = await getMaxSeverity(incident.eventIds);
   const siteCriticality = site.criticalityTier; // 1-5
   const hourFactor = getHourFactor(incident.createdAt);
   const zoneExposure = getZoneExposure(site, incident.zoneId);
@@ -111,7 +111,7 @@ export function scoreIncident(incident: Incident): ScoringResult {
   const priority = Math.min(100, rawPriority);
 
   // Confidence = P(real) from per-event-type priors via noisy-OR
-  const confidence = computeConfidence(incident.eventIds);
+  const confidence = await computeConfidence(incident.eventIds);
 
   // Tier selection: minimize expected cost given priority and P(real)
   const tier = priorityToTier(priority, confidence);
@@ -181,13 +181,13 @@ function priorityToTier(priority: number, pReal: number): number {
  * Same-type duplicates from the same source are correlated, not independent.
  * Multiple distinct types are treated as independent evidence channels.
  */
-function computeConfidence(eventIdsJson: string): number {
+async function computeConfidence(eventIdsJson: string): Promise<number> {
   const eventIds: string[] = JSON.parse(eventIdsJson);
   const seenTypes = new Set<string>();
   let pAllFalse = 1.0;
 
   for (const eid of eventIds) {
-    const event = eventRepo.getById(eid);
+    const event = await eventRepo.getById(eid);
     if (!event) continue;
 
     // Only count each event type once (correlated duplicates don't add info)
@@ -208,11 +208,11 @@ function computeConfidence(eventIdsJson: string): number {
  * Score an incident and persist the decision.
  * This is the main entry point used by the pipeline.
  */
-export function scoreAndDecide(incident: Incident): ScoringResult {
-  const result = scoreIncident(incident);
+export async function scoreAndDecide(incident: Incident): Promise<ScoringResult> {
+  const result = await scoreIncident(incident);
 
   // Persist decision (append-only)
-  decisionRepo.insert({
+  await decisionRepo.insert({
     id: `dec-${incident.id}`,
     incidentId: incident.id,
     inputsJson: JSON.stringify({
@@ -236,7 +236,7 @@ export function scoreAndDecide(incident: Incident): ScoringResult {
   });
 
   // Update incident with scoring results
-  incidentRepo.update(incident.id, {
+  await incidentRepo.update(incident.id, {
     priority: result.priority,
     tier: result.tier,
     confidence: result.confidence,

@@ -25,26 +25,34 @@ export class AppendOnlyViolation extends Error {
 
 // ---- Events (APPEND-ONLY) ----
 export const eventRepo = {
-  insert(event: typeof events.$inferInsert) {
-    return getDb().insert(events).values(event).run();
+  async insert(event: typeof events.$inferInsert) {
+    const db = await getDb();
+    return db.insert(events).values(event);
   },
-  insertMany(rows: (typeof events.$inferInsert)[]) {
+  async insertMany(rows: (typeof events.$inferInsert)[]) {
     if (rows.length === 0) return;
-    return getDb().insert(events).values(rows).run();
+    const db = await getDb();
+    for (const row of rows) {
+      await db.insert(events).values(row);
+    }
   },
-  getById(id: string): Event | undefined {
-    return getDb().select().from(events).where(eq(events.id, id)).get();
+  async getById(id: string): Promise<Event | undefined> {
+    const db = await getDb();
+    const rows = await db.select().from(events).where(eq(events.id, id));
+    return rows[0];
   },
-  getAll(): Event[] {
-    return getDb().select().from(events).all();
+  async getAll(): Promise<Event[]> {
+    const db = await getDb();
+    return db.select().from(events);
   },
-  getBySite(siteId: string): Event[] {
-    return getDb().select().from(events).where(eq(events.siteId, siteId)).all();
+  async getBySite(siteId: string): Promise<Event[]> {
+    const db = await getDb();
+    return db.select().from(events).where(eq(events.siteId, siteId));
   },
-  getByScenario(scenarioId: string): Event[] {
-    return getDb().select().from(events).where(eq(events.scenarioId, scenarioId)).all();
+  async getByScenario(scenarioId: string): Promise<Event[]> {
+    const db = await getDb();
+    return db.select().from(events).where(eq(events.scenarioId, scenarioId));
   },
-  // Forbidden operations
   update(): never {
     throw new AppendOnlyViolation("events", "update");
   },
@@ -55,27 +63,30 @@ export const eventRepo = {
 
 // ---- Decisions (APPEND-ONLY) ----
 export const decisionRepo = {
-  insert(decision: typeof decisions.$inferInsert) {
-    return getDb().insert(decisions).values(decision).run();
+  async insert(decision: typeof decisions.$inferInsert) {
+    const db = await getDb();
+    return db.insert(decisions).values(decision);
   },
-  insertMany(rows: (typeof decisions.$inferInsert)[]) {
+  async insertMany(rows: (typeof decisions.$inferInsert)[]) {
     if (rows.length === 0) return;
-    return getDb().insert(decisions).values(rows).run();
+    const db = await getDb();
+    for (const row of rows) {
+      await db.insert(decisions).values(row);
+    }
   },
-  getById(id: string): Decision | undefined {
-    return getDb().select().from(decisions).where(eq(decisions.id, id)).get();
+  async getById(id: string): Promise<Decision | undefined> {
+    const db = await getDb();
+    const rows = await db.select().from(decisions).where(eq(decisions.id, id));
+    return rows[0];
   },
-  getAll(): Decision[] {
-    return getDb().select().from(decisions).all();
+  async getAll(): Promise<Decision[]> {
+    const db = await getDb();
+    return db.select().from(decisions);
   },
-  getByIncident(incidentId: string): Decision[] {
-    return getDb()
-      .select()
-      .from(decisions)
-      .where(eq(decisions.incidentId, incidentId))
-      .all();
+  async getByIncident(incidentId: string): Promise<Decision[]> {
+    const db = await getDb();
+    return db.select().from(decisions).where(eq(decisions.incidentId, incidentId));
   },
-  // Forbidden operations
   update(): never {
     throw new AppendOnlyViolation("decisions", "update");
   },
@@ -86,117 +97,140 @@ export const decisionRepo = {
 
 // ---- Incidents (mutable — status changes) ----
 export const incidentRepo = {
-  insert(incident: typeof incidents.$inferInsert) {
-    return getDb().insert(incidents).values(incident).run();
+  async insert(incident: typeof incidents.$inferInsert) {
+    const db = await getDb();
+    return db.insert(incidents).values(incident);
   },
-  getById(id: string): Incident | undefined {
-    return getDb().select().from(incidents).where(eq(incidents.id, id)).get();
+  async getById(id: string): Promise<Incident | undefined> {
+    const db = await getDb();
+    const rows = await db.select().from(incidents).where(eq(incidents.id, id));
+    return rows[0];
   },
-  getAll(): Incident[] {
-    return getDb().select().from(incidents).all();
+  async getAll(): Promise<Incident[]> {
+    const db = await getDb();
+    return db.select().from(incidents);
   },
-  update(id: string, data: Partial<typeof incidents.$inferInsert>) {
-    return getDb().update(incidents).set(data).where(eq(incidents.id, id)).run();
+  async update(id: string, data: Partial<typeof incidents.$inferInsert>) {
+    const db = await getDb();
+    return db.update(incidents).set(data).where(eq(incidents.id, id));
   },
 };
 
 // ---- Outcomes ----
 export const outcomeRepo = {
-  insert(outcome: typeof outcomes.$inferInsert) {
-    return getDb().insert(outcomes).values(outcome).run();
+  async insert(outcome: typeof outcomes.$inferInsert) {
+    const db = await getDb();
+    return db.insert(outcomes).values(outcome);
   },
-  getByDecision(decisionId: string): Outcome[] {
-    return getDb()
-      .select()
-      .from(outcomes)
-      .where(eq(outcomes.decisionId, decisionId))
-      .all();
+  async getByDecision(decisionId: string): Promise<Outcome[]> {
+    const db = await getDb();
+    return db.select().from(outcomes).where(eq(outcomes.decisionId, decisionId));
   },
-  getByIncident(incidentId: string): Outcome[] {
-    return getDb()
-      .select()
-      .from(outcomes)
-      .where(eq(outcomes.incidentId, incidentId))
-      .all();
+  async getByIncident(incidentId: string): Promise<Outcome[]> {
+    const db = await getDb();
+    return db.select().from(outcomes).where(eq(outcomes.incidentId, incidentId));
   },
-  getAll(): Outcome[] {
-    return getDb().select().from(outcomes).all();
+  async getAll(): Promise<Outcome[]> {
+    const db = await getDb();
+    return db.select().from(outcomes);
   },
 };
 
 // ---- Sites ----
 export const siteRepo = {
-  insert(site: typeof sites.$inferInsert) {
-    return getDb().insert(sites).values(site).run();
+  async insert(site: typeof sites.$inferInsert) {
+    const db = await getDb();
+    return db.insert(sites).values(site);
   },
-  insertMany(rows: (typeof sites.$inferInsert)[]) {
+  async insertMany(rows: (typeof sites.$inferInsert)[]) {
     if (rows.length === 0) return;
-    return getDb().insert(sites).values(rows).run();
+    const db = await getDb();
+    for (const row of rows) await db.insert(sites).values(row);
   },
-  getById(id: string) {
-    return getDb().select().from(sites).where(eq(sites.id, id)).get();
+  async getById(id: string) {
+    const db = await getDb();
+    const rows = await db.select().from(sites).where(eq(sites.id, id));
+    return rows[0];
   },
-  getAll() {
-    return getDb().select().from(sites).all();
+  async getAll() {
+    const db = await getDb();
+    return db.select().from(sites);
   },
 };
 
 // ---- Guards ----
 export const guardRepo = {
-  insert(guard: typeof guards.$inferInsert) {
-    return getDb().insert(guards).values(guard).run();
+  async insert(guard: typeof guards.$inferInsert) {
+    const db = await getDb();
+    return db.insert(guards).values(guard);
   },
-  insertMany(rows: (typeof guards.$inferInsert)[]) {
+  async insertMany(rows: (typeof guards.$inferInsert)[]) {
     if (rows.length === 0) return;
-    return getDb().insert(guards).values(rows).run();
+    const db = await getDb();
+    for (const row of rows) await db.insert(guards).values(row);
   },
-  getById(id: string) {
-    return getDb().select().from(guards).where(eq(guards.id, id)).get();
+  async getById(id: string) {
+    const db = await getDb();
+    const rows = await db.select().from(guards).where(eq(guards.id, id));
+    return rows[0];
   },
-  getAll() {
-    return getDb().select().from(guards).all();
+  async getAll() {
+    const db = await getDb();
+    return db.select().from(guards);
   },
-  getBySite(siteId: string) {
-    return getDb().select().from(guards).where(eq(guards.siteId, siteId)).all();
+  async getBySite(siteId: string) {
+    const db = await getDb();
+    return db.select().from(guards).where(eq(guards.siteId, siteId));
   },
 };
 
 // ---- Robots ----
 export const robotRepo = {
-  insert(robot: typeof robots.$inferInsert) {
-    return getDb().insert(robots).values(robot).run();
+  async insert(robot: typeof robots.$inferInsert) {
+    const db = await getDb();
+    return db.insert(robots).values(robot);
   },
-  insertMany(rows: (typeof robots.$inferInsert)[]) {
+  async insertMany(rows: (typeof robots.$inferInsert)[]) {
     if (rows.length === 0) return;
-    return getDb().insert(robots).values(rows).run();
+    const db = await getDb();
+    for (const row of rows) await db.insert(robots).values(row);
   },
-  getById(id: string) {
-    return getDb().select().from(robots).where(eq(robots.id, id)).get();
+  async getById(id: string) {
+    const db = await getDb();
+    const rows = await db.select().from(robots).where(eq(robots.id, id));
+    return rows[0];
   },
-  getAll() {
-    return getDb().select().from(robots).all();
+  async getAll() {
+    const db = await getDb();
+    return db.select().from(robots);
   },
-  getBySite(siteId: string) {
-    return getDb().select().from(robots).where(eq(robots.siteId, siteId)).all();
+  async getBySite(siteId: string) {
+    const db = await getDb();
+    return db.select().from(robots).where(eq(robots.siteId, siteId));
   },
 };
 
 // ---- Shifts ----
 export const shiftRepo = {
-  insert(shift: typeof shifts.$inferInsert) {
-    return getDb().insert(shifts).values(shift).run();
+  async insert(shift: typeof shifts.$inferInsert) {
+    const db = await getDb();
+    return db.insert(shifts).values(shift);
   },
-  insertMany(rows: (typeof shifts.$inferInsert)[]) {
+  async insertMany(rows: (typeof shifts.$inferInsert)[]) {
     if (rows.length === 0) return;
-    return getDb().insert(shifts).values(rows).run();
+    const db = await getDb();
+    for (const row of rows) await db.insert(shifts).values(row);
   },
-  getAll() {
-    return getDb().select().from(shifts).all();
+  async getAll() {
+    const db = await getDb();
+    return db.select().from(shifts);
   },
-  getBySite(siteId: string) {
-    return getDb().select().from(shifts).where(eq(shifts.siteId, siteId)).all();
+  async getBySite(siteId: string) {
+    const db = await getDb();
+    return db.select().from(shifts).where(eq(shifts.siteId, siteId));
   },
-  update(id: string, data: Partial<typeof shifts.$inferInsert>) {
-    return getDb().update(shifts).set(data).where(eq(shifts.id, id)).run();
+  async update(id: string, data: Partial<typeof shifts.$inferInsert>) {
+    const db = await getDb();
+    return db.update(shifts).set(data).where(eq(shifts.id, id));
   },
 };

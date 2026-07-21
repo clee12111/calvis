@@ -1,118 +1,120 @@
 import {
-  sqliteTable,
+  pgTable,
   text,
   integer,
   real,
-} from "drizzle-orm/sqlite-core";
+  boolean,
+  bigint,
+} from "drizzle-orm/pg-core";
 
 // --- Sites ---
-export const sites = sqliteTable("sites", {
+export const sites = pgTable("sites", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
   address: text("address").notNull(),
-  criticalityTier: integer("criticality_tier").notNull(), // 1-5, 5 = most critical
-  quietHoursStart: integer("quiet_hours_start"), // hour 0-23
+  criticalityTier: integer("criticality_tier").notNull(),
+  quietHoursStart: integer("quiet_hours_start"),
   quietHoursEnd: integer("quiet_hours_end"),
   clientContactName: text("client_contact_name"),
   clientContactPhone: text("client_contact_phone"),
-  zonesJson: text("zones_json").notNull(), // JSON array of { id, name, geofence, exposure }
-  createdAt: integer("created_at").notNull(),
+  zonesJson: text("zones_json").notNull(),
+  createdAt: bigint("created_at", { mode: "number" }).notNull(),
 });
 
 // --- Guards ---
-export const guards = sqliteTable("guards", {
+export const guards = pgTable("guards", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
-  skillsJson: text("skills_json").notNull(), // JSON array of strings
-  armed: integer("armed", { mode: "boolean" }).notNull(),
-  languagesJson: text("languages_json").notNull(), // JSON array
-  shiftStart: integer("shift_start").notNull(), // hour 0-23
+  skillsJson: text("skills_json").notNull(),
+  armed: boolean("armed").notNull(),
+  languagesJson: text("languages_json").notNull(),
+  shiftStart: integer("shift_start").notNull(),
   shiftEnd: integer("shift_end").notNull(),
   siteId: text("site_id").references(() => sites.id),
   reliabilityAckRate: real("reliability_ack_rate").default(0.9),
-  reliabilityAvgResponse: real("reliability_avg_response").default(300), // seconds
-  createdAt: integer("created_at").notNull(),
+  reliabilityAvgResponse: real("reliability_avg_response").default(300),
+  createdAt: bigint("created_at", { mode: "number" }).notNull(),
 });
 
 // --- Robots ---
-export const robots = sqliteTable("robots", {
+export const robots = pgTable("robots", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
   siteId: text("site_id").references(() => sites.id).notNull(),
-  patrolRouteJson: text("patrol_route_json").notNull(), // JSON array of zone IDs
-  sensorsJson: text("sensors_json").notNull(), // JSON array of sensor types
-  falsePositiveRate: real("false_positive_rate").notNull(), // 0-1
+  patrolRouteJson: text("patrol_route_json").notNull(),
+  sensorsJson: text("sensors_json").notNull(),
+  falsePositiveRate: real("false_positive_rate").notNull(),
   batteryLevel: real("battery_level").default(1.0),
-  createdAt: integer("created_at").notNull(),
+  createdAt: bigint("created_at", { mode: "number" }).notNull(),
 });
 
 // --- Events (APPEND-ONLY) ---
-export const events = sqliteTable("events", {
+export const events = pgTable("events", {
   id: text("id").primaryKey(),
-  type: text("type").notNull(), // one of 12 fixed types
+  type: text("type").notNull(),
   siteId: text("site_id").references(() => sites.id).notNull(),
   zoneId: text("zone_id"),
-  sourceType: text("source_type").notNull(), // "robot" | "guard" | "sensor" | "client"
+  sourceType: text("source_type").notNull(),
   sourceId: text("source_id"),
-  severity: integer("severity").notNull(), // 1-5
-  timestamp: integer("timestamp").notNull(), // sim clock ms
-  rawDataJson: text("raw_data_json"), // arbitrary payload
-  groundTruthLabel: text("ground_truth_label"), // null in prod; set in sim for eval
-  scenarioId: text("scenario_id"), // which scenario generated this, for eval
-  createdAt: integer("created_at").notNull(), // wall clock
+  severity: integer("severity").notNull(),
+  timestamp: bigint("timestamp", { mode: "number" }).notNull(),
+  rawDataJson: text("raw_data_json"),
+  groundTruthLabel: text("ground_truth_label"),
+  scenarioId: text("scenario_id"),
+  createdAt: bigint("created_at", { mode: "number" }).notNull(),
 });
 
 // --- Incidents ---
-export const incidents = sqliteTable("incidents", {
+export const incidents = pgTable("incidents", {
   id: text("id").primaryKey(),
   siteId: text("site_id").references(() => sites.id).notNull(),
   zoneId: text("zone_id"),
-  status: text("status").notNull(), // open | dispatched | acknowledged | on_scene | resolved | false_alarm | abandoned
-  eventIds: text("event_ids_json").notNull(), // JSON array of event IDs
-  priority: real("priority"), // computed score
-  tier: integer("tier"), // 0-4
+  status: text("status").notNull(),
+  eventIds: text("event_ids_json").notNull(),
+  priority: real("priority"),
+  tier: integer("tier"),
   confidence: real("confidence"),
-  createdAt: integer("created_at").notNull(),
-  updatedAt: integer("updated_at").notNull(),
-  resolvedAt: integer("resolved_at"),
+  createdAt: bigint("created_at", { mode: "number" }).notNull(),
+  updatedAt: bigint("updated_at", { mode: "number" }).notNull(),
+  resolvedAt: bigint("resolved_at", { mode: "number" }),
 });
 
 // --- Decisions (APPEND-ONLY) ---
-export const decisions = sqliteTable("decisions", {
+export const decisions = pgTable("decisions", {
   id: text("id").primaryKey(),
   incidentId: text("incident_id").references(() => incidents.id).notNull(),
-  inputsJson: text("inputs_json").notNull(), // snapshot of what the scorer saw
-  factorsJson: text("factors_json").notNull(), // { name, value, weight } array
-  chosenTier: integer("chosen_tier").notNull(), // 0-4
-  confidence: real("confidence").notNull(), // 0-1
-  autonomyGate: text("autonomy_gate").notNull(), // "auto" | "propose"
+  inputsJson: text("inputs_json").notNull(),
+  factorsJson: text("factors_json").notNull(),
+  chosenTier: integer("chosen_tier").notNull(),
+  confidence: real("confidence").notNull(),
+  autonomyGate: text("autonomy_gate").notNull(),
   policyVersionHash: text("policy_version_hash").notNull(),
-  rationaleJson: text("rationale_json"), // structured rationale
-  timestamp: integer("timestamp").notNull(), // sim clock ms
-  createdAt: integer("created_at").notNull(),
+  rationaleJson: text("rationale_json"),
+  timestamp: bigint("timestamp", { mode: "number" }).notNull(),
+  createdAt: bigint("created_at", { mode: "number" }).notNull(),
 });
 
 // --- Outcomes ---
-export const outcomes = sqliteTable("outcomes", {
+export const outcomes = pgTable("outcomes", {
   id: text("id").primaryKey(),
   decisionId: text("decision_id").references(() => decisions.id).notNull(),
   incidentId: text("incident_id").references(() => incidents.id).notNull(),
-  source: text("source").notNull(), // "guard_closeout" | "ack_telemetry" | "operator_override" | "late_signal"
-  wasReal: integer("was_real", { mode: "boolean" }),
-  correctTier: integer("correct_tier"), // what the tier should have been
+  source: text("source").notNull(),
+  wasReal: boolean("was_real"),
+  correctTier: integer("correct_tier"),
   notes: text("notes"),
-  timestamp: integer("timestamp").notNull(),
-  createdAt: integer("created_at").notNull(),
+  timestamp: bigint("timestamp", { mode: "number" }).notNull(),
+  createdAt: bigint("created_at", { mode: "number" }).notNull(),
 });
 
 // --- Shift Schedule ---
-export const shifts = sqliteTable("shifts", {
+export const shifts = pgTable("shifts", {
   id: text("id").primaryKey(),
   guardId: text("guard_id").references(() => guards.id).notNull(),
   siteId: text("site_id").references(() => sites.id).notNull(),
-  startTime: integer("start_time").notNull(), // sim clock ms
-  endTime: integer("end_time").notNull(),
-  status: text("status").notNull(), // "scheduled" | "active" | "completed" | "no_show"
+  startTime: bigint("start_time", { mode: "number" }).notNull(),
+  endTime: bigint("end_time", { mode: "number" }).notNull(),
+  status: text("status").notNull(),
 });
 
 // Type exports

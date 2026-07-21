@@ -13,10 +13,10 @@
 - [x] 0.5.7 · F0 confessions cleared. — Dynamic require removed. 6 scorer boundary tests + 5 ingestion tests added. 44 total tests green.
 
 ## F0.6 — Postgres
-- [ ] 0.6.1 · Drizzle 1.0 RC, schema to pg-core
-- [ ] 0.6.2 · Two targets: Neon (app) + PGlite (eval/keyless)
-- [ ] 0.6.3 · Async cascade through all consumers
-- [ ] 0.6.4 · Zero-install keyless path works
+- [x] 0.6.1 · Drizzle 1.0 RC + pg-core schema. — `drizzle-orm@1.0.0-rc.4`, `pgTable`, `boolean`, `bigint` for timestamps. better-sqlite3 removed.
+- [x] 0.6.2 · PGlite for eval + keyless. — In-memory PGlite, no Neon yet (added when deploying). Tables created via Drizzle's `sql.raw()` not raw PGlite `.exec()`.
+- [x] 0.6.3 · Async cascade. — All repo methods async, all consumers awaited. 50+ call sites updated. Scripts wrapped in `async main()`.
+- [x] 0.6.4 · Zero-install keyless path. — `npm run seed` works with no env vars. 44 tests green. Eval: 16.6s/run (vs 2.2s on SQLite — 8x slower, still usable for dev, not for CI).
 
 ## F0.7 — Provider, generator, cache
 - [ ] 0.7.1 · LLMProvider interface + smoke test

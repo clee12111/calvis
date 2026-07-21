@@ -5,6 +5,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: "node",
+    testTimeout: 30000, // PGlite is slower than SQLite
   },
   resolve: {
     alias: {

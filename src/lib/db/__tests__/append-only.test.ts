@@ -1,20 +1,20 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { eventRepo, decisionRepo, AppendOnlyViolation } from "../repository";
-import { createTestDb, getSqlite } from "../connection";
+import { createTestDb, execSql } from "../connection";
 
 describe("append-only enforcement", () => {
-  beforeEach(() => {
-    createTestDb();
+  beforeEach(async () => {
+    await createTestDb();
     // Insert a site so FK constraints pass
-    getSqlite().exec(`
+    await execSql(`
       INSERT INTO sites (id, name, address, criticality_tier, zones_json, created_at)
       VALUES ('site-1', 'Test Site', '123 Main St', 3, '[]', 1000);
     `);
   });
 
   describe("events", () => {
-    it("allows insert", () => {
-      expect(() =>
+    it("allows insert", async () => {
+      await expect(
         eventRepo.insert({
           id: "evt-1",
           type: "door_forced",
@@ -24,7 +24,7 @@ describe("append-only enforcement", () => {
           timestamp: 1000,
           createdAt: Date.now(),
         })
-      ).not.toThrow();
+      ).resolves.not.toThrow();
     });
 
     it("throws on update", () => {
@@ -39,16 +39,16 @@ describe("append-only enforcement", () => {
   });
 
   describe("decisions", () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       // Insert prerequisite incident
-      getSqlite().exec(`
+      await execSql(`
         INSERT INTO incidents (id, site_id, status, event_ids_json, created_at, updated_at)
         VALUES ('inc-1', 'site-1', 'open', '["evt-1"]', 1000, 1000);
       `);
     });
 
-    it("allows insert", () => {
-      expect(() =>
+    it("allows insert", async () => {
+      await expect(
         decisionRepo.insert({
           id: "dec-1",
           incidentId: "inc-1",
@@ -61,7 +61,7 @@ describe("append-only enforcement", () => {
           timestamp: 1000,
           createdAt: Date.now(),
         })
-      ).not.toThrow();
+      ).resolves.not.toThrow();
     });
 
     it("throws on update", () => {

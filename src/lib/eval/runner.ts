@@ -9,7 +9,7 @@ import { generateSimOutcomes } from "../engine/outcome-join";
 import { computeAllMetrics, type AllMetrics } from "./metrics";
 import type { Incident } from "../db/schema";
 
-export type ArmFn = (seed: number) => AllMetrics;
+export type ArmFn = (seed: number) => Promise<AllMetrics>;
 
 // --- Arm registry ---
 const arms = new Map<string, ArmFn>();
@@ -27,25 +27,25 @@ export function listArms(): string[] {
 }
 
 // --- Shared setup: seed → events → incidents (no scoring) ---
-function setupWorld(seed: number): { events: SimEvent[]; incidents: Incident[] } {
-  seedWorld({ seed });
-  const sites = siteRepo.getAll();
-  const guards = guardRepo.getAll();
-  const robots = robotRepo.getAll();
+async function setupWorld(seed: number): Promise<{ events: SimEvent[]; incidents: Incident[] }> {
+  await seedWorld({ seed });
+  const sites = await siteRepo.getAll();
+  const guards = await guardRepo.getAll();
+  const robots = await robotRepo.getAll();
   const events = generateEventStream({ seed, sites, guards, robots });
   const pipeline = new IngestionPipeline(events);
-  pipeline.ingestAll();
-  const incidents = correlateEvents(events);
+  await pipeline.ingestAll();
+  const incidents = await correlateEvents(events);
   return { events, incidents };
 }
 
-function collectMetrics(events: SimEvent[], incidents: Incident[], startWall: number): AllMetrics {
+async function collectMetrics(events: SimEvent[], incidents: Incident[], startWall: number): Promise<AllMetrics> {
   const nightEndMs = 10 * 3600 * 1000;
-  generateSimOutcomes(incidents, events, nightEndMs);
+  await generateSimOutcomes(incidents, events, nightEndMs);
   return computeAllMetrics({
-    decisions: decisionRepo.getAll(),
-    outcomes: outcomeRepo.getAll(),
-    incidents: incidentRepo.getAll(),
+    decisions: await decisionRepo.getAll(),
+    outcomes: await outcomeRepo.getAll(),
+    incidents: await incidentRepo.getAll(),
     totalEvents: events.length,
     wallTimeMs: Date.now() - startWall,
   });
@@ -53,13 +53,13 @@ function collectMetrics(events: SimEvent[], incidents: Incident[], startWall: nu
 
 // --- Constant-tier arm factory ---
 function constantTierArm(tier: number): ArmFn {
-  return (seed: number) => {
+  return async (seed: number) => {
     const startWall = Date.now();
-    const { events, incidents } = setupWorld(seed);
+    const { events, incidents } = await setupWorld(seed);
     for (const incident of incidents) {
       // Insert decision with fixed tier, confidence from priors
-      const result = scoreIncident(incident);
-      decisionRepo.insert({
+      const result = await scoreIncident(incident);
+      await decisionRepo.insert({
         id: `dec-${incident.id}`,
         incidentId: incident.id,
         inputsJson: JSON.stringify({ siteId: incident.siteId }),
@@ -72,21 +72,21 @@ function constantTierArm(tier: number): ArmFn {
         timestamp: incident.createdAt,
         createdAt: incident.createdAt,
       });
-      incidentRepo.update(incident.id, { priority: result.priority, tier, confidence: result.confidence });
+      await incidentRepo.update(incident.id, { priority: result.priority, tier, confidence: result.confidence });
     }
-    return collectMetrics(events, incidents, startWall);
+    return await collectMetrics(events, incidents, startWall);
   };
 }
 
 // --- Random-uniform arm ---
-function randomUniformArm(seed: number): AllMetrics {
+async function randomUniformArm(seed: number): Promise<AllMetrics> {
   const startWall = Date.now();
-  const { events, incidents } = setupWorld(seed);
+  const { events, incidents } = await setupWorld(seed);
   const rng = seedrandom(`random-arm-${seed}`);
   for (const incident of incidents) {
     const tier = Math.floor(rng() * 5); // 0-4
-    const result = scoreIncident(incident);
-    decisionRepo.insert({
+    const result = await scoreIncident(incident);
+    await decisionRepo.insert({
       id: `dec-${incident.id}`,
       incidentId: incident.id,
       inputsJson: JSON.stringify({ siteId: incident.siteId }),
@@ -99,19 +99,19 @@ function randomUniformArm(seed: number): AllMetrics {
       timestamp: incident.createdAt,
       createdAt: incident.createdAt,
     });
-    incidentRepo.update(incident.id, { priority: result.priority, tier, confidence: result.confidence });
+    await incidentRepo.update(incident.id, { priority: result.priority, tier, confidence: result.confidence });
   }
-  return collectMetrics(events, incidents, startWall);
+  return await collectMetrics(events, incidents, startWall);
 }
 
 // --- Rules-only arm ---
-function rulesOnlyArm(seed: number): AllMetrics {
+async function rulesOnlyArm(seed: number): Promise<AllMetrics> {
   const startWall = Date.now();
-  const { events, incidents } = setupWorld(seed);
+  const { events, incidents } = await setupWorld(seed);
   for (const incident of incidents) {
-    scoreAndDecide(incident);
+    await scoreAndDecide(incident);
   }
-  return collectMetrics(events, incidents, startWall);
+  return await collectMetrics(events, incidents, startWall);
 }
 
 // --- Register all arms ---
@@ -123,10 +123,10 @@ registerArm("always-4", constantTierArm(4));
 registerArm("random-uniform", randomUniformArm);
 
 // Stub arms for future phases
-registerArm("agent-no-memory", (_seed: number) => {
+registerArm("agent-no-memory", async (_seed: number) => {
   throw new Error("agent-no-memory arm is not implemented (F1)");
 });
-registerArm("agent-with-memory", (_seed: number) => {
+registerArm("agent-with-memory", async (_seed: number) => {
   throw new Error("agent-with-memory arm is not implemented (F2)");
 });
 
@@ -203,18 +203,18 @@ function spreadMetrics(metricsList: AllMetrics[]): Partial<AllMetrics> {
   } as Partial<AllMetrics>;
 }
 
-export function runArm(armName: string, seed: number): RunResult {
+export async function runArm(armName: string, seed: number): Promise<RunResult> {
   const fn = getArm(armName);
   if (!fn) throw new Error(`Unknown arm: ${armName}. Available: ${listArms().join(", ")}`);
-  return { arm: armName, seed, metrics: fn(seed) };
+  return { arm: armName, seed, metrics: await fn(seed) };
 }
 
-export function runMultiple(armName: string, baseSeed: number, runs: number): MultiRunResult {
+export async function runMultiple(armName: string, baseSeed: number, runs: number): Promise<MultiRunResult> {
   const seeds = Array.from({ length: runs }, (_, i) => baseSeed + i);
   const results: RunResult[] = [];
 
   for (const seed of seeds) {
-    results.push(runArm(armName, seed));
+    results.push(await runArm(armName, seed));
   }
 
   return {
@@ -295,17 +295,17 @@ function bootstrapCI(
   return [lo, hi];
 }
 
-export function runAllArmsCompared(
+export async function runAllArmsCompared(
   baseSeed: number,
   runs: number,
   baselineArm: string = "rules-only"
-): { baseline: MultiRunResult; comparisons: PairedResult[] } {
+): Promise<{ baseline: MultiRunResult; comparisons: PairedResult[] }> {
   const seeds = Array.from({ length: runs }, (_, i) => baseSeed + i);
 
   // Run baseline first
   const baselineResults: RunResult[] = [];
   for (const seed of seeds) {
-    baselineResults.push(runArm(baselineArm, seed));
+    baselineResults.push(await runArm(baselineArm, seed));
   }
   const baseline: MultiRunResult = {
     arm: baselineArm,
@@ -324,7 +324,7 @@ export function runAllArmsCompared(
   for (const armName of otherArms) {
     const armResults: RunResult[] = [];
     for (const seed of seeds) {
-      armResults.push(runArm(armName, seed));
+      armResults.push(await runArm(armName, seed));
     }
 
     // Paired deltas per seed
