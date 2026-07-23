@@ -2,6 +2,8 @@
 
 AI dispatch agent for physical security. Watches sensor events from 40+ sites overnight, decides what needs human attention, and learns from outcomes.
 
+![Calvis E2E Pipeline](docs/pipeline.svg)
+
 ## Run it
 
 ```bash
