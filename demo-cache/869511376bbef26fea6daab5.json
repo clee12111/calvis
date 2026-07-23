@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze this situation:\n\n**Incident Summary:**\n- **Site:** site-005, zone 5-1\n- **Event:** Missed check-in (guard didn't check in)\n- **Evidence Level:** E1 (something happened, intent unknown)\n- **Prior:** P(real) = 0.3, but n=0 — this is a hand-set assumption with zero observations behind it\n- **Precedents:** None — this is a novel event type for this site\n- **Board Load:** 0 items/10min — operator is free\n- **Guards:** 3 on shift, Sofia Martinez (armed, 82% ack), Patricia Williams (unarmed, 89% ack), Natalia Martin (unarmed, 80% ack)\n\n**Key considerations:**\n1. **n=0 prior** — This is a hand-set assumption with no data. I should be freer to adjust.\n2. **Novelty** — No precedents at this site for missed check-ins. This is genuinely novel.\n3. **Board load is 0** — No flood conditions, so no suppression needed.\n4. **Missed check-in** — This could be a guard who forgot, a technical glitch, or something more serious. A guard not checking in is potentially meaningful.\n5. **We have guards available** — We can reach out to check.\n\n**Decision logic:**\n- The prior is 0.3 with n=0 (weak). A missed check-in from a guard is somewhat concerning — guards are trained to check in. But it could also be a simple oversight.\n- Since board load is 0, we have bandwidth to investigate.\n- The best move is to **investigate** — ask a cheap question. We can check if the guard has been responsive recently, or ping the guard directly.\n\nLet me investigate by asking about the guard's status.",
+  "toolCalls": [
+    {
+      "id": "call_00_Ug4lKZihqNNTHAU1gGMO7053",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"investigate\", \"action_id\": \"check_guard_status\", \"prior_adjustment_log_odds\": 0.5, \"adjustment_reasons\": [\"n=0 prior is a hand-set assumption with no data backing it — weak starting point\", \"Missed check-in is a guard reliability signal, not a random sensor glitch\", \"Novel event at this site — no precedents to anchor expectations\"], \"novelty_flag\": true, \"confidence_p_real\": 0.4, \"what_would_change_my_mind\": \"If the guard responds promptly saying they forgot, P(real) drops. If the guard doesn't respond to multiple attempts, P(real) rises toward E2/E3. If other guards report the guard was seen recently, P(real) drops.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2538,
+    "completionTokens": 671,
+    "totalTokens": 3209
+  },
+  "latencyMs": 7534,
+  "model": "deepseek-chat",
+  "costUsd": 0.0003655400000000001
+}

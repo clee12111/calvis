@@ -1,0 +1,45 @@
+{
+  "text": "Good, I have the context. Let me gather more data before deciding.\n\n**Incident**: site-004, zone-4-0 — a guard no-show at shift start (E2, severity 3). Board load is 0 (low), so operator has bandwidth.\n\nLet me get the site prior, check precedents, active rules, and available guards.",
+  "toolCalls": [
+    {
+      "id": "call_00_iwGXRFppeQ0Cv4Y5IIxL5509",
+      "type": "function",
+      "function": {
+        "name": "get_site_prior",
+        "arguments": "{\"event_type\": \"no_show_at_shift_start\"}"
+      }
+    },
+    {
+      "id": "call_01_cKmL77qDlVzfGF6a7aSa2809",
+      "type": "function",
+      "function": {
+        "name": "find_precedent",
+        "arguments": "{\"k\": 5}"
+      }
+    },
+    {
+      "id": "call_02_MILDB0qwPDcY5jpB15k93733",
+      "type": "function",
+      "function": {
+        "name": "get_active_rules",
+        "arguments": "{}"
+      }
+    },
+    {
+      "id": "call_03_0dNByypgFvNKmRiZdicA9566",
+      "type": "function",
+      "function": {
+        "name": "get_available_guards",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 1921,
+    "completionTokens": 335,
+    "totalTokens": 2256
+  },
+  "latencyMs": 3841,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0016305
+}

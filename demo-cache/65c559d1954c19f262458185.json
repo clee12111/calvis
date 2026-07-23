@@ -1,0 +1,29 @@
+{
+  "text": "I'm on it. Let me pull in all the available context to make a sound decision.",
+  "toolCalls": [
+    {
+      "id": "call_00_u5lG50j2BpEHlrhaQPkG9641",
+      "type": "function",
+      "function": {
+        "name": "get_incident_context",
+        "arguments": "{}"
+      }
+    },
+    {
+      "id": "call_01_bWmqB1ewus9P2DKBgGnt5143",
+      "type": "function",
+      "function": {
+        "name": "get_board_load",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 1785,
+    "completionTokens": 106,
+    "totalTokens": 1891
+  },
+  "latencyMs": 2338,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0011045
+}

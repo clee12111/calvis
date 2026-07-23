@@ -1,0 +1,21 @@
+{
+  "text": "I'm on it. Let me gather the full picture before deciding.",
+  "toolCalls": [
+    {
+      "id": "call_00_ZwP551D4eFultktSjkER6604",
+      "type": "function",
+      "function": {
+        "name": "get_incident_context",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 1785,
+    "completionTokens": 76,
+    "totalTokens": 1861
+  },
+  "latencyMs": 1575,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0010445
+}

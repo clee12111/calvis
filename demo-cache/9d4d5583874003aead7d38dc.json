@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze this carefully.\n\n**Incident Summary:**\n- **Site:** site-005, zone-5-2\n- **Event:** `area_advisory` (severity 1, background sensor data)\n- **Evidence Level:** E0 (nothing to act on)\n- **Prior:** P(real) = 0.05, n=0 (hand-set assumption, no real data behind it)\n- **Precedents:** None — this is a **novel** event type at this site\n- **Board Load:** 0 items/10min — operator is free, no flood conditions\n- **5 questions already asked, 5 answered** — the system has already done some investigation\n\n**Key observations:**\n1. **n=0** — This is a hand-set prior with zero observations. It's a starting assumption, not a learned estimate. I should be freer to adjust.\n2. **Novelty** — No precedents exist for this event type at this site. This is genuinely new.\n3. **Board load is 0** — Operator has capacity. No need to suppress.\n4. **E0 level** — Nothing actionable yet. But the prior is weak (n=0) and it's novel.\n5. **5 questions already asked** — The system has already done some investigation loop.\n\nGiven E0, a hand-set prior with n=0, and novelty, the right move here is **investigate** — ask a cheap question to gather more evidence. The operator has bandwidth. Let me think about what question to ask.\n\nActually, looking at the data: there's a single `area_advisory` event from a sensor with `background: true`. This is a very low-severity sensor advisory. With n=0, the prior is just a guess. I could ask the system to check if this sensor has been reporting anomalies recently, or check the sensor health status.\n\nLet me go with investigate — a system lookup question is cheap and free.",
+  "toolCalls": [
+    {
+      "id": "call_00_4CsA854Ff9YgOn1oLtTU8373",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"investigate\", \"action_id\": \"check_sensor_health\", \"prior_adjustment_log_odds\": 0.0, \"adjustment_reasons\": [\"Hand-set prior with n=0 — no real data behind it\", \"Novel event type at this site — no precedents\", \"Board load is 0 — operator has capacity to investigate\"], \"novelty_flag\": true, \"confidence_p_real\": 0.05, \"what_would_change_my_mind\": \"If sensor health check shows a malfunction pattern, I'd lower confidence further. If a guard reports seeing something in that zone, I'd raise confidence and escalate.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2528,
+    "completionTokens": 656,
+    "totalTokens": 3184
+  },
+  "latencyMs": 7748,
+  "model": "deepseek-chat",
+  "costUsd": 0.00036063999999999996
+}

@@ -1,0 +1,45 @@
+{
+  "text": "Two events: an area advisory and a robot going offline. Let me gather more context.",
+  "toolCalls": [
+    {
+      "id": "call_00_1BUseB4uwSA8ILL3kYzv7246",
+      "type": "function",
+      "function": {
+        "name": "get_site_prior",
+        "arguments": "{\"event_type\": \"area_advisory\"}"
+      }
+    },
+    {
+      "id": "call_01_69OXZstEuwR9sqFI1onJ6792",
+      "type": "function",
+      "function": {
+        "name": "get_site_prior",
+        "arguments": "{\"event_type\": \"robot_offline\"}"
+      }
+    },
+    {
+      "id": "call_02_QFb5wTExs5Rx4LNroo9Y1489",
+      "type": "function",
+      "function": {
+        "name": "find_precedent",
+        "arguments": "{\"k\": 5}"
+      }
+    },
+    {
+      "id": "call_03_2bjkYPlrK9gVuXkKveod1346",
+      "type": "function",
+      "function": {
+        "name": "get_board_load",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 1952,
+    "completionTokens": 149,
+    "totalTokens": 2101
+  },
+  "latencyMs": 1809,
+  "model": "deepseek-chat",
+  "costUsd": 0.00017836000000000002
+}

@@ -11,7 +11,15 @@ export function ConfidenceBar({ confidence }: { confidence: number }) {
 
   return (
     <div className="flex items-center gap-2 min-w-[80px]">
-      <div className="flex-1 h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+      <div
+        className="flex-1 h-1.5 bg-zinc-800 rounded-full overflow-hidden"
+        role="progressbar"
+        aria-valuenow={pct}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-label={`P(real): ${pct}%`}
+        title={`P(real): ${pct}% — probability this incident is real`}
+      >
         <div
           className={`h-full ${color} rounded-full transition-all duration-300`}
           style={{ width: `${pct}%` }}

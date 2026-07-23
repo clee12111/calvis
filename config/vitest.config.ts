@@ -6,6 +6,7 @@ export default defineConfig({
     globals: true,
     environment: "node",
     testTimeout: 30000, // PGlite is slower than SQLite
+    fileParallelism: false, // PGlite shared instance doesn't support parallel test files
   },
   resolve: {
     alias: {

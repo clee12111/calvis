@@ -1,0 +1,21 @@
+{
+  "text": "I'm on it. Let me gather the full context before making any move.",
+  "toolCalls": [
+    {
+      "id": "call_00_bg4Gs5hCtKVkAtsh72re2077",
+      "type": "function",
+      "function": {
+        "name": "get_incident_context",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 1785,
+    "completionTokens": 93,
+    "totalTokens": 1878
+  },
+  "latencyMs": 1731,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0010785
+}

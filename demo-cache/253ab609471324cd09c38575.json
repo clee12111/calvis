@@ -1,0 +1,21 @@
+{
+  "text": "Let me gather the full context before deciding.\n\n**Analysis:**\n\n- **Event:** Guard no-show at shift start at site-003, zone-3-2 (severity 3, E2)\n- **Prior:** P(real) = **0.7** — but this is a **hand-set assumption (n=0)** with zero observed outcomes behind it. Very weak.\n- **Precedents:** **None** — this is a **novel** event for this site.\n- **Board Load:** 0 items/10min — operator has bandwidth.\n- **Available Guards:** 3 guards on shift (Yesenia Harris has best response time at ~3min).\n\nWe're at E2 with 5 evidence items and 5 questions already answered. The event is novel — a guard hasn't shown up for shift start. This could be benign (overslept, traffic) or real (the guard encountered a problem en route).\n\nThe prior is a hand-set guess with no data behind it (n=0), so I'll adjust it only slightly upward. The cheap next question is: **has anyone tried to contact the missing guard?** A simple system/radio check would tell us if the guard is reachable — that's critical information that changes everything.",
+  "toolCalls": [
+    {
+      "id": "call_00_EfaKvRPkAXzVI5N6726x0109",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"investigate\", \"action_id\": \"check_guard_contact_status\", \"prior_adjustment_log_odds\": 0.5, \"adjustment_reasons\": [\"Hand-set prior with n=0 is very weak — no learned data behind it\", \"Novel event — no site precedents to anchor expectations\", \"Guard no-show at shift start is moderately concerning but could be benign (overslept/traffic)\"], \"novelty_flag\": true, \"confidence_p_real\": 0.75, \"what_would_change_my_mind\": \"If the guard responds to a radio/call and has a benign explanation (overslept, traffic), I would downgrade to E1 and defer. If the guard is unreachable and nearby colleagues haven't seen them, I would escalate to commit — dispatch a guard to investigate physically.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2553,
+    "completionTokens": 2095,
+    "totalTokens": 4648
+  },
+  "latencyMs": 24752,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0054665
+}

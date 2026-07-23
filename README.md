@@ -1,63 +1,85 @@
-# Calvis Dispatch Agent
+# Calvis Dispatch
 
-AI dispatch agent for physical security operations. Watches a stream of real-world events from guards and robots, decides how to prioritize and respond, and gets smarter over time.
+AI dispatch agent for physical security operations. Watches a stream of real-world events from guards and robots across 40+ sites overnight, decides how to prioritize and respond, and learns from outcomes.
 
 ## 30-Second Demo
 
 ```bash
 npm install
-npm run seed       # Generate deterministic world (12 sites, 30 guards, 8 robots)
-npm run dev        # Start at http://localhost:3000
+npm run build
+npm start          # Production server at http://localhost:3000
 ```
 
-Click **Start Sim** → watch a full night replay at 10x. Click any incident to see correlated events and the baseline's scoring factors.
+1. Click **Start Sim** — 273 incidents load in ~4 seconds
+2. Click the top incident (panic button, E4) — see the investigation trace: 5 system questions, evidence level chain, committed response
+3. Click **?** for an overview of evidence levels, cost model, and keyboard shortcuts
+4. Click **Override** on any incident, set tier to T0, enter "false alarm" — watch the prior update in the Learning panel (bottom-right)
+5. Switch arms with the **Agent / Scripted / Rules** buttons — same night, different strategies, instant cost comparison
 
-## Eval
+> Hosted demo may take ~40s to wake if idle.
+
+## Local Development
 
 ```bash
-npm run eval -- --arm=rules-only --seed=42 --runs=3
+npm install
+npm run dev        # Dev server with hot reload at http://localhost:3000
+npm test           # 160 tests (20 files)
+npm run learn      # Run 30-night learning curve (~3 min, no API key needed)
 ```
 
-Prints a metrics table with mean ± spread across runs. Zero LLM calls in F0.
+No API key or database required. DEMO=1 (default) uses in-memory PGlite and cached LLM traces.
 
-## Tests
+## Deploy to Render
 
-```bash
-npm test
-```
+Push to GitHub, then on Render:
 
-26 tests covering: append-only enforcement, seed determinism, correlation (cascading + stuck sensor), outcome joins (including late labels), and metrics with hand-computed fixtures.
+- **Build command:** `npm install && npm run build`
+- **Start command:** `npm start`
+- **Environment:** `DEMO=1`
 
-## Architecture (F0 — Foundation)
+Or use the included `render.yaml` for Blueprint deployment.
 
-- **Schema**: Sites, Guards, Robots, Events (append-only), Incidents, Decisions (append-only), Outcomes, Shifts
-- **Seed World**: Deterministic from a seed via seedrandom. Same seed → identical row hashes
-- **Scenario Generator**: 6 adversarial scenarios + background noise, ~500 events/night
-- **Virtual Clock**: All domain code uses a clock abstraction. Supports batch mode (<5s wall clock for a full night) and realtime replay at 1x/10x/100x
-- **Correlator**: Groups events into incidents by site+zone proximity, related event types, and source identity
-- **Rules-Only Baseline**: `severity × site_criticality × hour_factor × zone_exposure × event_count` → static tier table
-- **Metrics**: Cost-weighted triage error (C_miss=10, C_noise=1), Brier score, ack rate, time-to-ack, time-to-resolution, guard-minutes
-- **UI**: Three-zone layout (queue, detail, sites), SSE streaming, replay controls
+## What This Is
 
-## Stack
+Three triage strategies compared on the same simulated night:
 
-Next.js 16 (App Router) · TypeScript strict · Tailwind CSS · shadcn/ui · Drizzle ORM · better-sqlite3 · Vitest · seedrandom
+| Arm | How it works | Cost (seed 42) |
+|-----|-------------|----------------|
+| **Scripted** | Fixed protocol: 5 system questions, then human questions if ambiguous. The ProQA/MPDS model used in emergency dispatch for 50 years. | $4,433 |
+| **Rules-only** | Static scorer: severity x site criticality x hour x zone. No investigation. | $12,516 |
+| **Agent** | LLM reasons about each incident — calls tools, checks priors, adjusts probabilities, explains reasoning. Two-tier model routing. | $1,513 (with API key) |
+
+Cost = response cost + harm cost (convex penalty for under-responding) + flood penalty (EEMUA 191).
+
+## The Feedback Loop
+
+The system maintains P(real) for each event type at each site as a Beta distribution. Operator overrides update the prior: "false alarm" pushes P(real) down, "confirmed real" pushes it up. The agent sees the observation count n — it trusts a prior backed by 50 observations more than a hand-set guess at n=0.
+
+**Honest result:** After 30 training nights, learned priors improve calibration (Brier 0.072 → 0.054) but don't reduce operational cost. Why: evidence levels (E0-E4) are determined by event types, not P(real). The cost depends on tier vs true level. This is a structural gap documented in DECISION.md (D-035).
+
+## Architecture
+
+- **Next.js 16** App Router, React 19, Tailwind CSS 4, shadcn/ui
+- **PGlite** (in-memory Postgres) — no external database needed
+- **LoopEngine** — 30-second tick intervals, evidence-state machine (E0-E4), investigation questions, flood-aware suppression
+- **Trace cache** — ~9,000 cached LLM responses for deterministic replay
+- **Beta counters** — Bayesian learned priors with hierarchical cold-start backoff
+- **Episodic memory** — past incident outcomes for find_precedent tool
 
 ## Scripts
 
 | Script | Description |
 |--------|-------------|
-| `npm run dev` | Start dev server |
-| `npm run seed` | Seed deterministic world |
-| `npm run sim` | Generate and inspect event stream |
-| `npm run eval -- --arm=rules-only --seed=42 --runs=3` | Run eval |
-| `npm test` | Run test suite |
+| `npm run dev` | Dev server with hot reload |
+| `npm run build` | Production build |
+| `npm start` | Production server |
+| `npm test` | 160 tests across 20 files |
+| `npm run learn` | 30-night learning curve with holdout eval |
+| `npm run eval` | Multi-arm evaluation with bootstrap CIs |
 
-## Phase Roadmap
+## Key Decisions (from DECISION.md)
 
-- **F0** ✅ Foundation & infrastructure (current)
-- **F1** Agent: LLM reasoning, structured output, action tools
-- **F2** Loop: Outcome capture, priors, episodic memory, reliability models
-- **F3** Eval: Three arms, ablation, learning curve
-- **F4** UI: Live board, Learning tab, polish
-- **F5** Writeup + deploy
+- **D-035:** Learning improves calibration but not cost — evidence levels are event-type-driven, not P(real)-driven
+- **D-032:** Progressive reveal of precomputed decisions (batch correlation too costly for live)
+- **D-033:** Override validation rejects incoherent submissions (false alarm + escalation)
+- **D-023:** Agent seam is the decider function — replaces `chooseNextMove` and nothing else

@@ -23,7 +23,8 @@ function formatSimTime(ms: number): string {
 }
 
 export function DecisionCard({ decision }: { decision: DecisionData }) {
-  const factors = JSON.parse(decision.factorsJson);
+  let factors: any[] = [];
+  try { factors = JSON.parse(decision.factorsJson); } catch { /* malformed */ }
 
   return (
     <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-3 space-y-2">

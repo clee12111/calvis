@@ -1,0 +1,21 @@
+{
+  "text": "Let me start gathering context. An E4 incident with a 0.990 base prior is serious. Let me look into everything.",
+  "toolCalls": [
+    {
+      "id": "call_00_UpC1eJJFzVjIsv2oSLvj7653",
+      "type": "function",
+      "function": {
+        "name": "get_incident_context",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 1785,
+    "completionTokens": 71,
+    "totalTokens": 1856
+  },
+  "latencyMs": 2058,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0010345
+}

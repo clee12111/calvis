@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze this carefully.",
+  "toolCalls": [
+    {
+      "id": "call_00_bj5bZAumKRx34J5QTgEb1450",
+      "type": "function",
+      "function": {
+        "name": "get_incident_context",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2494,
+    "completionTokens": 1237,
+    "totalTokens": 3731
+  },
+  "latencyMs": 15176,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.003721
+}

@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze this situation:\n\n**Incident Summary:**\n- Site: site-002, Zone: zone-2-0\n- Event: `robot_offline` (severity 1, background check)\n- Evidence level: E0 (nothing to act on)\n- Current board load: 0/10min (very low — operator is free)\n- 5 questions already asked, 5 answered\n\n**Prior Analysis:**\n- P(real) = 0.05, but n=0 — this is a hand-set prior with zero observations. It's a starting assumption, not a learned estimate.\n- No precedents found — this is a **novel** event-type/site combination.\n\n**Assessment:**\nA robot going offline at a background check is very likely a benign equipment issue (network glitch, battery dead, firmware crash). With n=0, the prior of 0.05 is just a guess. Given:\n- It's E0 — no actionable evidence\n- It's a robot offline event (equipment, not human intrusion)\n- No precedents exist\n- Board load is 0 — operator is free\n\nThis is a low-signal event. The prior is already very low (0.05). I could investigate further, but 5 questions have already been asked and answered. The event is E0 — nothing to act on. I think the right move is to **defer** — set a recheck to see if the robot comes back online, and if not, it may warrant a guard check later.\n\nLet me adjust the prior slightly downward since robot_offline background events are typically benign equipment issues.",
+  "toolCalls": [
+    {
+      "id": "call_00_7ic8qk3x8hjrxWavYnHp5593",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"defer\", \"action_id\": \"recheck_5min\", \"prior_adjustment_log_odds\": -0.5, \"adjustment_reasons\": [\"Robot offline background event is typically benign equipment issue\", \"E0 - no actionable evidence of any kind\", \"Hand-set prior with n=0 is uncalibrated; slight downward adjustment for equipment-type event\"], \"novelty_flag\": true, \"confidence_p_real\": 0.03, \"what_would_change_my_mind\": \"If the robot doesn't come back online within 5 minutes, or if a correlated event (e.g., zone door sensor) fires, that would escalate this. Also if a guard reports seeing something unusual in that zone.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2529,
+    "completionTokens": 600,
+    "totalTokens": 3129
+  },
+  "latencyMs": 7966,
+  "model": "deepseek-chat",
+  "costUsd": 0.0003450300000000001
+}

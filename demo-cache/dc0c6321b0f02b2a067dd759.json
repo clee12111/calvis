@@ -1,0 +1,29 @@
+{
+  "text": "Let me start gathering information to make an informed decision.",
+  "toolCalls": [
+    {
+      "id": "call_00_tIoc2aQROLvwKhoHZEFy1998",
+      "type": "function",
+      "function": {
+        "name": "get_incident_context",
+        "arguments": "{}"
+      }
+    },
+    {
+      "id": "call_01_3HCTbrUa9xlsSuQIWZOw8495",
+      "type": "function",
+      "function": {
+        "name": "get_board_load",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 1785,
+    "completionTokens": 100,
+    "totalTokens": 1885
+  },
+  "latencyMs": 2875,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0010925
+}

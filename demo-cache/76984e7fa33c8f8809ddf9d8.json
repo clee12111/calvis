@@ -1,0 +1,21 @@
+{
+  "text": "",
+  "toolCalls": [
+    {
+      "id": "call_00_0I0wKE7Zcpb9AuC2yFA69609",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"defer\", \"action_id\": \"recheck_5min\", \"prior_adjustment_log_odds\": -0.5, \"adjustment_reasons\": [\"E0 evidence level with background:true suggests benign equipment behavior\", \"5 questions already asked, no escalation — no need to surface to operator now\", \"Hand-set prior (n=0) is weak; E0 outcome supports lower probability than the assumption\"], \"novelty_flag\": true, \"confidence_p_real\": 0.05, \"what_would_change_my_mind\": \"If the anomaly repeats or escalates to E1+ on recheck, or if robot diagnostic data shows actual perimeter intrusion vs. internal motion noise\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2545,
+    "completionTokens": 1278,
+    "totalTokens": 3823
+  },
+  "latencyMs": 15627,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0038285
+}

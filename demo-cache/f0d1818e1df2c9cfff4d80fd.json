@@ -1,0 +1,21 @@
+{
+  "text": "",
+  "toolCalls": [
+    {
+      "id": "call_00_3a4Gc6iefcWJpEWmBI0o0303",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"commit\", \"action_id\": \"dispatch_guard\", \"prior_adjustment_log_odds\": 0.2, \"adjustment_reasons\": [\"Panic button from a guard is inherently serious — guard signaling active distress\", \"n=0 prior is a hand-set assumption with no observational backing, warranting modest adjustment\", \"No precedents exist at this site — novelty increases caution but the event type itself is high-severity\"], \"novelty_flag\": true, \"confidence_p_real\": 0.88, \"what_would_change_my_mind\": \"A guard radio check confirming the panic button was accidental/dropped device would change this to investigate. Direct visual confirmation of all-clear would downgrade to E0-E1.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2536,
+    "completionTokens": 1556,
+    "totalTokens": 4092
+  },
+  "latencyMs": 19035,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.00438
+}

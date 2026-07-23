@@ -2,6 +2,9 @@
   "name": "calvis-dispatch",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -11,6 +14,7 @@
     "sim": "tsx scripts/sim.ts",
     "eval": "tsx scripts/eval.ts",
     "gen:nights": "tsx scripts/gen-nights.ts",
+    "learn": "tsx scripts/learn.ts",
     "test": "vitest run --config config/vitest.config.ts",
     "test:watch": "vitest --config config/vitest.config.ts"
   },

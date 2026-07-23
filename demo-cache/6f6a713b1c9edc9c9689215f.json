@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze this carefully.\n\n**Incident Summary:**\n- **Site:** site-000, zone-0-0\n- **Event:** robot_motion_anomaly (severity 2) — a background robot detected something unusual in its motion\n- **Evidence Level:** E0 (nothing to act on)\n- **Prior:** P(real) = 0.1, but n=0 — this is a hand-set assumption with zero observations behind it\n- **Precedents:** None — this is a **novel** event type at this site\n- **Board Load:** 0 items/10min — operator is free, no flood conditions\n- **Guards available:** 3 guards on shift\n\n**Analysis:**\n\n1. **E0** — The system says nothing to act on. But this is a robot motion anomaly with severity 2, and it's novel (never seen before at this site).\n\n2. **Prior n=0** — This is a hand-set prior with zero data. It's a starting assumption, not a learned estimate. I should be freer to adjust.\n\n3. **Novelty** — find_precedent returned zero precedents. This is genuinely novel. I should flag it.\n\n4. **Board load = 0** — Operator is not busy. No flood suppression needed. This is the perfect time to investigate something novel.\n\n5. **What happened?** A robot detected an anomalous motion pattern. At E0, this could be a sensor glitch, a calibration issue, or something subtle. Since it's novel and the prior is unbacked, it's worth a quick investigation — a cheap system lookup to understand what the robot detected.\n\nLet me investigate — ask a question to gather more evidence before committing.",
+  "toolCalls": [
+    {
+      "id": "call_00_bN0WVCe9KoIJ3JPDvtCU8532",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"investigate\", \"action_id\": \"query_robot_telemetry\", \"prior_adjustment_log_odds\": 0.5, \"adjustment_reasons\": [\"Novel event type at this site — no precedents to learn from\", \"Hand-set prior with n=0 — no real data backing it, so weak starting point\", \"Robot motion anomaly at severity 2 warrants a closer look given low operator load\"], \"novelty_flag\": true, \"confidence_p_real\": 0.15, \"what_would_change_my_mind\": \"If robot telemetry shows a known false-positive pattern (e.g., sensor calibration drift, floor debris, known path obstruction), I'd downgrade to suppress. If telemetry shows an actual human-sized heat signature or unexpected obstacle, I'd escalate to commit with a guard dispatch.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2542,
+    "completionTokens": 645,
+    "totalTokens": 3187
+  },
+  "latencyMs": 7636,
+  "model": "deepseek-chat",
+  "costUsd": 0.0003585400000000001
+}

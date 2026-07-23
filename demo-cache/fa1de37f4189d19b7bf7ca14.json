@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze this:\n\n**Incident Summary:**\n- **Site:** site-010, zone-10-2\n- **Event:** `robot_offline` — a patrol robot went offline\n- **Evidence Level:** E0 (nothing to act on)\n- **Severity:** 1 (low)\n- **Background:** true (this was a background/check-in event)\n\n**Prior:** P(real) = 0.05, but n=0 — this is a hand-set assumption with zero observations behind it. Very weak prior.\n\n**Precedents:** None — this is a **novel** event type at this site. No history of robot_offline events here.\n\n**Board Load:** 0 items/10min — operator is not busy at all. No flood condition, so no suppression needed.\n\n**Available Guards:** Two guards on shift. Michael Johnson (armed, 74% ack rate, ~4min response) and Tyler Rodriguez (unarmed, 91% ack rate, ~2.7min response).\n\n**Analysis:**\n- A robot going offline at a site with no history of this happening is worth noting.\n- The prior is a hand-set 0.05 with n=0 — very weak. I should adjust upward slightly because:\n  1. Novelty — we have no data, so we can't confidently say it's nothing\n  2. A robot going offline could mean a physical issue (stuck, damaged, battery dead) or a comms glitch\n  3. Board load is zero — we have attention to spare\n- However, it's E0 with background=true, meaning the system itself flagged it as likely routine.\n\nGiven the low severity, E0 level, and background flag, but the novelty and weak prior, I think the right move is to **investigate** — ask a cheap question to gather more info. Let me check if there's a system query I can make.\n\nActually, looking at the available actions — I should investigate by asking a question. A good question would be to check the robot's last known status or ping it.\n\nLet me decide: I'll investigate with a system-level query to check if the robot has come back online or if there's telemetry data.\n\n**Adjustment reasoning:** The prior is hand-set (n=0) so it's weak. The event is novel (no precedents). But it's E0 with background=true. I'll adjust slightly upward (+0.3 log-odds) to account for the weak prior and novelty, but not much since it's E0/background.\n\nWait — I need to think about what investigation questions are available. Let me proceed with the decision.",
+  "toolCalls": [
+    {
+      "id": "call_00_BBWepd5MdYBupcBkQDcc9900",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"investigate\", \"action_id\": \"query_robot_telemetry\", \"prior_adjustment_log_odds\": 0.3, \"adjustment_reasons\": [\"Hand-set prior with n=0 is very weak — no real data behind it\", \"Novel event type at this site — no precedents to learn from\", \"E0/background suggests low likelihood but board load is zero so investigation is cheap\"], \"novelty_flag\": true, \"confidence_p_real\": 0.08, \"what_would_change_my_mind\": \"If the robot's telemetry shows a physical obstruction, battery failure, or tamper alert, I'd escalate. If it comes back online with a clean comms log, I'd suppress. If the guard on site reports seeing nothing unusual, I'd defer to recheck.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2490,
+    "completionTokens": 835,
+    "totalTokens": 3325
+  },
+  "latencyMs": 10854,
+  "model": "deepseek-chat",
+  "costUsd": 0.0004081
+}

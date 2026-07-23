@@ -1,0 +1,101 @@
+{
+  "text": "",
+  "toolCalls": [
+    {
+      "id": "call_00_2C0zfnOSXdlSIRzTCoIo4168",
+      "type": "function",
+      "function": {
+        "name": "get_site_prior",
+        "arguments": "{\"event_type\": \"panic_button\"}"
+      }
+    },
+    {
+      "id": "call_01_nbSGTyukvdlWPM4nzwRo1166",
+      "type": "function",
+      "function": {
+        "name": "get_site_prior",
+        "arguments": "{\"event_type\": \"door_forced\"}"
+      }
+    },
+    {
+      "id": "call_02_TpLlWtXun5WHgJGM0UzU6442",
+      "type": "function",
+      "function": {
+        "name": "get_site_prior",
+        "arguments": "{\"event_type\": \"radio_transcript_flag\"}"
+      }
+    },
+    {
+      "id": "call_03_OfWmA8eeKdCMhdmcQwZl3665",
+      "type": "function",
+      "function": {
+        "name": "get_site_prior",
+        "arguments": "{\"event_type\": \"geofence_exit\"}"
+      }
+    },
+    {
+      "id": "call_04_oDdZP6DtxK5bG4UTlu7p4691",
+      "type": "function",
+      "function": {
+        "name": "get_site_prior",
+        "arguments": "{\"event_type\": \"robot_thermal_anomaly\"}"
+      }
+    },
+    {
+      "id": "call_05_26b5a5LvlE8KhKdg0gKF3975",
+      "type": "function",
+      "function": {
+        "name": "get_site_prior",
+        "arguments": "{\"event_type\": \"robot_motion_anomaly\"}"
+      }
+    },
+    {
+      "id": "call_06_UuPekBGJP1vTBe5heFoF9029",
+      "type": "function",
+      "function": {
+        "name": "get_site_prior",
+        "arguments": "{\"event_type\": \"plate_read_unknown\"}"
+      }
+    },
+    {
+      "id": "call_07_UgLPWZM3hn7T1bCTZveW1399",
+      "type": "function",
+      "function": {
+        "name": "find_precedent",
+        "arguments": "{\"k\": 5}"
+      }
+    },
+    {
+      "id": "call_08_M07V1f6g8mTYzCWSLhs14834",
+      "type": "function",
+      "function": {
+        "name": "get_board_load",
+        "arguments": "{}"
+      }
+    },
+    {
+      "id": "call_09_vY0vlWoFdC9MjehfGisu9346",
+      "type": "function",
+      "function": {
+        "name": "get_available_guards",
+        "arguments": "{}"
+      }
+    },
+    {
+      "id": "call_10_v7Us2EUYTNcsEkOi8My33612",
+      "type": "function",
+      "function": {
+        "name": "get_active_rules",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2230,
+    "completionTokens": 575,
+    "totalTokens": 2805
+  },
+  "latencyMs": 5615,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.002265
+}

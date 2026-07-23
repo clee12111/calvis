@@ -1,0 +1,21 @@
+{
+  "text": "Good, I've gathered the full picture. Let me process this.\n\n**Incident Summary:**\n- **Site:** site-007, Zone 7-5\n- **Event:** Guard no-show at shift start (E2 — human presence confirmed, intent unknown)\n- **Prior:** P(real)=0.7, but **n=0** (hand-set assumption, zero observed outcomes — weak)\n- **Precedents:** None — this is **novel** for this site\n- **Board Load:** 0 items/10min — operator is free, no flood concerns\n- **Guards Available:** 2 — Elena Garcia (armed, 92.6% ack) and Valentina Martin (unarmed, 89.9% ack)\n- **Evidence collected:** Already 5 evidence items, 5 questions asked/answered\n\nThe prior of 0.7 is a hand-set assumption with zero data behind it. No-shows are frequently benign (slept in, traffic, illness), and we have no site history to say otherwise. But with time of night being the night shift (2am context), a no-show is more concerning than during the day — fewer people around, harder to get coverage. However, we have two other guards on shift already.\n\nSince the board is clear and we have capacity, I'll **investigate** — check if the missing guard communicated any reason for absence before pursuing a physical response.",
+  "toolCalls": [
+    {
+      "id": "call_00_VpsAyVYHeo8GaMPDSwrH5468",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"investigate\", \"action_id\": \"check_guard_communication\", \"prior_adjustment_log_odds\": -0.85, \"adjustment_reasons\": [\"Hand-set prior (n=0) has no observed data backing — weak starting point\", \"Guard no-shows are frequently benign (sick, traffic, oversleep) — reduces likelihood of genuine security threat\", \"Novel event — no site precedents to confirm or challenge the prior\"], \"novelty_flag\": true, \"confidence_p_real\": 0.5, \"what_would_change_my_mind\": \"If the guard had no communication about being late, or if attempts to contact the guard fail — that would push me toward committing a response. If the guard communicated a benign reason (slept in, traffic), I'd defer/suppress.\\\"\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2517,
+    "completionTokens": 1768,
+    "totalTokens": 4285
+  },
+  "latencyMs": 19932,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0047945
+}

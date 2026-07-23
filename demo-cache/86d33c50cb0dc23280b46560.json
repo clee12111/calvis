@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze this situation:\n\n**Incident Summary:**\n- **Site:** site-005\n- **Event:** Missed check-in by guard Sofia Martinez (check-in #3)\n- **Evidence Level:** E1 (something happened, intent unknown)\n- **Prior:** P(real) = 0.3, but n=0 — this is a hand-set assumption with zero observations behind it\n- **Precedents:** None — this is a novel event for this site\n- **Board Load:** 0 items/10min — operator is free, no flood conditions\n\n**Analysis:**\n1. **Novelty:** find_precedent returned zero precedents, so novelty_flag = true. This site/event-type combo has never been seen before.\n2. **Prior n=0:** The prior is a hand-set assumption with no data behind it. I should be freer in my adjustment.\n3. **Board load is 0** — operator has bandwidth. No suppression needed.\n4. **Guard info:** Sofia Martinez is armed (ack rate ~82%, avg response ~295s). She missed check-in #3. This could be:\n   - Equipment/phone issue (benign)\n   - She's busy with something legitimate\n   - She's in trouble (worst case)\n   - She forgot or is distracted\n\n**Decision logic:** A missed check-in from an armed guard at E1 with no precedents and a weak prior (n=0) — this warrants investigation. The operator has capacity. I should ask a question to gather more evidence before committing a response. Let me investigate by checking if the guard can be reached.\n\nLet me think about what question to ask. A cheap, free question would be to check if the guard has acknowledged any recent communications, or to attempt to contact them.\n\nActually, I'll go with **investigate** — ask to attempt contacting the guard via radio/app to confirm their status. This is a cheap question that buys evidence.",
+  "toolCalls": [
+    {
+      "id": "call_00_jAi3MDK9dhhoppjGz47z8838",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"investigate\", \"action_id\": \"attempt_contact_guard\", \"prior_adjustment_log_odds\": 0.5, \"adjustment_reasons\": [\"Prior is hand-set with n=0 — weak starting point, free to adjust\", \"Armed guard missed check-in — higher concern than unarmed\", \"Novel event at this site — no historical pattern to anchor to\"], \"novelty_flag\": true, \"confidence_p_real\": 0.35, \"what_would_change_my_mind\": \"If Sofia responds and confirms she's okay (just forgot or was delayed), that drops P(real) significantly. If she doesn't respond and Patricia/Natalia also can't reach her, that raises P(real) toward E2/E3 territory and I'd commit a dispatch.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2538,
+    "completionTokens": 682,
+    "totalTokens": 3220
+  },
+  "latencyMs": 8649,
+  "model": "deepseek-chat",
+  "costUsd": 0.00036862
+}

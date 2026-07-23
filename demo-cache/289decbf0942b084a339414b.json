@@ -1,0 +1,21 @@
+{
+  "text": "Let me work through this step by step.\n\n**Current context:**\n- **Site**: site-011, zone 11-2\n- **Event**: `no_show_at_shift_start` (severity 3, source: guard)\n- **Evidence level**: E2 (human presence confirmed, intent unknown)\n- **Prior**: P(real)=0.70, n=0 (hand-set assumption, no observations behind it)\n- **Precedents**: None found — this is **novel** at this site\n- **Board load**: 0/10min (well below flood threshold of 6)\n- **Available guards**: Lucia Martin (armed, 92.9% ack, ~8.9min avg response) & Brianna Martin (unarmed, 89% ack, ~5.9min avg response)\n\n**Analysis:**\n\n1. **n=0 means the 0.70 prior is a weak starting assumption**, not a learned estimate. I should adjust freely.\n\n2. **No precedents** — this site/zone has never seen this event type before. Novelty flag = true.\n\n3. **Board load is 0** — operator has bandwidth. No reason to suppress.\n\n4. This is a guard no-show at shift start. E2 = someone is confirmed *not* there. Intent unknown — could be a guard running late (benign), could be something happened to them (serious). The absence from a shift start is relatively common benign behavior (oversleeping, traffic), so I lean slightly away from the hand-set 0.70 prior.\n\n5. **Best move**: **Investigate** — I should ask a cheap question before committing resources. Let me check with one of the available guards about the missing guard's status. This costs nothing and buys clarity.\n\nLet me submit the decision.",
+  "toolCalls": [
+    {
+      "id": "call_00_uJUW5u4fqFXl99JzR15M0817",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"investigate\", \"action_id\": \"ask_guard_about_no_show\", \"prior_adjustment_log_odds\": -0.3, \"adjustment_reasons\": [\"n=0 hand-set prior with no observations — weak starting point, adjusting freely\", \"No-show at shift start is commonly benign (oversleep, traffic) — lowers prior\", \"No precedents at this site — uncertainty is high so investigate before committing\"], \"novelty_flag\": true, \"confidence_p_real\": 0.55, \"what_would_change_my_mind\": \"If the guard on site confirms the missing guard is unreachable by radio/phone and hasn't been seen at all, I'd raise to commit. If they confirm the guard is just running late, I'd lower and defer/recheck.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2517,
+    "completionTokens": 1478,
+    "totalTokens": 3995
+  },
+  "latencyMs": 17911,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0042145
+}

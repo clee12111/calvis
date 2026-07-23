@@ -1,0 +1,45 @@
+{
+  "text": "Let me gather all the context I need.\n\n**Context so far:**\n- **Site:** site-010, zone-10-0\n- **Event:** `door_forced` — severity 4, sensor-triggered\n- **Current E-Level:** E3 (threat to property confirmed)\n- **Questions asked:** 5 (all answered) — substantial investigation has occurred\n- **Evidence items:** 5\n\nLet me look at the prior, precedents, guards, and board load.",
+  "toolCalls": [
+    {
+      "id": "call_00_zXrEWJGpyqYFPy85BDs16594",
+      "type": "function",
+      "function": {
+        "name": "get_site_prior",
+        "arguments": "{\"event_type\": \"door_forced\"}"
+      }
+    },
+    {
+      "id": "call_01_mJ2VolLWh0xTrBp2Awxp0889",
+      "type": "function",
+      "function": {
+        "name": "find_precedent",
+        "arguments": "{\"k\": 5}"
+      }
+    },
+    {
+      "id": "call_02_w7bXZzWt9tVKJm7Uyfag1069",
+      "type": "function",
+      "function": {
+        "name": "get_available_guards",
+        "arguments": "{}"
+      }
+    },
+    {
+      "id": "call_03_UCE7jjo87CN1sxbtjHrQ0209",
+      "type": "function",
+      "function": {
+        "name": "get_board_load",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2500,
+    "completionTokens": 1343,
+    "totalTokens": 3843
+  },
+  "latencyMs": 16343,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.003936
+}

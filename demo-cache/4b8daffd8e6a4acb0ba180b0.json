@@ -1,0 +1,21 @@
+{
+  "text": "Let me gather all the information before deciding.",
+  "toolCalls": [
+    {
+      "id": "call_00_vnvjYbTDYdnXAnzre21L2018",
+      "type": "function",
+      "function": {
+        "name": "get_incident_context",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2552,
+    "completionTokens": 1259,
+    "totalTokens": 3811
+  },
+  "latencyMs": 15401,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.003794
+}

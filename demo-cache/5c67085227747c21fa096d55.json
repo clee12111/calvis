@@ -1,0 +1,61 @@
+{
+  "text": "",
+  "toolCalls": [
+    {
+      "id": "call_00_0Mh7NsDa31Ggl2FEoFDT3410",
+      "type": "function",
+      "function": {
+        "name": "get_site_prior",
+        "arguments": "{\"event_type\": \"robot_motion_anomaly\"}"
+      }
+    },
+    {
+      "id": "call_01_ZDx4LEGH79fX7fB2L1W08721",
+      "type": "function",
+      "function": {
+        "name": "get_site_prior",
+        "arguments": "{\"event_type\": \"plate_read_unknown\"}"
+      }
+    },
+    {
+      "id": "call_02_xzF3W3bHICtUB6RtAfrV7509",
+      "type": "function",
+      "function": {
+        "name": "get_site_prior",
+        "arguments": "{\"event_type\": \"geofence_exit\"}"
+      }
+    },
+    {
+      "id": "call_03_x8WFPvcEO53DwyarrDjy5247",
+      "type": "function",
+      "function": {
+        "name": "find_precedent",
+        "arguments": "{\"k\": 5}"
+      }
+    },
+    {
+      "id": "call_04_xMvgcUOimO3sndQ8a7wX3848",
+      "type": "function",
+      "function": {
+        "name": "get_board_load",
+        "arguments": "{}"
+      }
+    },
+    {
+      "id": "call_05_XKlPktLm4Qb3CbWOB2Pk3268",
+      "type": "function",
+      "function": {
+        "name": "get_active_rules",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2083,
+    "completionTokens": 424,
+    "totalTokens": 2507
+  },
+  "latencyMs": 4031,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0018895
+}

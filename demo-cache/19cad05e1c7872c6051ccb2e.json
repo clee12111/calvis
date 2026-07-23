@@ -1,0 +1,21 @@
+{
+  "text": "Now I have a clear picture. Let me analyze:\n\n**Incident**: Site-003, Zone 3-1 — a missed check-in from a guard. E1 (something happened, intent unknown).\n\n**Prior**: P(real) = 0.3, but n=0 — this is a hand-set assumption with zero observations behind it. Very weak prior.\n\n**Precedents**: Zero. This is a novel event type at this site — never seen before.\n\n**Board load**: 0 items/10min — operator is free. No flood conditions.\n\n**Guards available**: 3 guards on shift. Ana Lopez (80% ack, 539s avg response), Isabel Martin (95% ack, 574s), Yesenia Harris (91% ack, 184s).\n\n**Key insight**: A missed check-in from a guard is ambiguous. It could be:\n- Guard forgot to check in (benign)\n- Guard is in trouble (serious)\n- Equipment/network issue\n\nSince n=0 (hand-set prior), I should be free to adjust. The prior of 0.3 is just a starting guess. A missed check-in at 2am... could be a guard who fell asleep, or it could be something more concerning. With zero precedents, this is novel.\n\nGiven the low board load, I have room to **investigate** — ask a question to gather more evidence before committing. The cheapest, most informative action would be to check with the guard or dispatch.\n\nLet me investigate by asking the guard to respond/check in.",
+  "toolCalls": [
+    {
+      "id": "call_00_XJRn89Nld8X7ShPfKy3d7226",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"investigate\", \"action_id\": \"check_in_guard\", \"prior_adjustment_log_odds\": 0.5, \"adjustment_reasons\": [\"n=0 hand-set prior — no real data behind it, free to adjust\", \"Novel event at this site — no precedents to anchor expectations\", \"Missed check-in at 2am could indicate guard distress or fatigue — slight upward adjustment warranted\"], \"novelty_flag\": true, \"confidence_p_real\": 0.35, \"what_would_change_my_mind\": \"If the guard responds promptly confirming they're okay, P(real) drops to near zero. If no response after a reasonable window, P(real) increases significantly. If another guard reports the missing guard was acting strangely earlier, that would also increase concern.\\\"\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2536,
+    "completionTokens": 601,
+    "totalTokens": 3137
+  },
+  "latencyMs": 7395,
+  "model": "deepseek-chat",
+  "costUsd": 0.00034580000000000006
+}

@@ -1,0 +1,21 @@
+{
+  "text": "## Analysis for Incident inc-00155\n\nLet me walk through the evidence:\n\n### Context Summary\n- **Site:** site-005, zone-5-1\n- **Event:** `plate_read_unknown` — robot on patrol read a plate not in the known database\n- **Severity:** 2 (moderate), **E1** (something happened, intent unknown)\n- **Background:** true (routine patrol, not an active alarm)\n- **Board Load:** **0 items/10min** — operator is completely free\n- **Guards:** 3 on shift (Sofia armed, 82% ack rate ~5min)\n\n### Prior & Precedents\n| Element | Value | Meaning |\n|---|---|---|\n| P(real) prior | **0.15** | Hand-set assumption, **n=0** — no real data behind it |\n| Precedents | **0 found** | This event/site combo is **novel** — no past outcomes to learn from |\n\nThe prior is a weak guess, not a learned statistic. And with zero precedents, there's no historical pattern to rely on.\n\n### Decision\n\nThis is a **novel** event (no precedents) on a **low-threat** profile (plate_read_unknown is often a delivery driver or visitor). The operator is **idle** (0 load). A cheap system lookup costs nothing.\n\n**Move: Investigate** — ask a free question before committing any guard resources.",
+  "toolCalls": [
+    {
+      "id": "call_00_Kd4DrjYbxACE9D3Zmrug2237",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"investigate\", \"action_id\": \"query_visitor_system\", \"prior_adjustment_log_odds\": -0.3, \"adjustment_reasons\": [\"Weak prior (n=0) — hand-set guess with no data behind it\", \"Novel event type at this site — no historical pattern\", \"Plate_read_unknown is frequently benign (visitors, deliveries, false reads)\"], \"novelty_flag\": true, \"confidence_p_real\": 0.12, \"what_would_change_my_mind\": \"If the visitor system has no record and the robot captured a vehicle loitering, or if this plate appears in a 2nd zone within a short window — that would raise suspicion and warrant dispatching a guard for visual verification.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2544,
+    "completionTokens": 1553,
+    "totalTokens": 4097
+  },
+  "latencyMs": 19554,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.004378
+}

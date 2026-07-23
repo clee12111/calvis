@@ -1,0 +1,29 @@
+{
+  "text": "",
+  "toolCalls": [
+    {
+      "id": "call_00_nHpHVkFO8ZTn1vpWnWO81114",
+      "type": "function",
+      "function": {
+        "name": "get_site_prior",
+        "arguments": "{\"event_type\": \"radio_transcript_flag\"}"
+      }
+    },
+    {
+      "id": "call_01_5ycjFkymPhRyR1EPoxNf3150",
+      "type": "function",
+      "function": {
+        "name": "find_precedent",
+        "arguments": "{\"k\": 5}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 1915,
+    "completionTokens": 202,
+    "totalTokens": 2117
+  },
+  "latencyMs": 2167,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0013615
+}

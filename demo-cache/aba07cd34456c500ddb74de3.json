@@ -1,0 +1,21 @@
+{
+  "text": "I'm on it. Let me start gathering the full picture — context, site priors, precedents, board load, guards, and rules.",
+  "toolCalls": [
+    {
+      "id": "call_00_S4scwhqzLSMmeJUzUyEC3606",
+      "type": "function",
+      "function": {
+        "name": "get_incident_context",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 1785,
+    "completionTokens": 71,
+    "totalTokens": 1856
+  },
+  "latencyMs": 1662,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0010345
+}

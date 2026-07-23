@@ -1,0 +1,29 @@
+{
+  "text": "I have an E2 incident at hand. Let me gather all the context before making a move.",
+  "toolCalls": [
+    {
+      "id": "call_00_kEv2sBF9xBv5W8HCL4MG2200",
+      "type": "function",
+      "function": {
+        "name": "get_incident_context",
+        "arguments": "{}"
+      }
+    },
+    {
+      "id": "call_01_ZBhR3Zk9TVkuz6kbh1lU2298",
+      "type": "function",
+      "function": {
+        "name": "get_board_load",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 1785,
+    "completionTokens": 108,
+    "totalTokens": 1893
+  },
+  "latencyMs": 2292,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0011085
+}

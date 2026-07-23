@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: calvis-dispatch
+    runtime: node
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: DEMO
+        value: "1"
+      - key: NODE_ENV
+        value: production

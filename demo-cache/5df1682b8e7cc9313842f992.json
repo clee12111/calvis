@@ -1,0 +1,29 @@
+{
+  "text": "Let me start gathering context, prior, precedents, and board load in parallel.",
+  "toolCalls": [
+    {
+      "id": "call_00_jtlfUlbVAsafyYJRY6Qy4792",
+      "type": "function",
+      "function": {
+        "name": "get_incident_context",
+        "arguments": "{}"
+      }
+    },
+    {
+      "id": "call_01_MUb69P8kYE394QqTzJUo7835",
+      "type": "function",
+      "function": {
+        "name": "get_board_load",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 1778,
+    "completionTokens": 81,
+    "totalTokens": 1859
+  },
+  "latencyMs": 1931,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.001051
+}

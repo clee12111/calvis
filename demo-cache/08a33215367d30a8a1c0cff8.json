@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze what I've gathered:\n\n**Incident Summary:**\n- **Site:** site-011, zone-11-3\n- **Event:** `robot_thermal_anomaly` (severity 3) — a single event, background reading\n- **Evidence Level:** E1 (something happened, intent unknown)\n- **Prior:** P(real) = 0.25, but n=0 — this is a hand-set assumption with zero observations behind it. Very weak prior.\n- **Precedents:** Zero — this is a **novel** event type at this site.\n- **Board Load:** 0 items/10min — operator is free, no flood conditions.\n- **Guards:** Two available (Lucia Martin, armed, 93% ack rate; Brianna Martin, unarmed, 89% ack rate)\n\n**Analysis:**\n- n=0 means the 0.25 prior is a pure assumption, not learned. I should be free in my adjustment.\n- No precedents at all — this is genuinely novel (novelty_flag = true).\n- Board load is 0 — operator has bandwidth. No suppression needed.\n- It's a single thermal anomaly from a robot, background reading, severity 3. Could be a sensor glitch, environmental heat source, or something more.\n- With no prior data and a hand-set prior, I should lean toward **investigate** — ask a cheap question to gather more evidence before committing a guard.\n\nLet me think about what question to ask. I could check if the robot's thermal sensor has been reporting anomalies recently, or check environmental conditions in that zone. Let me investigate.\n\n**Decision:** Investigate — ask a system-level question to gather more evidence. The prior is weak (n=0), novelty is high, and the operator has bandwidth.",
+  "toolCalls": [
+    {
+      "id": "call_00_3IGdTo4CC41svgeLv9X59204",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"investigate\", \"action_id\": \"check_robot_sensor_history\", \"prior_adjustment_log_odds\": 0.0, \"adjustment_reasons\": [\"n=0 hand-set prior — no real data behind it, so no adjustment warranted yet\", \"Novel event type at this site — need more evidence before committing\", \"Board load is 0 — operator has bandwidth for investigation\"], \"novelty_flag\": true, \"confidence_p_real\": 0.25, \"what_would_change_my_mind\": \"If the robot sensor history shows recent false positives or calibration issues, I'd lower confidence. If it shows a pattern matching known threats (e.g., electrical overheating), I'd raise confidence and consider committing a guard. A second corroborating sensor reading would also increase confidence.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2511,
+    "completionTokens": 654,
+    "totalTokens": 3165
+  },
+  "latencyMs": 7639,
+  "model": "deepseek-chat",
+  "costUsd": 0.00035889
+}

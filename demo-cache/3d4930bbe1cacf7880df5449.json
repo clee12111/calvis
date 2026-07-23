@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze this situation:\n\n**Incident Summary:**\n- Site: site-006, Zone: zone-6-2\n- Event: `robot_offline` (severity 1, E0 level)\n- Single event, background data\n- 5 questions already asked (5 answered), 5 evidence items collected\n\n**Prior:** P(real) = 0.05, but n=0 — this is a hand-set assumption with zero observations behind it. Very weak prior.\n\n**Precedents:** Zero precedents found. This is a **novel** event-type/site combination.\n\n**Board Load:** 0 items/10min — operator is free, no flood conditions.\n\n**Analysis:**\n- A robot going offline at E0 with background data is likely a benign equipment issue (network glitch, battery dead, maintenance mode).\n- However, n=0 means the prior is a guess, not learned. And there are zero precedents — this has never happened at this site before.\n- The operator is not overloaded (load=0), so we have bandwidth.\n- 5 questions already asked — we've already done some investigation.\n\nGiven:\n1. E0 level — nothing to act on yet\n2. n=0 prior — weak, hand-set\n3. Novelty — never seen before at this site\n4. Low board load — operator has capacity\n5. Already 5 questions asked\n\nThis is a borderline case. The prior says 5% chance real, but with n=0 that's just a guess. Novelty means we should be cautious. But E0 with a robot_offline background event is very likely just a technical glitch.\n\nI think the right move here is to **defer** — set a recheck timer. If the robot comes back online, it was nothing. If it stays offline and other events accumulate, we escalate. This conserves operator attention while not ignoring the novelty.\n\nLet me adjust the prior slightly downward from 0.05 since robot_offline with background data is almost always benign equipment behavior.",
+  "toolCalls": [
+    {
+      "id": "call_00_8mpCLEa2cqsngd6dj7zh4865",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"defer\", \"action_id\": \"recheck_5min\", \"prior_adjustment_log_odds\": -0.5, \"adjustment_reasons\": [\"robot_offline with background data is almost always benign equipment behavior\", \"n=0 prior is a hand-set guess, not learned — weak evidence\", \"Novel event at this site — worth a recheck rather than ignoring\"], \"novelty_flag\": true, \"confidence_p_real\": 0.03, \"what_would_change_my_mind\": \"If the robot stays offline after 5 minutes AND another event type fires in the same zone (e.g., motion detection, door contact), that would raise the evidence level and warrant investigation. Also if a guard reports the robot is in an unexpected location or state.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2490,
+    "completionTokens": 701,
+    "totalTokens": 3191
+  },
+  "latencyMs": 8326,
+  "model": "deepseek-chat",
+  "costUsd": 0.00037058
+}

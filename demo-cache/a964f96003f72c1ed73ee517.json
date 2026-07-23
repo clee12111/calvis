@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze this carefully.\n\n**Incident Summary:**\n- **Site:** site-002, zone-2-0\n- **Event:** Missed check-in (guard didn't check in)\n- **Severity:** 2 (moderate)\n- **Evidence Level:** E1 (something happened, intent unknown)\n- **Prior:** P(real) = 0.3, but n=0 — this is a hand-set assumption with zero observations behind it\n- **Precedents:** None — this is a **novel** event for this site\n- **Board load:** 0/10min — operator is free, no flood conditions\n- **Guards available:** 3 guards on shift, James Williams (armed, 84% ack), Diego Harris (armed, 71% ack), Antonio Williams (unarmed, 95% ack)\n\n**Analysis:**\n\nA missed check-in at E1 with a hand-set prior (n=0) and no precedents. This is genuinely novel — we've never seen this event type at this site before.\n\nThe prior of 0.3 is a hand-set assumption with zero data behind it. That means I should be freer to adjust. A missed check-in could be:\n- Guard forgot (benign) — very common\n- Guard distracted/in trouble (real) — less common but possible\n- Equipment/radio issue (benign)\n\nGiven it's a guard check-in, the guard is physically present at the site. With 3 guards on shift, we can investigate cheaply. The board load is 0 — operator has bandwidth.\n\n**My move:** Investigate. Let's ask the guard to check in or radio the guard to confirm status. This is a cheap, free question (system lookup / radio call) that can quickly resolve E1 → E0 (guard just forgot) or escalate to E2+ (guard doesn't respond).\n\n**Adjustment:** The hand-set prior of 0.3 with n=0 is weak. A missed check-in is fairly common and often benign. I'll adjust slightly downward to ~0.25 (logit adjustment of about -0.2).",
+  "toolCalls": [
+    {
+      "id": "call_00_sEOt1E5c9Bv4r0L9LgFT2386",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"investigate\", \"action_id\": \"radio_guard_check_in\", \"prior_adjustment_log_odds\": -0.2, \"adjustment_reasons\": [\"Hand-set prior with n=0 — weak starting point, free to adjust\", \"Missed check-ins are often benign (guard forgot, radio issue)\", \"Novel event — no site history to anchor the prior\"], \"novelty_flag\": true, \"confidence_p_real\": 0.25, \"what_would_change_my_mind\": \"If the guard doesn't respond to radio, that escalates to E2 (human presence confirmed, intent unknown). If the guard responds and says everything is fine, this resolves to E0 (benign). If another guard reports the missing guard was seen recently, that also resolves to benign.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2536,
+    "completionTokens": 723,
+    "totalTokens": 3259
+  },
+  "latencyMs": 8955,
+  "model": "deepseek-chat",
+  "costUsd": 0.00037996000000000004
+}

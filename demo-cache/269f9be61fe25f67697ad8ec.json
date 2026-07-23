@@ -1,0 +1,45 @@
+{
+  "text": "This is very revealing. Let me analyze:\n\n1. **Site**: site-011, zone-11-0\n2. **Event types**: `robot_motion_anomaly` (severity 1, ~200 events, all with `stuck: true, reading: 0.42`) and `robot_thermal_anomaly` (severity 3, one event)\n3. The motion anomaly events are **identical** — same `stuck: true, reading: 0.42` — repeating every 36 seconds for nearly 2 hours. This is clearly a **stuck sensor** or **stuck robot** — a mechanical/equipment issue, not a security event.\n4. There's one `robot_thermal_anomaly` at severity 3 — that's more concerning.\n\nLet me get priors and precedents.",
+  "toolCalls": [
+    {
+      "id": "call_00_78CpCZHzduF6jUVXXDib6205",
+      "type": "function",
+      "function": {
+        "name": "get_site_prior",
+        "arguments": "{\"event_type\": \"robot_motion_anomaly\"}"
+      }
+    },
+    {
+      "id": "call_01_BvBUakM4WXVoW7VgkPFD2023",
+      "type": "function",
+      "function": {
+        "name": "get_site_prior",
+        "arguments": "{\"event_type\": \"robot_thermal_anomaly\"}"
+      }
+    },
+    {
+      "id": "call_02_EYKl8ReFkMqqaBpcmnMU2364",
+      "type": "function",
+      "function": {
+        "name": "find_precedent",
+        "arguments": "{\"k\": 5}"
+      }
+    },
+    {
+      "id": "call_03_nuiFtNJCsB4qDxhDkSvw4553",
+      "type": "function",
+      "function": {
+        "name": "get_board_load",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 12773,
+    "completionTokens": 319,
+    "totalTokens": 13092
+  },
+  "latencyMs": 3540,
+  "model": "deepseek-chat",
+  "costUsd": 0.0009834300000000002
+}

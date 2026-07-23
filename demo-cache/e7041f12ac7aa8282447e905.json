@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze this carefully.\n\n**Incident Summary:**\n- Site: site-002, Zone: zone-2-0\n- Event: `robot_offline` (severity 1, background check)\n- Current evidence level: **E0** (nothing to act on)\n- Board load: **0** (quiet night, no flood concerns)\n- 5 questions already asked, 5 answered\n\n**Prior Analysis:**\n- P(real) = 0.05, n=0 — this is a **hand-set prior with zero observations**. It's a starting assumption, not learned data.\n- No precedents found — this is **novel** for this site.\n\n**What we know:**\n- A robot went offline. It's a background event, severity 1.\n- E0 means nothing to act on yet — this could be a benign equipment glitch.\n- With n=0, the prior is very weak. But the event itself is low-severity (robot offline, background check).\n- Board load is 0 — no pressure to suppress.\n\n**Decision logic:**\n- E0 + hand-set prior (n=0) + no precedents = we have very little to go on.\n- 5 questions already asked and answered — we've already done some investigation.\n- The prior is 0.05, which is already quite low. A robot going offline in a background check is likely a comms glitch or battery issue.\n- Since n=0, I should be somewhat free in my adjustment, but the event itself is low-severity and E0.\n- I'll adjust slightly downward from the already-low prior — this looks like equipment noise.\n\n**Move: Defer** — set a recheck. No need to bother the operator at 2am for a robot offline with E0 evidence. Let's recheck in 5 minutes to see if it comes back online or if more events accumulate.\n\nWait — actually, let me reconsider. The prior is 0.05 (hand-set, n=0). With no precedents and E0, this is very likely benign. But it's novel (no precedents), so I should flag that for learning.\n\nI'll defer with a recheck. The operator is tired, it's 2am, board load is 0 — no urgency.",
+  "toolCalls": [
+    {
+      "id": "call_00_ng9Lm0NZj829thCPrgzj6508",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"defer\", \"action_id\": \"recheck_5min\", \"prior_adjustment_log_odds\": -0.5, \"adjustment_reasons\": [\"Hand-set prior with n=0 — no real data behind it\", \"E0 evidence level — nothing actionable\", \"Robot offline in background check is likely benign comms glitch\", \"No precedents at this site for this event type\"], \"novelty_flag\": true, \"confidence_p_real\": 0.03, \"what_would_change_my_mind\": \"If the robot doesn't come back online within 5 minutes, or if additional events (motion, door alarms) occur in the same zone suggesting a human presence, I'd escalate to investigate.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2529,
+    "completionTokens": 744,
+    "totalTokens": 3273
+  },
+  "latencyMs": 9024,
+  "model": "deepseek-chat",
+  "costUsd": 0.00038535
+}

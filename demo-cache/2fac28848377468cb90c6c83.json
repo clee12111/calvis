@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze this carefully.\n\n**Incident Summary:**\n- **Site:** site-006, zone-6-0\n- **Event:** robot_motion_anomaly (severity 2, background=true)\n- **Evidence Level:** E0 (nothing to act on)\n- **Prior:** P(real) = 0.1, n=0 (hand-set, no data behind it)\n- **Precedents:** None — this is a **novel** event type at this site\n- **Board Load:** 0 items/10min — very low, operator is not overloaded\n- **Guards:** 2 available (David Martinez armed, high ack rate; Omar Lopez unarmed)\n\n**Analysis:**\n1. The event is a robot motion anomaly with `\"background\": true` — this suggests it's a routine/background robot movement, not an intrusion.\n2. The prior is hand-set (n=0), so it's a weak starting point. With no precedents, I have no historical data to lean on.\n3. Board load is 0 — the operator has bandwidth. This is a good time to investigate a novel event.\n4. E0 means \"nothing to act on\" — but the novelty flag means we should learn from this.\n\n**Decision:** Since this is novel (no precedents), the prior is weak (n=0), and board load is low, I should **investigate** — ask a cheap question to gather more evidence. A good question would be to check if this robot motion anomaly is part of a scheduled patrol or an unscheduled movement. Let me ask about the robot's schedule.\n\nActually, looking at the available actions — I need to pick an action_id for investigate. Let me think about what question to ask. A system lookup to check if the robot's motion was scheduled would be a cheap, free question.\n\nLet me set a moderate positive adjustment since the prior is weak (n=0) and this is novel — I should be open to it being real but not jump to conclusions.",
+  "toolCalls": [
+    {
+      "id": "call_00_v96EIPcAy382JQ1jt1tg9801",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"investigate\", \"action_id\": \"check_robot_schedule\", \"prior_adjustment_log_odds\": 0.5, \"adjustment_reasons\": [\"Novel event type at this site — no precedents to learn from\", \"Hand-set prior with n=0 is weak, needs evidence to calibrate\", \"Board load is 0 — operator has bandwidth to investigate\"], \"novelty_flag\": true, \"confidence_p_real\": 0.15, \"what_would_change_my_mind\": \"If the robot's motion was unscheduled or outside its normal patrol pattern, that would raise suspicion. If it's confirmed as a scheduled patrol route, I'd suppress this as benign.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2502,
+    "completionTokens": 678,
+    "totalTokens": 3180
+  },
+  "latencyMs": 7562,
+  "model": "deepseek-chat",
+  "costUsd": 0.00036498
+}

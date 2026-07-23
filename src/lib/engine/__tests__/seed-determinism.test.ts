@@ -10,7 +10,7 @@ describe("seed determinism", () => {
     await seedWorld({ seed: 42 });
     const hash2 = await computeWorldHash();
     expect(hash1).toBe(hash2);
-  });
+  }, 15_000);
 
   it("produces different hashes for different seeds", async () => {
     await seedWorld({ seed: 42 });

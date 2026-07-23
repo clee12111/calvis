@@ -1,0 +1,21 @@
+{
+  "text": "Now I have a solid picture. Let me make the decision.\n\n**Analysis:**\n- **Event:** Guard Sofia Martinez (armed) didn't show at shift start at site-005\n- **Prior:** Hand-set at 0.7 with **n=0** — a pure assumption with zero observations behind it → I should adjust freely\n- **Precedents:** None found — this is **novel** for this site\n- **Board load:** 0/10min — operator has full bandwidth\n- **Context:** Sofia IS listed as an available guard (armed, 82% ack rate), yet didn't show. This raises questions — is she late, stuck in traffic, or is there something more concerning? Given she's armed, the stakes are higher.\n\nI'll **investigate** — ask a free question to check on the guard's status before committing resources.",
+  "toolCalls": [
+    {
+      "id": "call_00_BpkIGVJ3KE3FW5rmJLen4656",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"investigate\", \"action_id\": \"check_guard_status\", \"prior_adjustment_log_odds\": 0.3, \"adjustment_reasons\": [\"Hand-set prior with n=0 — weak assumption, adjust freely\", \"Guard is armed — adds non-trivial concern to a no-show\", \"Novel event at this site — conservative approach warrants more info before committing\"], \"novelty_flag\": true, \"confidence_p_real\": 0.65, \"what_would_change_my_mind\": \"If Sofia answers her phone and confirms she's safe (traffic/personal issue), P(real) drops to benign. If her phone goes to voicemail and other guards report not hearing from her, I'd escalate to commit — dispatch Patricia or Natalia to check on her.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2554,
+    "completionTokens": 1562,
+    "totalTokens": 4116
+  },
+  "latencyMs": 18783,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.004401
+}

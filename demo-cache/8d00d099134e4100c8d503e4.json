@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze what I've gathered:\n\n**Incident Summary:**\n- **Site:** site-011, zone-11-1\n- **Event:** `plate_read_unknown` — a robot patrol detected an unknown license plate\n- **Evidence Level:** E1 (something happened, intent unknown)\n- **Severity:** 2 (moderate)\n- **Prior:** P(real) = 0.15, but n=0 — this is a hand-set assumption with zero observations behind it\n- **Precedents:** None — this is a **novel** event type at this site\n- **Board Load:** 0 items/10min — operator is free, no flood conditions\n- **Guards:** 2 available (Lucia Martin, armed, 93% ack rate; Brianna Martin, unarmed, 89% ack rate)\n\n**Analysis:**\n- n=0 means the 0.15 prior is a pure assumption, not learned. With no data behind it, I should be freer to adjust.\n- No precedents at all — this is genuinely novel for this site.\n- Board load is 0 — operator has bandwidth.\n- E1 is low evidence, but the novelty and the fact that this is an unknown plate read (could be a vehicle casing the site) warrants investigation.\n- The prior of 0.15 with n=0 is very weak. Given it's a plate read unknown (could be a delivery, visitor, or threat), and it's novel, I'll adjust slightly upward to reflect that we have no data to say it's unlikely.\n\n**Decision:** Investigate — ask a cheap question to gather more evidence. The operator is not overloaded, so this is a good time to learn about this novel event type.\n\nLet me think about what question to ask. A system lookup on the plate read would be a cheap, free question.",
+  "toolCalls": [
+    {
+      "id": "call_00_tqu82OeTSRh6Mz4ccOde4724",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"investigate\", \"action_id\": \"query_plate_database\", \"prior_adjustment_log_odds\": 0.3, \"adjustment_reasons\": [\"Prior is hand-set with n=0 — no real data behind it, so freer adjustment warranted\", \"Novel event type at this site — no precedents to anchor expectations\", \"Board load is 0 — operator has bandwidth to investigate this E1\"], \"novelty_flag\": true, \"confidence_p_real\": 0.2, \"what_would_change_my_mind\": \"If the plate database lookup shows this plate is registered to a known visitor, delivery service, or employee vehicle, I'd lower confidence. If it's a stolen plate, out-of-state plate with no business reason, or matches a vehicle of interest, I'd escalate to commit (dispatch guard).\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2499,
+    "completionTokens": 676,
+    "totalTokens": 3175
+  },
+  "latencyMs": 8087,
+  "model": "deepseek-chat",
+  "costUsd": 0.00036421
+}

@@ -1,0 +1,61 @@
+{
+  "text": "",
+  "toolCalls": [
+    {
+      "id": "call_00_Aexwty7FBupdfzT71fXN3708",
+      "type": "function",
+      "function": {
+        "name": "get_site_prior",
+        "arguments": "{\"event_type\": \"robot_motion_anomaly\"}"
+      }
+    },
+    {
+      "id": "call_01_MqsmODVbwlgziyjt0CGq2525",
+      "type": "function",
+      "function": {
+        "name": "get_site_prior",
+        "arguments": "{\"event_type\": \"plate_read_unknown\"}"
+      }
+    },
+    {
+      "id": "call_02_sIgKe2sirYpGSs4qGVen7766",
+      "type": "function",
+      "function": {
+        "name": "get_site_prior",
+        "arguments": "{\"event_type\": \"door_forced\"}"
+      }
+    },
+    {
+      "id": "call_03_GiL5NSnSZFGFPFkVg8ay4072",
+      "type": "function",
+      "function": {
+        "name": "find_precedent",
+        "arguments": "{\"k\": 5}"
+      }
+    },
+    {
+      "id": "call_04_9QVCY9845OvtGEisN91G7820",
+      "type": "function",
+      "function": {
+        "name": "get_active_rules",
+        "arguments": "{}"
+      }
+    },
+    {
+      "id": "call_05_Zvlw9yV0DY38CB17DHO68348",
+      "type": "function",
+      "function": {
+        "name": "get_available_guards",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2125,
+    "completionTokens": 354,
+    "totalTokens": 2479
+  },
+  "latencyMs": 3525,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0017705
+}

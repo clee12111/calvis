@@ -17,8 +17,8 @@ export class SimManager {
   readonly pipeline: IngestionPipeline;
   private _eventListeners: Set<EventCallback> = new Set();
   private _incidentListeners: Set<IncidentCallback> = new Set();
-  private _correlator: ((events: SimEvent[]) => Incident[]) | null = null;
-  private _scorer: ((incident: Incident) => void) | null = null;
+  private _correlator: ((events: SimEvent[]) => Promise<Incident[]>) | null = null;
+  private _scorer: ((incident: Incident) => Promise<void>) | null = null;
 
   constructor(events: SimEvent[]) {
     this.clock = resetClock(0);
@@ -33,12 +33,12 @@ export class SimManager {
   }
 
   /** Register the correlator function */
-  setCorrelator(fn: (events: SimEvent[]) => Incident[]) {
+  setCorrelator(fn: (events: SimEvent[]) => Promise<Incident[]>) {
     this._correlator = fn;
   }
 
   /** Register the scorer function */
-  setScorer(fn: (incident: Incident) => void) {
+  setScorer(fn: (incident: Incident) => Promise<void>) {
     this._scorer = fn;
   }
 
@@ -64,15 +64,15 @@ export class SimManager {
    * Process a single tick: ingest events up to current clock time,
    * correlate, score.
    */
-  tick(): { events: SimEvent[]; incidents: Incident[] } {
-    const events = this.pipeline.ingestUpTo(this.clock.now);
+  async tick(): Promise<{ events: SimEvent[]; incidents: Incident[] }> {
+    const events = await this.pipeline.ingestUpTo(this.clock.now);
     const incidents: Incident[] = [];
 
     if (events.length > 0 && this._correlator) {
-      const newIncidents = this._correlator(events);
+      const newIncidents = await this._correlator(events);
       for (const inc of newIncidents) {
         if (this._scorer) {
-          this._scorer(inc);
+          await this._scorer(inc);
         }
         this._notifyIncident(inc);
         incidents.push(inc);
@@ -86,19 +86,17 @@ export class SimManager {
    * Run the entire simulation in batch mode (for eval).
    * Advances clock through all events, processing each batch.
    */
-  runBatch(): { totalEvents: number; totalIncidents: number } {
+  async runBatch(): Promise<{ totalEvents: number; totalIncidents: number }> {
     this.clock.setBatchMode();
     let totalIncidents = 0;
 
-    // Process events in time-ordered batches
-    // Group events by timestamp windows (1 second windows)
-    const allEvents = this.pipeline.ingestAll();
+    const allEvents = await this.pipeline.ingestAll();
 
     if (this._correlator) {
-      const incidents = this._correlator(allEvents);
+      const incidents = await this._correlator(allEvents);
       for (const inc of incidents) {
         if (this._scorer) {
-          this._scorer(inc);
+          await this._scorer(inc);
         }
         totalIncidents++;
       }
@@ -115,13 +113,21 @@ export class SimManager {
    */
   startRealtime(speed: number = 1) {
     this.clock.start(speed);
-    // Set up periodic ticking
-    const tickInterval = setInterval(() => {
+    // Set up periodic ticking with async handling
+    let ticking = false;
+    const tickInterval = setInterval(async () => {
       if (!this.clock.running) {
         clearInterval(tickInterval);
         return;
       }
-      this.tick();
+      if (ticking) return; // prevent overlapping async ticks
+      ticking = true;
+      try {
+        await this.tick();
+      } catch (err) {
+        console.error("Tick error:", err);
+      }
+      ticking = false;
       if (this.pipeline.done) {
         this.clock.pause();
         clearInterval(tickInterval);

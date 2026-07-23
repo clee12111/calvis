@@ -1,0 +1,21 @@
+{
+  "text": "Now let me analyze this carefully.",
+  "toolCalls": [
+    {
+      "id": "call_00_REJ4otL6ZlzsptjAFl2a4954",
+      "type": "function",
+      "function": {
+        "name": "get_board_load",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2423,
+    "completionTokens": 1324,
+    "totalTokens": 3747
+  },
+  "latencyMs": 15973,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0038595
+}

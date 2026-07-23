@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze this carefully.\n\n**Context:**\n- **Site:** site-003, zone-3-0\n- **Event:** Missed check-in (guard didn't check in)\n- **Severity:** 2 (moderate)\n- **Evidence Level:** E1 (something happened, intent unknown)\n- **Prior:** P(real) = 0.3, but n=0 — this is a hand-set assumption with zero observations behind it. Very weak prior.\n- **Precedents:** Zero — this is a novel event type for this site.\n- **Board load:** 0/10min — operator is free, no flood conditions.\n- **Guards available:** 3 guards on shift. Ana Lopez (80% ack, ~9min avg), Isabel Martin (95% ack, ~9.5min avg), Yesenia Harris (91% ack, ~3min avg).\n\n**Analysis:**\n- A missed check-in at E1 means a guard didn't check in. This could be:\n  - Guard forgot (benign)\n  - Guard is in trouble (real threat)\n  - Equipment/radio issue (malfunction)\n- The prior is hand-set (n=0), so I should be free to adjust.\n- No precedents — this IS novel (novelty_flag = true).\n- Board load is 0 — operator has bandwidth.\n- We have 3 guards on shift. We can ask one of them to check on the guard who missed the check-in.\n\n**Decision:** Since this is a missed check-in with no prior data, and we have guards available, the best move is to **investigate** — specifically, ask a nearby guard to check on the missing guard. This is a cheap, free question that buys us evidence.\n\nLet me think about the adjustment. The hand-set prior of 0.3 for missed check-ins... with n=0, this is just an assumption. Given that we have guards available and the operator is free, I'll adjust slightly upward since a missed check-in at 2am is more concerning than during the day — but not too much since it's still E1.\n\nLet me set a modest positive adjustment.",
+  "toolCalls": [
+    {
+      "id": "call_00_3uJzkrzuuIrAmDde8BOP7167",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"investigate\", \"action_id\": \"dispatch_guard_to_zone\", \"prior_adjustment_log_odds\": 0.3, \"adjustment_reasons\": [\"Hand-set prior with n=0 — very weak, free to adjust\", \"Night shift missed check-in is more concerning than daytime\", \"Novel event — no precedents to anchor expectations\"], \"novelty_flag\": true, \"confidence_p_real\": 0.35, \"what_would_change_my_mind\": \"If the guard responds to a radio call or another guard confirms they're okay, this drops to E0/E1 benign. If the guard is unresponsive and another guard finds them missing or in distress, this escalates to E3/E4.\\\"\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2536,
+    "completionTokens": 717,
+    "totalTokens": 3253
+  },
+  "latencyMs": 8435,
+  "model": "deepseek-chat",
+  "costUsd": 0.00037828000000000004
+}

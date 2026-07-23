@@ -1,0 +1,29 @@
+{
+  "text": "",
+  "toolCalls": [
+    {
+      "id": "call_00_1fMe8fnha7qeV0RmIfLA3924",
+      "type": "function",
+      "function": {
+        "name": "get_active_rules",
+        "arguments": "{}"
+      }
+    },
+    {
+      "id": "call_01_zotHeELTMNwppUseZIZ50437",
+      "type": "function",
+      "function": {
+        "name": "get_available_guards",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2203,
+    "completionTokens": 433,
+    "totalTokens": 2636
+  },
+  "latencyMs": 5073,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0019675
+}

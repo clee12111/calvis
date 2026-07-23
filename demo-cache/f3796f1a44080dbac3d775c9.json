@@ -1,0 +1,21 @@
+{
+  "text": "",
+  "toolCalls": [
+    {
+      "id": "call_00_guOJlaSiP0kbbioFFkmA1032",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"commit\", \"action_id\": \"dispatch_armed_guard\", \"prior_adjustment_log_odds\": -0.3, \"adjustment_reasons\": [\"Hand-set prior with n=0 carries no data weight — weak starting point\", \"Raw data shows 'background:true' suggesting secondary/non-critical door\", \"Zero precedents at this site — no evidence to support the default prior\"], \"novelty_flag\": true, \"confidence_p_real\": 0.5, \"what_would_change_my_mind\": \"If guard arrives on scene and reports the door is intact and secured (no forced entry visible), I would downgrade to E1/E0. If video analytics or nearby sensors corroborate an intruder (motion after the door event), I would escalate toward E4.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2912,
+    "completionTokens": 1441,
+    "totalTokens": 4353
+  },
+  "latencyMs": 18108,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.004338
+}

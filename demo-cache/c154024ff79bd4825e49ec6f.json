@@ -1,0 +1,21 @@
+{
+  "text": "Now let me gather the board load info too.",
+  "toolCalls": [
+    {
+      "id": "call_00_7uVpYvmTjtaogzzq3zE10569",
+      "type": "function",
+      "function": {
+        "name": "get_board_load",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2450,
+    "completionTokens": 1486,
+    "totalTokens": 3936
+  },
+  "latencyMs": 17128,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.004197
+}

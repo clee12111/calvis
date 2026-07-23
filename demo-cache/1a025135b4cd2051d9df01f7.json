@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze this carefully.\n\n**Incident Summary:**\n- Site: site-000, zone 0-0\n- Event: **missed_check_in** (guard didn't check in)\n- Evidence level: E1 (something happened, intent unknown)\n- 5 questions asked, 5 answered — so we've already done some investigation\n- 5 evidence items collected\n\n**Prior:** P(real) = 0.3, but n=0 — this is a hand-set assumption with zero observations behind it. Very weak prior.\n\n**Precedents:** Zero precedents. This is a **novel** combination for this site.\n\n**Board load:** 0 items/10min — operator is free. No flood conditions.\n\n**Available guards:** 3 guards on shift. Carlos (75% ack, ~5min response), Robert (75% ack, ~3min response), DeShawn (88% ack, ~5min response).\n\n**Analysis:**\n- A missed check-in at E1 with 5 questions already asked. We've done some investigation.\n- The prior is hand-set (n=0), so it's weak. A missed check-in could be:\n  - Guard forgot / distracted (benign)\n  - Guard is in trouble (real threat)\n- With 3 guards on site, we could ask one to go check on the guard who missed the check-in.\n- Since we've already asked 5 questions, further investigation might be diminishing returns. Let's consider committing — sending a guard to investigate physically.\n\nGiven:\n- n=0 prior (weak), so I should be willing to adjust\n- Novelty flag = true (no precedents)\n- Board load is low (0 items)\n- We have guards available\n- 5 questions already asked\n\nI think the right move here is to **commit** — send a guard to physically check on the missing guard. A missed check-in with no precedent and a weak prior warrants a physical response, especially since we've already exhausted 5 questions.\n\nLet me adjust the prior slightly upward. The hand-set prior of 0.3 for missed check-ins is reasonable but with n=0 and no precedents, and we've already investigated with 5 questions, I'll nudge it slightly up since a missed check-in that persists after investigation is more concerning.\n\nActually, let me reconsider. The prior is 0.3 (hand-set). With n=0, this is just an assumption. A missed check-in could easily be a guard who forgot. But we've asked 5 questions already — that suggests we've been probing. Let me set a modest positive adjustment.\n\nI'll commit by dispatching a guard to check on the situation.",
+  "toolCalls": [
+    {
+      "id": "call_00_KbQ7d44KwB665D0YRc4o0061",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"commit\", \"action_id\": \"dispatch_guard_check\", \"prior_adjustment_log_odds\": 0.3, \"adjustment_reasons\": [\"Hand-set prior with n=0 is weak — no real data behind it\", \"No precedents at this site — novelty increases uncertainty\", \"5 questions already asked with no resolution — diminishing returns on further investigation\", \"Board load is 0 — operator has capacity to handle this\", \"Guards available on site to physically verify\"], \"novelty_flag\": true, \"confidence_p_real\": 0.45, \"what_would_change_my_mind\": \"If the guard radios in confirming they just forgot, I'd downgrade. If the dispatched guard finds no one at the post, I'd escalate to E3/E4.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2537,
+    "completionTokens": 833,
+    "totalTokens": 3370
+  },
+  "latencyMs": 10436,
+  "model": "deepseek-chat",
+  "costUsd": 0.00041083000000000005
+}

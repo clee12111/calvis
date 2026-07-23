@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze all the gathered context before making a decision.",
+  "toolCalls": [
+    {
+      "id": "call_00_Z6VbrIZ2PzTlLkbvCC7A6847",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"commit\", \"action_id\": \"dispatch_guard_rosa_smith\", \"prior_adjustment_log_odds\": 0.8, \"adjustment_reasons\": [\"Event already classified as E3 (threat to property confirmed)\", \"Zero precedents — novel event with no historical pattern to reference\", \"Weak prior (n=0, hand-set) but door_forced is inherently high-significance\", \"Board load is 0 — operator has full attention available for response\"], \"novelty_flag\": true, \"confidence_p_real\": 0.78, \"what_would_change_my_mind\": \"If a guard reports the door is intact and the sensor flagged a false positive, or if the 'background: true' flag in raw data indicates a scheduled maintenance test rather than an actual forced entry.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2500,
+    "completionTokens": 1532,
+    "totalTokens": 4032
+  },
+  "latencyMs": 18187,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.004314
+}

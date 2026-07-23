@@ -1,0 +1,21 @@
+{
+  "text": "Let me dig into the details of this event.\n\n**Context Summary:**\n- **Site:** site-010, zone-10-1\n- **Event:** geofence_exit (severity 3, source: guard, with `\"background\": true`)\n- **Prior:** P(real)=0.4, **n=0** (hand-set assumption, zero evidence weight)\n- **Precedents:** **None** — this is a novel event type for this site\n- **Board load:** 0 items/10min (operator has bandwidth)\n- **Guards available:** Michael Johnson (armed, 74% ack, ~250s) and Tyler Rodriguez (unarmed, 91% ack, ~166s)\n\n**Key observations:**\n1. `\"background\": true` strongly suggests this is a routine, unattended system/process event — likely a guard's badge leaving the geofenced area during normal shift transition, not an intrusion.\n2. Source is a **guard** — a known, trusted user, not an unknown person.\n3. **n=0** means the 0.4 prior is a blank-slate guess with zero data behind it — I should adjust freely.\n4. **No precedents** — setting novelty flag.\n\nGiven the \"background: true\" flag and guard source, this looks routine. But since it's novel and the prior is weightless, a cheap investigation makes sense before dismissing.",
+  "toolCalls": [
+    {
+      "id": "call_00_iWVsZzl6L2DzKqU9uATt6606",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"investigate\", \"action_id\": \"check_guard_schedule\", \"prior_adjustment_log_odds\": -0.7, \"adjustment_reasons\": [\"'background: true' flag suggests routine/system process, not active intrusion\", \"Guard source = known personnel, reduces likelihood of threat\", \"n=0 prior is a hand-set assumption with no data weight, free to adjust\"], \"novelty_flag\": true, \"confidence_p_real\": 0.25, \"what_would_change_my_mind\": \"If guard schedule shows NO planned exit at this time (unexpected), or if radio check reveals the guard is not accounted for. A guard confirming they're on routine movement would collapse P(real) to near-zero.\\\"\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2507,
+    "completionTokens": 1646,
+    "totalTokens": 4153
+  },
+  "latencyMs": 18515,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0045455
+}

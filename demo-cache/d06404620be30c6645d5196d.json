@@ -1,0 +1,45 @@
+{
+  "text": "Let me gather more context on the priors and precedents.",
+  "toolCalls": [
+    {
+      "id": "call_00_eoMkrlx3zBMoLPWHGQLV0320",
+      "type": "function",
+      "function": {
+        "name": "get_site_prior",
+        "arguments": "{\"event_type\": \"plate_read_unknown\"}"
+      }
+    },
+    {
+      "id": "call_01_Xzpmug0cdit4zuJ23kCB9142",
+      "type": "function",
+      "function": {
+        "name": "get_site_prior",
+        "arguments": "{\"event_type\": \"robot_offline\"}"
+      }
+    },
+    {
+      "id": "call_02_PCUue8av6j8UfzkksTNq1021",
+      "type": "function",
+      "function": {
+        "name": "find_precedent",
+        "arguments": "{\"k\": 5}"
+      }
+    },
+    {
+      "id": "call_03_qwPnim3VVw01UCPcHuaf1262",
+      "type": "function",
+      "function": {
+        "name": "get_board_load",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 1960,
+    "completionTokens": 145,
+    "totalTokens": 2105
+  },
+  "latencyMs": 1837,
+  "model": "deepseek-chat",
+  "costUsd": 0.0001778
+}

@@ -7,6 +7,7 @@ import { correlateEvents } from "../engine/correlator";
 import { scoreAndDecide, scoreIncident, setEventCache, setSiteCache, clearCaches } from "../engine/baseline-scorer";
 import { generateSimOutcomes } from "../engine/outcome-join";
 import { computeAllMetrics, type AllMetrics } from "./metrics";
+import { LoopEngine } from "../loop/loop-engine";
 import type { Incident } from "../db/schema";
 
 export type ArmFn = (seed: number) => Promise<AllMetrics>;
@@ -118,21 +119,310 @@ async function rulesOnlyArm(seed: number): Promise<AllMetrics> {
   return await collectMetrics(events, incidents, startWall);
 }
 
+// --- Scripted-interrogation arm (F0.8 evidence-state loop, zero model calls) ---
+// Named honestly: asks all five system questions in fixed order, then human
+// questions by cost priority. This is precisely the ProQA fixed-script baseline
+// that emergency dispatch has run on for fifty years. F1's agent replaces the
+// fixed script with chosen questioning — same machinery, different decider.
+async function scriptedInterrogationArm(seed: number): Promise<AllMetrics> {
+  const startWall = Date.now();
+  const { events, incidents } = await setupWorld(seed);
+  const guards = await guardRepo.getAll();
+
+  // Run the loop engine
+  const engine = new LoopEngine({ seed, events, incidents, guards });
+  const result = await engine.run();
+
+  // Convert loop decisions to DB decisions for metric computation
+  // Each incident's final committed level becomes the decision
+  for (const incident of incidents) {
+    const state = result.finalStates.get(incident.id);
+    const committedLevel = state?.committedLevel ?? 0;
+
+    // Get confidence from baseline scorer (P(real) from priors)
+    const scoring = await scoreIncident(incident);
+
+    await decisionRepo.insert({
+      id: `dec-${incident.id}`,
+      incidentId: incident.id,
+      inputsJson: JSON.stringify({
+        siteId: incident.siteId,
+        loopMoves: state?.transitions.length ?? 0,
+        evidenceGathered: state?.evidenceGathered.length ?? 0,
+      }),
+      factorsJson: JSON.stringify(
+        state?.transitions.map((t) => ({
+          name: t.move.type,
+          value: t.evidenceLevelAfter,
+          weight: 1,
+        })) ?? []
+      ),
+      chosenTier: committedLevel,
+      confidence: scoring.confidence,
+      autonomyGate: committedLevel <= 2 ? "auto" : "propose",
+      policyVersionHash: "scripted-interrogation-v1",
+      rationaleJson: JSON.stringify({
+        method: "scripted-interrogation",
+        totalMoves: state?.transitions.length ?? 0,
+        evidenceLevel: state?.evidenceLevel ?? 0,
+        hypothesis: state?.hypothesis ?? "unknown",
+      }),
+      timestamp: incident.createdAt,
+      createdAt: incident.createdAt,
+    });
+
+    await incidentRepo.update(incident.id, {
+      priority: scoring.priority,
+      tier: committedLevel,
+      confidence: scoring.confidence,
+    });
+  }
+
+  return await collectMetrics(events, incidents, startWall);
+}
+
 // --- Register all arms ---
 registerArm("rules-only", rulesOnlyArm);
+registerArm("scripted-interrogation", scriptedInterrogationArm);
 registerArm("always-0", constantTierArm(0));
 registerArm("always-2", constantTierArm(2));
 registerArm("always-3", constantTierArm(3));
 registerArm("always-4", constantTierArm(4));
 registerArm("random-uniform", randomUniformArm);
 
-// Stub arms for future phases
-registerArm("agent-no-memory", async (_seed: number) => {
-  throw new Error("agent-no-memory arm is not implemented (F1)");
-});
-registerArm("agent-with-memory", async (_seed: number) => {
-  throw new Error("agent-with-memory arm is not implemented (F2)");
-});
+// --- Agent-fixed-policy arm (F1: LLM agent through LoopEngine, no memory) ---
+// F1.5.1: Routes through LoopEngine via the deciderFn seam so the agent
+// experiences real boardLoad, question timeouts, deadlines, and flood penalty.
+async function agentFixedPolicyArm(seed: number): Promise<AllMetrics> {
+  const { createProvider, getRoutingConfig, resetRunCost } = await import("../llm/index");
+
+  let provider: import("../llm/provider").LLMProvider;
+  try {
+    provider = createProvider();
+  } catch {
+    throw new Error("agent-fixed-policy requires an LLM API key. Set DEEPSEEK_API_KEY, OPENAI_API_KEY, or ANTHROPIC_API_KEY.");
+  }
+
+  const routing = getRoutingConfig();
+  resetRunCost(routing.maxUsdPerRun);
+  const startWall = Date.now();
+  const { events, incidents } = await setupWorld(seed);
+  const guards = await guardRepo.getAll();
+
+  const { agentChooseNextMove } = await import("../loop/agent-decider");
+  const rng = seedrandom(`agent-audit-${seed}`);
+
+  const agentConfig: import("../loop/agent-decider").AgentConfig = {
+    provider,
+    fastModel: routing.fastModel,
+    strongModel: routing.strongModel,
+    escalateBandLow: routing.escalateBandLow,
+    escalateBandHigh: routing.escalateBandHigh,
+    auditFraction: 0.05,
+    policyVersion: "agent-fixed-policy-v2",
+    rng: () => rng(),
+  };
+
+  // Build event map for tool context
+  const eventById = new Map(events.map((e) => [e.id, e]));
+  const eventsByIncident = new Map<string, import("../engine/scenarios").SimEvent[]>();
+  for (const incident of incidents) {
+    const eventIds: string[] = JSON.parse(incident.eventIds);
+    eventsByIncident.set(
+      incident.id,
+      eventIds.map((id) => eventById.get(id)).filter((e): e is import("../engine/scenarios").SimEvent => !!e)
+    );
+  }
+
+  let totalLlmCalls = 0;
+  let totalLlmCostUsd = 0;
+
+  // The agent decider — called by LoopEngine on each tick for each incident
+  const agentDecider = async (state: import("../loop/types").WorkingState, boardLoad: number) => {
+    const incEvents = eventsByIncident.get(state.incidentId) ?? [];
+    const toolCtx: import("../loop/agent-tools").ToolContext = {
+      events: incEvents,
+      siteId: incEvents[0]?.siteId ?? "",
+      zoneId: incEvents[0]?.zoneId ?? null,
+      boardLoad,  // REAL board load from LoopEngine, not hardcoded 0
+      guards,
+      simTime: 0,
+    };
+    const decision = await agentChooseNextMove(state, toolCtx, agentConfig);
+    totalLlmCalls += decision.llmCalls;
+    totalLlmCostUsd += decision.llmCostUsd;
+    return decision.move;
+  };
+
+  // Route through LoopEngine — agent experiences real boardLoad, timeouts, flood
+  const engine = new LoopEngine({ seed, events, incidents, guards, deciderFn: agentDecider });
+  const result = await engine.run();
+
+  // Convert loop decisions to DB decisions for metric computation
+  for (const incident of incidents) {
+    const state = result.finalStates.get(incident.id);
+    const committedLevel = state?.committedLevel ?? 0;
+    const scoring = await scoreIncident(incident);
+
+    await decisionRepo.insert({
+      id: `dec-${incident.id}`,
+      incidentId: incident.id,
+      inputsJson: JSON.stringify({
+        siteId: incident.siteId,
+        loopMoves: state?.transitions.length ?? 0,
+        evidenceGathered: state?.evidenceGathered.length ?? 0,
+      }),
+      factorsJson: JSON.stringify(
+        state?.transitions.map((t) => ({
+          name: t.move.type,
+          value: t.evidenceLevelAfter,
+          weight: 1,
+        })) ?? []
+      ),
+      chosenTier: committedLevel,
+      confidence: scoring.confidence,
+      autonomyGate: committedLevel <= 2 ? "auto" : "propose",
+      policyVersionHash: "agent-fixed-policy-v2",
+      rationaleJson: JSON.stringify({
+        method: "agent-fixed-policy",
+        totalMoves: state?.transitions.length ?? 0,
+        evidenceLevel: state?.evidenceLevel ?? 0,
+        llmCalls: totalLlmCalls,
+        llmCostUsd: totalLlmCostUsd,
+      }),
+      timestamp: incident.createdAt,
+      createdAt: incident.createdAt,
+    });
+
+    await incidentRepo.update(incident.id, {
+      priority: scoring.priority,
+      tier: committedLevel,
+      confidence: scoring.confidence,
+    });
+  }
+
+  const metrics = await collectMetrics(events, incidents, startWall);
+  metrics.llmCalls = totalLlmCalls;
+  metrics.llmCostUsd = totalLlmCostUsd;
+  return metrics;
+}
+
+registerArm("agent-fixed-policy", agentFixedPolicyArm);
+
+// --- Agent-with-memory arm (F2: scripted interrogation + learned priors + episodic memory) ---
+// Uses the same LoopEngine as scripted-interrogation but with learned Beta priors
+// feeding into the confidence computation. No LLM calls — tests whether learning helps.
+async function agentWithMemoryArm(seed: number): Promise<AllMetrics> {
+  const { getLearnedPriorStore } = await import("../loop/learned-priors");
+  const { getEpisodicMemory } = await import("../loop/episodic-memory");
+  const { getTrueEvidenceLevel } = await import("../engine/scenarios");
+
+  const startWall = Date.now();
+  const { events, incidents } = await setupWorld(seed);
+  const guards = await guardRepo.getAll();
+
+  // Run the loop engine with rules decider (same as scripted)
+  const engine = new LoopEngine({ seed, events, incidents, guards });
+  const result = await engine.run();
+
+  const priorStore = getLearnedPriorStore();
+  const memory = getEpisodicMemory();
+  const eventById = new Map(events.map((e) => [e.id, e]));
+
+  for (const incident of incidents) {
+    const state = result.finalStates.get(incident.id);
+    const committedLevel = state?.committedLevel ?? 0;
+
+    // Use learned priors to adjust confidence
+    const eventIds: string[] = JSON.parse(incident.eventIds);
+    const incEvents = eventIds
+      .map((id) => eventById.get(id))
+      .filter((e): e is import("../engine/scenarios").SimEvent => !!e);
+    const eventTypes = [...new Set(incEvents.map((e) => e.type))];
+
+    // Compute confidence using learned priors
+    let pAllFalse = 1.0;
+    for (const et of eventTypes) {
+      const priorResult = priorStore.getPrior({
+        eventType: et,
+        siteId: incident.siteId,
+        zoneId: incident.zoneId ?? null,
+        simTimeMs: incident.createdAt,
+      });
+      pAllFalse *= (1 - priorResult.pReal);
+    }
+    const learnedConfidence = Math.max(0.01, Math.min(0.99, 1 - pAllFalse));
+
+    // Ground truth for outcome recording
+    const trueLevel = getTrueEvidenceLevel(incEvents);
+    const wasReal = trueLevel > 0;
+
+    // Update learned priors with outcome
+    for (const et of eventTypes) {
+      priorStore.update({
+        eventType: et,
+        siteId: incident.siteId,
+        zoneId: incident.zoneId ?? null,
+        simTimeMs: incident.createdAt,
+        wasReal,
+      });
+    }
+
+    // Record in episodic memory
+    memory.record({
+      incidentId: incident.id,
+      siteId: incident.siteId,
+      zoneId: incident.zoneId ?? null,
+      eventTypes,
+      chosenTier: committedLevel,
+      trueLevel,
+      wasReal,
+      nightIndex: seed,
+      timestamp: incident.createdAt,
+    });
+
+    // Persist decision with learned confidence
+    const scoring = await scoreIncident(incident);
+    await decisionRepo.insert({
+      id: `dec-${incident.id}`,
+      incidentId: incident.id,
+      inputsJson: JSON.stringify({
+        siteId: incident.siteId,
+        loopMoves: state?.transitions.length ?? 0,
+      }),
+      factorsJson: JSON.stringify(
+        state?.transitions.map((t) => ({
+          name: t.move.type,
+          value: t.evidenceLevelAfter,
+          weight: 1,
+        })) ?? []
+      ),
+      chosenTier: committedLevel,
+      confidence: learnedConfidence,
+      autonomyGate: committedLevel <= 2 ? "auto" : "propose",
+      policyVersionHash: "agent-with-memory-v1",
+      rationaleJson: JSON.stringify({
+        method: "agent-with-memory",
+        totalMoves: state?.transitions.length ?? 0,
+        evidenceLevel: state?.evidenceLevel ?? 0,
+        learnedConfidence,
+        baselineConfidence: scoring.confidence,
+      }),
+      timestamp: incident.createdAt,
+      createdAt: incident.createdAt,
+    });
+
+    await incidentRepo.update(incident.id, {
+      priority: scoring.priority,
+      tier: committedLevel,
+      confidence: learnedConfidence,
+    });
+  }
+
+  return await collectMetrics(events, incidents, startWall);
+}
+
+registerArm("agent-with-memory", agentWithMemoryArm);
 
 // --- Multi-run support ---
 export interface RunResult {
@@ -323,8 +613,13 @@ export async function runAllArmsCompared(
   };
 
   // Run all other arms on the same seeds
+  // F1.5.6: include agent arms in paired comparison (was previously excluded)
+  // agent-with-memory excluded from paired comparison: it requires persistent
+  // learned state across runs, which runAllArmsCompared doesn't support (each
+  // seed resets DB). Use scripts/learn.ts for the learning curve instead.
+  const excludeFromPaired = new Set(["agent-with-memory"]);
   const otherArms = listArms().filter(
-    (a) => a !== baselineArm && !a.startsWith("agent-")
+    (a) => a !== baselineArm && !excludeFromPaired.has(a)
   );
   const comparisons: PairedResult[] = [];
 

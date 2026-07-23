@@ -1,0 +1,29 @@
+{
+  "text": "I'll start by gathering all the context I need. Let me pull the incident details, site priors, precedents, and board load.",
+  "toolCalls": [
+    {
+      "id": "call_00_2gjtYqP4FS02TM0HJGkR6158",
+      "type": "function",
+      "function": {
+        "name": "get_incident_context",
+        "arguments": "{}"
+      }
+    },
+    {
+      "id": "call_01_uaNCQjS8U2VytOnWM2Sa5866",
+      "type": "function",
+      "function": {
+        "name": "get_board_load",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 1785,
+    "completionTokens": 86,
+    "totalTokens": 1871
+  },
+  "latencyMs": 1596,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0010645
+}

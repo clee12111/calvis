@@ -1,0 +1,21 @@
+{
+  "text": "",
+  "toolCalls": [
+    {
+      "id": "call_00_l57GjnNrI6SPXnji9XEN7714",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"defer\", \"action_id\": \"recheck_5min\", \"prior_adjustment_log_odds\": -0.5, \"adjustment_reasons\": [\"Guard source event (authorized personnel) is less likely to be threatening\", \"Background flag suggests routine/system event, not emergency\", \"Weak prior (n=0) allows moderate downward adjustment\"], \"novelty_flag\": true, \"confidence_p_real\": 0.3, \"what_would_change_my_mind\": \"If the guard does not return to the zone within 5 minutes, or additional events/escalation occur at this zone, I would escalate to investigate or commit. Also if communication with the guard fails.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2548,
+    "completionTokens": 1715,
+    "totalTokens": 4263
+  },
+  "latencyMs": 19747,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.004704
+}

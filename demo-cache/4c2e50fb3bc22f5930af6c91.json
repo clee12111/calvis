@@ -1,0 +1,21 @@
+{
+  "text": "Let me gather the full picture before deciding.",
+  "toolCalls": [
+    {
+      "id": "call_00_g1MSeo3s0whW4QzeELiE3831",
+      "type": "function",
+      "function": {
+        "name": "get_incident_context",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2547,
+    "completionTokens": 1367,
+    "totalTokens": 3914
+  },
+  "latencyMs": 17824,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0040075
+}

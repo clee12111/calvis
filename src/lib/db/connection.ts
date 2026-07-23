@@ -3,8 +3,14 @@ import { drizzle } from "drizzle-orm/pglite";
 import { sql } from "drizzle-orm";
 import * as schema from "./schema";
 
-let _db: ReturnType<typeof drizzle> | null = null;
-let _pglite: PGlite | null = null;
+// Use globalThis to persist DB across Next.js hot reloads and API route contexts
+const globalDb = globalThis as unknown as {
+  __calvisDb?: ReturnType<typeof drizzle>;
+  __calvisPglite?: PGlite;
+};
+
+let _db: ReturnType<typeof drizzle> | null = globalDb.__calvisDb ?? null;
+let _pglite: PGlite | null = globalDb.__calvisPglite ?? null;
 
 const CREATE_TABLES_SQL = `
   CREATE TABLE IF NOT EXISTS sites (
@@ -114,14 +120,19 @@ async function createPgliteDb(): Promise<ReturnType<typeof drizzle>> {
   const pglite = new PGlite();
   await pglite.waitReady;
   _pglite = pglite;
-  const db = drizzle(pglite, { schema });
+  globalDb.__calvisPglite = pglite;
+  const db = (drizzle as any)(pglite, { schema });
   _db = db;
+  globalDb.__calvisDb = db;
   return db;
 }
 
 export async function getDb(): Promise<ReturnType<typeof drizzle>> {
   if (!_db) {
-    return createPgliteDb();
+    const db = await createPgliteDb();
+    // Auto-create tables on first access
+    await execCreateTables(db);
+    return db;
   }
   return _db;
 }

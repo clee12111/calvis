@@ -2,13 +2,18 @@
  * Trace cache for DEMO=1 mode.
  * Keyed on: policy version + model + prompt hash + incident hash.
  * DEMO=1 reads only; errors loudly on a cache miss.
+ *
+ * Search order:
+ *   1. demo-cache/ (committed, for deployed demos)
+ *   2. data/trace-cache/ (local, gitignored, for dev)
  */
 import crypto from "crypto";
 import fs from "fs";
 import path from "path";
 import type { LLMResponse, ChatMessage, ToolSchema } from "./provider";
 
-const CACHE_DIR = path.resolve(process.cwd(), "data", "trace-cache");
+const DEMO_CACHE_DIR = path.resolve(process.cwd(), "demo-cache");
+const DEV_CACHE_DIR = path.resolve(process.cwd(), "data", "trace-cache");
 
 function computeKey(params: {
   policyVersion: string;
@@ -31,9 +36,20 @@ export function getCachedTrace(params: {
   tools?: ToolSchema[];
 }): LLMResponse | null {
   const key = computeKey(params);
-  const file = path.join(CACHE_DIR, `${key}.json`);
-  if (!fs.existsSync(file)) return null;
-  return JSON.parse(fs.readFileSync(file, "utf-8"));
+
+  // Check committed demo cache first
+  const demoFile = path.join(DEMO_CACHE_DIR, `${key}.json`);
+  if (fs.existsSync(demoFile)) {
+    return JSON.parse(fs.readFileSync(demoFile, "utf-8"));
+  }
+
+  // Fall back to dev cache
+  const devFile = path.join(DEV_CACHE_DIR, `${key}.json`);
+  if (fs.existsSync(devFile)) {
+    return JSON.parse(fs.readFileSync(devFile, "utf-8"));
+  }
+
+  return null;
 }
 
 export function setCachedTrace(params: {
@@ -43,8 +59,9 @@ export function setCachedTrace(params: {
   tools?: ToolSchema[];
 }, response: LLMResponse): void {
   const key = computeKey(params);
-  fs.mkdirSync(CACHE_DIR, { recursive: true });
-  const file = path.join(CACHE_DIR, `${key}.json`);
+  // Write to dev cache (not committed)
+  fs.mkdirSync(DEV_CACHE_DIR, { recursive: true });
+  const file = path.join(DEV_CACHE_DIR, `${key}.json`);
   fs.writeFileSync(file, JSON.stringify(response, null, 2));
 }
 

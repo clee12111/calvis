@@ -1,0 +1,53 @@
+{
+  "text": "Good, I have the context. A panic button activation from a guard at site-006. Let me gather more intelligence before deciding.",
+  "toolCalls": [
+    {
+      "id": "call_00_sqXfI28cADxOvBayrgEY0606",
+      "type": "function",
+      "function": {
+        "name": "get_site_prior",
+        "arguments": "{\"event_type\": \"panic_button\"}"
+      }
+    },
+    {
+      "id": "call_01_mUFussmfA5KP5X1ZS0om6208",
+      "type": "function",
+      "function": {
+        "name": "find_precedent",
+        "arguments": "{\"k\": 5}"
+      }
+    },
+    {
+      "id": "call_02_TT6LCYfrDttuETQyEr288717",
+      "type": "function",
+      "function": {
+        "name": "get_active_rules",
+        "arguments": "{}"
+      }
+    },
+    {
+      "id": "call_03_q1lpMgkKmQU0iCdtKz7y5787",
+      "type": "function",
+      "function": {
+        "name": "get_available_guards",
+        "arguments": "{}"
+      }
+    },
+    {
+      "id": "call_04_VGoiA7pFlrCzdIqTC7GT5945",
+      "type": "function",
+      "function": {
+        "name": "get_board_load",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 1910,
+    "completionTokens": 311,
+    "totalTokens": 2221
+  },
+  "latencyMs": 3260,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.001577
+}

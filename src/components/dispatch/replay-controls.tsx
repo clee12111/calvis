@@ -63,7 +63,7 @@ export function ReplayControls({
 
       {/* Speed buttons */}
       <div className="flex items-center gap-1">
-        {[1, 10, 100].map((s) => (
+        {[1, 10, 100, 1000].map((s) => (
           <button
             key={s}
             onClick={() => onSpeedChange(s)}

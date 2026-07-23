@@ -6,6 +6,98 @@ where they conflict with the advisor's; reconcile at the next commit.
 
 ---
 
+## 2026-07-22 — F2 the feedback loop (engineer)
+
+### D-035 · Learning operates on P(real) but decisions are driven by evidence level
+**Decision:** The learning curve is a negative result. Beta priors improve Brier score (0.072 → 0.054) but do not reduce operational cost ($2,221 → $2,221) because the cost-driving tier is determined by `assessInitialEvidence` from event types, not from P(real).
+**Why:** The evidence-state loop was designed in F0.8 to be deterministic from event types. P(real) feeds into confidence scoring and the agent's prior-adjustment mechanism, but the scripted decider commits at the evidence level, not at a P(real)-derived tier. This is a structural gap between the learning target (P(real)) and the decision target (evidence level).
+**Precludes:** Claiming learning reduces cost without also changing the evidence-level assessment to be prior-sensitive. Deliberate cut: evidence-level learning goes in writeup as F3 future work.
+
+### D-036 · Overrides update priors with weight=1 (same as ground truth)
+**Decision:** Operator overrides are treated as a single observation (α+1 or β+1), same weight as simulated ground truth. No separate weighting.
+**Why:** The operator's judgment is one data point. Weighting it higher than ground truth would give a single override disproportionate influence on a prior backed by 50+ observations. Weighting it lower would make the feedback loop invisible. Equal weight is the simplest honest choice; differential weighting is F3.
+**Precludes:** Nothing — the weight can be tuned later.
+
+### D-037 · agent-with-memory uses scripted decider, not LLM agent
+**Decision:** The agent-with-memory arm uses the scripted-interrogation decider (zero LLM calls) with learned priors feeding into confidence computation. This isolates the learning signal from the LLM agent's behavior.
+**Why:** The ~9,000 cached traces were generated with the F1 tool schema (no find_precedent). Reinstating find_precedent changes the tool schema, which changes the cache keys, causing cache misses. Running the learning curve through the LLM would require regenerating ~250K traces across 40 seeds at ~$16 API cost. The scripted decider tests whether learning ITSELF helps, independent of the LLM.
+**Precludes:** Testing whether learned priors improve LLM agent decisions specifically. That's a valid future experiment.
+
+---
+
+## 2026-07-22 — F4.6 the console shows the agent (engineer)
+
+### D-031 · Sim route runs all three arms at startup
+**Decision:** /api/sim action=start runs LoopEngine three times: rules-only (baseline scorer), scripted-interrogation (LoopEngine + rules decider), and agent (LoopEngine + agent decider via trace cache). Results stored per-arm in memory. Switching arms swaps the incident cache instantly.
+**Why:** Running all arms at startup (3.7s total) makes arm switching instant instead of requiring a 30-60s re-computation. The user can compare the same night under different arms without waiting.
+**Precludes:** Dynamic arm addition at runtime. All arms must be precomputed at start.
+
+### D-032 · Progressive reveal replaces batch dump
+**Decision:** Incidents appear in the queue as the sim clock passes their createdAt timestamp. Precomputed decisions are revealed progressively, not dumped on start.
+**Why:** "watches that stream" is the brief's first verb. A console displaying a completed night is a report, not a dispatch tool. Full live correlation proved too costly (D-029), so progressive reveal of precomputed decisions is the stated compromise.
+**Precludes:** True live correlation/scoring during replay.
+
+### D-033 · Override incoherence validation
+**Decision:** POST /api/override rejects incoherent overrides: false-alarm reason paired with an escalation, real-threat reason paired with a de-escalation. Pattern matching on reason text.
+**Why:** Overrides are F2's training signal. Garbage overrides poison the learning loop before it exists. Better to reject at the API boundary than clean up later.
+**Precludes:** Overrides with false-alarm language that genuinely accompany an escalation (e.g., "investigating whether this false alarm pattern is a deliberate test" — would need to word differently). Acceptable constraint for data quality.
+
+### D-034 · Agent trace includes engineer-facing data
+**Decision:** The AgentTrace type carries both ops data (tool calls, prior/adjustment/P(real), evidence level, what-would-change) and engineer data (model tier + reason, tokens, latency, cost, policy version, cache key + hit/miss). One object, two views, one click apart.
+**Why:** "Should be inspectable" serves two audiences. The ops manager needs reasoning; the engineer needs machinery. Same decision record, different rendering, no second API call.
+**Precludes:** Nothing — the trace type is additive.
+
+---
+
+## 2026-07-21 — F4.5 console fix (engineer)
+
+### D-029 · Batch sim mode replaces broken realtime correlation
+**Decision:** The sim route processes all events in batch (ingest→correlate→score) before starting the replay clock. The old realtime tick-by-tick correlation produced only 1 incident because the async correlator was too slow for the 100ms tick interval.
+**Why:** In-memory PGlite + async correlator + realtime tick guard = most ticks skipped. Batch mode gives eval-quality correlation (273 incidents) and instant queue population.
+**Precludes:** True realtime event-by-event processing in the UI. Events appear pre-correlated. The clock still runs for time display and replay controls.
+
+### D-030 · PGlite shared via globalThis for Next.js route isolation
+**Decision:** The PGlite/Drizzle singleton is stored on `globalThis` so it persists across Next.js API route hot reloads and module re-evaluations. `getDb()` auto-creates tables if they don't exist.
+**Why:** Next.js Turbopack can re-evaluate module state across routes, losing the in-memory DB. `globalThis` is the standard Next.js pattern for dev-mode singleton persistence.
+**Precludes:** Nothing — production would use Neon (persistent) so this is dev-only.
+
+---
+
+## 2026-07-21 — F0.9 + F1 (engineer)
+
+### D-022 · Scripted-interrogation is the correct control arm name
+**Decision:** Rename rules-loop → scripted-interrogation. The arm asks all five system questions in fixed order, then human questions by cost priority. This is precisely the ProQA/MPDS fixed-script baseline that emergency dispatch has run on for fifty years.
+**Why:** Naming it honestly turns the confessed weakness (isRelevantSystemQuestion always returns true) into the correct description: a fixed interrogation protocol. The F1 comparison becomes exactly "scripted questioning vs. chosen questioning" — which is what dispatch research actually studies.
+**Precludes:** Claiming the scripted arm is a novel contribution. It's a known baseline, and that's its value as a control.
+
+### D-023 · Agent seam is the decider function
+**Decision:** F1 injects its decider via `deciderFn` parameter in LoopEngine constructor. The loop engine changes were: async run/tick (to support LLM calls), injectable decider, LLM cost tracking. No logic changes. 3 property additions.
+**Why:** The prompt said "if you find yourself changing the loop engine, stop and report." The seam was in the right place — the agent replaces `chooseNextMove` and nothing else.
+**Precludes:** Agent-specific logic in the loop engine. All agent intelligence lives in `agent-decider.ts` and `agent-tools.ts`.
+
+### ~~D-024~~ · ~~Agent arm requires live LLM~~ → **superseded: agent ran live, see D-025**
+
+### D-025 · Agent beats scripted-interrogation on 1 seed: $1,140 vs $2,453 (−$1,313)
+**Decision:** Accept the 1-seed result as a promising signal, not as evidence. The agent reduces misses (6 vs 17) by being more cautious about suppression — it surfaces E1 incidents the script would suppress, catching real incidents the script misses. The cost: 126 over-responses (vs 16) and worse Brier calibration (0.22 vs 0.11). LLM cost: $0.39/night on deepseek-chat.
+**Why:** The gain comes from the agent's judgment about which low-evidence incidents are worth surfacing. The script suppresses all E0 and most E1 uniformly. The agent considers the specific event types and context to decide which E1s are worth the operator's attention. This is exactly what "chosen questioning vs scripted questioning" was supposed to test.
+**Precludes:** Claiming the agent wins without N≥10 bootstrap CIs. One seed is suggestive, not conclusive. Also precludes claiming the gain is from memory — no memory exists. The gain is from selective attention, which is the agent's core competence even without learning.
+
+---
+
+## 2026-07-21 — F0.8 loop machinery (engineer)
+
+### D-020 · Initial evidence assessment from event signals, not ground truth
+**Decision:** Each incident's initial evidence level is assessed from observable event types and severity, never from ground truth. `panic_button` → E4, `door_forced` → E3, `no_show_at_shift_start` → E2, multiple moderate signals → E1, low-severity sensor noise → E0. The function `assessInitialEvidence()` uses only the event types and severity that would be visible to an operator.
+**Why:** Without initial evidence assessment, all incidents start at E0 and the system questions rarely change evidence level (they check delivery schedules and plate allowlists, not severity). The decider needs a starting point to decide whether to ask human questions (E1-E2 range) or commit immediately (E3+).
+**Precludes:** Starting every incident at E0 and relying entirely on investigation to establish evidence. The initial assessment is the "what the sensors tell us" phase; investigation is "what we learn by asking."
+
+### D-021 · Rules-loop beats rules-only: evidence-state loop validates the mechanism
+**Decision:** Accept the scripted-interrogation result. $2,483 vs $5,495 (−$3,012, CI [−$6,060, −$336]). The mechanism is: the loop suppresses most incidents (252 at E0) while correctly escalating real threats, eliminating the baseline's over-response cost ($233 vs $1,180 response cost) at the cost of higher miss count (17.7 vs 3.2). The tradeoff favors the loop because over-response harm was the dominant cost.
+**Why:** The one-shot baseline responds to every incident based on Bayes-optimal tier from priors, which over-responds to 252 incidents. The loop asks free system questions first (delivery schedule, plate allowlist), then asks human questions for ambiguous incidents (E1-E2), and suppresses the rest. This is what "cheap verification dominates heuristic triage" looks like — and it's the headroom F1's agent will operate in.
+**Precludes:** Claiming the one-shot scorer is the strongest rules-only baseline. The loop is now the control arm for F1. The agent's job in F1 is to choose which question to ask (replacing `chooseNextMove`), not whether to ask one.
+
+---
+
 ## 2026-07-21 — F0.6.5 cost model repair (engineer)
 
 ### D-019 · Convex harm, operator attention, and flood penalty — cost model v2

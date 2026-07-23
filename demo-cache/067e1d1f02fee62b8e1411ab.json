@@ -1,0 +1,21 @@
+{
+  "text": "",
+  "toolCalls": [
+    {
+      "id": "call_00_ACjkpmCZw2A1vkBQxqND1989",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"commit\", \"action_id\": \"dispatch_guard\", \"prior_adjustment_log_odds\": 0.3, \"adjustment_reasons\": [\"E3 confirmed threat level warrants response\", \"Novel incident - no precedent history to reduce confidence\", \"Board load is 0 - operator has bandwidth to handle this\"], \"novelty_flag\": true, \"confidence_p_real\": 0.67, \"what_would_change_my_mind\": \"If guard reports back that the door is intact and the sensor was a malfunction, I'd reassess to E0-E1 and log as false alarm. If security footage shows an actual forced entry, would escalate to E4 and involve law enforcement via operator confirmation.\\\"\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2500,
+    "completionTokens": 1134,
+    "totalTokens": 3634
+  },
+  "latencyMs": 14251,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.003518
+}

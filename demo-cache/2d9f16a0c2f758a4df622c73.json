@@ -1,0 +1,45 @@
+{
+  "text": "Interesting. So the incident is about a \"plate_read_unknown\" event that was resolved by a client message saying \"That's our CEO's rental car, disregard.\" Let me gather more context.",
+  "toolCalls": [
+    {
+      "id": "call_00_rPNgDTWbYpQwgDj4sz2j6327",
+      "type": "function",
+      "function": {
+        "name": "get_site_prior",
+        "arguments": "{\"event_type\": \"client_inbound_message\"}"
+      }
+    },
+    {
+      "id": "call_01_yzSh5NXDKdS98NRQXuhu3757",
+      "type": "function",
+      "function": {
+        "name": "find_precedent",
+        "arguments": "{\"k\": 5}"
+      }
+    },
+    {
+      "id": "call_02_ZJwCDVEz4ZfXdY9xaMc80672",
+      "type": "function",
+      "function": {
+        "name": "get_board_load",
+        "arguments": "{}"
+      }
+    },
+    {
+      "id": "call_03_gQSzFQTma2xApUcPPf1w9114",
+      "type": "function",
+      "function": {
+        "name": "get_active_rules",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 1924,
+    "completionTokens": 151,
+    "totalTokens": 2075
+  },
+  "latencyMs": 1901,
+  "model": "deepseek-chat",
+  "costUsd": 0.00017696
+}

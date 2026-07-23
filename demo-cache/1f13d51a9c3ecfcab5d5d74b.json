@@ -1,0 +1,21 @@
+{
+  "text": "Let me gather the remaining useful context before making a decision.",
+  "toolCalls": [
+    {
+      "id": "call_00_LsUE9g2f6e32IeJCKGDB4261",
+      "type": "function",
+      "function": {
+        "name": "get_available_guards",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2378,
+    "completionTokens": 1009,
+    "totalTokens": 3387
+  },
+  "latencyMs": 12775,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.003207
+}

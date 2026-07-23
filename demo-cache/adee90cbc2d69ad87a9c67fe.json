@@ -1,0 +1,21 @@
+{
+  "text": "",
+  "toolCalls": [
+    {
+      "id": "call_00_G2FYsyy9Ie4cSl1AoU6Q9532",
+      "type": "function",
+      "function": {
+        "name": "get_board_load",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2307,
+    "completionTokens": 28,
+    "totalTokens": 2335
+  },
+  "latencyMs": 1144,
+  "model": "deepseek-chat",
+  "costUsd": 0.00016933
+}

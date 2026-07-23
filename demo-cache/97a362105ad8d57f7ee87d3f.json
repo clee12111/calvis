@@ -1,0 +1,29 @@
+{
+  "text": "Let me start gathering context to make a well-informed decision.",
+  "toolCalls": [
+    {
+      "id": "call_00_SELI6esCQEOBjh8UXyus2138",
+      "type": "function",
+      "function": {
+        "name": "get_incident_context",
+        "arguments": "{}"
+      }
+    },
+    {
+      "id": "call_01_N2grvpu36sJfy6ZgItE04009",
+      "type": "function",
+      "function": {
+        "name": "get_board_load",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 1785,
+    "completionTokens": 115,
+    "totalTokens": 1900
+  },
+  "latencyMs": 1948,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0011225
+}

@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze what I've gathered:\n\n**Incident Context:**\n- Site: site-000, Zone: zone-0-1\n- Event: `robot_motion_anomaly` — a robot detected some motion anomaly\n- Severity: 2 (moderate severity within the event type)\n- E0 evidence level (nothing to act on yet)\n- Single event, background data\n\n**Prior:** P(real) = 0.10, but n=0 — this is a hand-set assumption with zero observations behind it. Very weak prior.\n\n**Precedents:** Zero precedents. This is a **novel** event-type/site combination.\n\n**Board Load:** 0 items/10min — operator is not busy at all. No flood conditions.\n\n**Available Guards:** 3 guards on shift, all with reasonable ack rates (75-88%).\n\n**Analysis:**\n- E0 means nothing to act on yet — this is the lowest evidence level.\n- The prior is a hand-set 0.10 with n=0, meaning it's a guess, not learned.\n- No precedents exist — this is genuinely novel.\n- Board load is 0 — operator has bandwidth.\n- The event is a robot motion anomaly — could be a robot seeing something, or could be a sensor glitch.\n\nSince this is E0 (nothing to act on), the standard play is to **investigate** — ask a cheap question to gather more evidence. The operator isn't overloaded, so surfacing a low-cost question is fine. Given the novelty (no precedents), we should be curious but not alarmed.\n\nLet me ask a system-level question — something that costs the operator minimal attention but buys us information.\n\nI'll investigate by asking the robot system for more detail on the anomaly.",
+  "toolCalls": [
+    {
+      "id": "call_00_V5ebztS8vZVFzkXrwD5F8407",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"investigate\", \"action_id\": \"query_robot_detail\", \"prior_adjustment_log_odds\": 0.0, \"adjustment_reasons\": [\"n=0 hand-set prior — no weight to adjust from\", \"No precedents exist — novel event\", \"E0 — nothing to act on yet, gather more info\"], \"novelty_flag\": true, \"confidence_p_real\": 0.1, \"what_would_change_my_mind\": \"If the robot system reports a confirmed human-shaped heat signature or movement pattern, that would raise this to E2+ and warrant committing a guard response. If it's a sensor glitch or known false-positive pattern, I'd suppress/defer.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2542,
+    "completionTokens": 626,
+    "totalTokens": 3168
+  },
+  "latencyMs": 7949,
+  "model": "deepseek-chat",
+  "costUsd": 0.00035322
+}

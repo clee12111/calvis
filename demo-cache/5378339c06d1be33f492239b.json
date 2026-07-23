@@ -1,0 +1,21 @@
+{
+  "text": "",
+  "toolCalls": [
+    {
+      "id": "call_00_wiAvhU4lfdsAFY4NFY3S4372",
+      "type": "function",
+      "function": {
+        "name": "get_board_load",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2466,
+    "completionTokens": 996,
+    "totalTokens": 3462
+  },
+  "latencyMs": 10759,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.003225
+}

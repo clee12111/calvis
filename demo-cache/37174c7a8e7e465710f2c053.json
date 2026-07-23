@@ -1,0 +1,53 @@
+{
+  "text": "Let me gather context on this incident.",
+  "toolCalls": [
+    {
+      "id": "call_00_sFGyxgZGRi6hsV5bkITg5823",
+      "type": "function",
+      "function": {
+        "name": "get_site_prior",
+        "arguments": "{\"event_type\": \"plate_read_unknown\"}"
+      }
+    },
+    {
+      "id": "call_01_uknrFcDUAOoQEmrV1DzI8996",
+      "type": "function",
+      "function": {
+        "name": "find_precedent",
+        "arguments": "{\"k\": 5}"
+      }
+    },
+    {
+      "id": "call_02_JQweBRsiRqX7dPAMFjyz2863",
+      "type": "function",
+      "function": {
+        "name": "get_active_rules",
+        "arguments": "{}"
+      }
+    },
+    {
+      "id": "call_03_sPHL3jZGodBNzNnIed8B8480",
+      "type": "function",
+      "function": {
+        "name": "get_available_guards",
+        "arguments": "{}"
+      }
+    },
+    {
+      "id": "call_04_duF3S5ElaXAxovkVjmh78543",
+      "type": "function",
+      "function": {
+        "name": "get_board_load",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 1915,
+    "completionTokens": 259,
+    "totalTokens": 2174
+  },
+  "latencyMs": 2780,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0014755
+}

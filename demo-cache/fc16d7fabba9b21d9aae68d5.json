@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze what I've gathered:\n\n**Incident Context:**\n- Site: site-009, zone 9-0\n- Event: `robot_thermal_anomaly` (severity 3, background raw data)\n- Evidence level: E1 (something happened, intent unknown)\n- 5 questions asked, 5 answered, 5 evidence items\n\n**Prior:** P(real) = 0.25, but n=0 — this is a hand-set assumption with zero observations. Very weak prior.\n\n**Precedents:** Zero precedents. This is a **novel** event type at this site.\n\n**Board Load:** 0 items/10min — operator is free. No flood conditions.\n\n**Guards:** Rosa Smith (78% ack, ~4.5min avg response) and Ashley Davis (81% ack, ~4.6min avg response) — both available but unarmed.\n\n**Analysis:**\n- This is a thermal anomaly detected by a robot. Severity 3 (high), but the raw data says \"background\" — could be a sensor glitch, environmental heat source, or something more.\n- n=0 means the prior of 0.25 is a guess, not learned. I should be free to adjust.\n- No precedents at all — truly novel.\n- Board load is zero, so I have room to investigate.\n- The operator has already asked 5 questions and gotten answers. They've been working this.\n\nGiven the novelty (zero precedents), the weak prior (n=0), and the fact that a robot thermal anomaly at severity 3 could be significant, I think the right move is to **investigate** — ask a targeted question to gather more evidence before committing resources. The operator has bandwidth.\n\nLet me think about what question to ask. The raw data says \"background\" — I could ask the robot system for more details on the thermal reading, or ask if there's a patrol schedule that could verify.\n\nActually, let me consider: 5 questions already asked, 5 answered. The operator has been probing. Maybe it's time to commit or defer. But with zero precedents and a hand-set prior... I think one more targeted question is warranted.\n\nLet me go with investigate — ask the robot system for a detailed thermal reading comparison (current vs baseline).",
+  "toolCalls": [
+    {
+      "id": "call_00_ZhKO7Ujfq2lEpiKniPhj0086",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"investigate\", \"action_id\": \"query_robot_thermal_details\", \"prior_adjustment_log_odds\": 0.5, \"adjustment_reasons\": [\"Novel event type at this site — zero precedents to learn from\", \"Hand-set prior with n=0 — weak starting point, not strong evidence\", \"Severity 3 thermal anomaly warrants cautious upward adjustment\", \"Board load is zero — operator has capacity to investigate\"], \"novelty_flag\": true, \"confidence_p_real\": 0.35, \"what_would_change_my_mind\": \"If the robot thermal detail shows a normal baseline reading (equipment glitch), I'd lower confidence. If it shows an anomalous heat signature consistent with a human or fire, I'd escalate to commit with a guard dispatch.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2509,
+    "completionTokens": 756,
+    "totalTokens": 3265
+  },
+  "latencyMs": 9263,
+  "model": "deepseek-chat",
+  "costUsd": 0.0003873100000000001
+}

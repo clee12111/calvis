@@ -1,7 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // PGlite uses WASM that can't be bundled by Turbopack — keep it external
+  serverExternalPackages: ["@electric-sql/pglite"],
 };
 
 export default nextConfig;

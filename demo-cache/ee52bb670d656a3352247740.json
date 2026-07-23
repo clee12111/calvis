@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze what I've gathered:\n\n**Incident Context:**\n- Site: site-005, Zone: zone-5-2\n- Event: `robot_thermal_anomaly` (severity 3, background source)\n- Evidence level: E1 (something happened, intent unknown)\n- 5 questions already asked, 5 evidence items collected\n\n**Prior:** P(real) = 0.25, but n=0 — this is a hand-set assumption with zero observations. Very weak prior.\n\n**Precedents:** Zero precedents. This is a **novel** event type for this site.\n\n**Board Load:** 0 items/10min — operator is free, no flood conditions.\n\n**Available Guards:** 3 guards on shift. Sofia Martinez is armed (82% ack rate). Patricia Williams (89% ack rate) and Natalia Martin (80% ack rate) are unarmed.\n\n**Analysis:**\n- This is a thermal anomaly detected by a robot, background source. Severity 3 (moderate).\n- No precedents at all — truly novel.\n- The prior is hand-set (n=0), so it's a weak starting point. I should be free to adjust.\n- Board load is 0 — operator has bandwidth.\n- 5 questions already asked — we've gathered some evidence.\n\nGiven it's E1 (something happened, intent unknown), it's a thermal anomaly from a robot. This could be a real issue (overheating equipment, fire risk) or a false alarm (robot sensor glitch, environmental heat source). With no precedents and a weak prior, and the operator having bandwidth, I think **investigate** is the right move — ask a cheap question to gather more evidence before committing resources.\n\nLet me think about what question to ask. We could ask the robot for more sensor data, or check if there are other sensors in the zone that corroborate.\n\nActually, let me reconsider. We have 5 evidence items already and 5 questions answered. The event is a single robot thermal anomaly. Let me think about what we know and what we don't.\n\nA good cheap question: check if other sensors in the zone (fire alarms, temperature sensors) corroborate the thermal anomaly. Let me investigate.",
+  "toolCalls": [
+    {
+      "id": "call_00_roCehaXT8bhKgvEpD6M34547",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"investigate\", \"action_id\": \"check_zone_sensor_correlation\", \"prior_adjustment_log_odds\": 0.5, \"adjustment_reasons\": [\"Novel event - no precedents at this site\", \"Hand-set prior (n=0) is weak, warrants slight upward adjustment for severity 3\", \"Thermal anomalies from robots can indicate real equipment issues\"], \"novelty_flag\": true, \"confidence_p_real\": 0.35, \"what_would_change_my_mind\": \"Corroborating evidence from other zone sensors (fire, temperature) would increase confidence. A guard visual check confirming no heat source would decrease it. If the robot's own diagnostics show a sensor fault, that would also decrease confidence.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2550,
+    "completionTokens": 734,
+    "totalTokens": 3284
+  },
+  "latencyMs": 9200,
+  "model": "deepseek-chat",
+  "costUsd": 0.00038402000000000005
+}

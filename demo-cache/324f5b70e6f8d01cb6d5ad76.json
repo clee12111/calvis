@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze this situation:\n\n**Incident Summary:**\n- **Site:** site-004, zone-4-2\n- **Event:** Missed check-in (guard didn't check in)\n- **Evidence Level:** E1 (something happened, intent unknown)\n- **Prior:** P(real) = 0.3, but n=0 — this is a hand-set assumption with zero observations behind it\n- **Precedents:** None — this is a novel event for this site\n- **Board Load:** 0 items/10min — operator is free\n- **Guards available:** 3 guards on shift (Marcus Lewis, Chris Lewis, Kevin Taylor)\n\n**Analysis:**\n- A missed check-in at E1 means a guard didn't check in on time. This could be:\n  - Equipment/button malfunction (benign)\n  - Guard forgot or was distracted (benign)\n  - Guard is in trouble (real threat)\n- The prior is 0.3 with n=0 — a hand-set assumption with no data. I should be free to adjust.\n- No precedents exist — this is novel for this site.\n- Board load is 0 — operator has bandwidth.\n- There are 3 guards on shift. I could ask one to check on the guard who missed the check-in.\n\n**Decision:** Since this is a missed check-in (E1) with a weak prior (n=0), no precedents, and low board load, I should **investigate** — specifically, ask one of the available guards to check on the guard who missed the check-in. This is a cheap, free question that buys evidence.\n\nLet me think about the adjustment. The hand-set prior of 0.3 for missed check-ins... with n=0, this is just an assumption. Missed check-ins at 2am could be more concerning (guard might be asleep, injured, or in trouble). But they could also just be forgetfulness. I'll adjust slightly upward since it's night shift and a missed check-in could indicate a problem, but not too much since it's E1.\n\nLet me set prior_adjustment_log_odds to +0.3 (slightly more likely real given it's night shift and a guard not checking in could be meaningful).\n\nActually, I'll investigate by asking a guard to check.",
+  "toolCalls": [
+    {
+      "id": "call_00_M8BrHJnIePx1DGbCBEUe9686",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"investigate\", \"action_id\": \"dispatch_guard_check\", \"prior_adjustment_log_odds\": 0.3, \"adjustment_reasons\": [\"Hand-set prior with n=0 — weak prior, free to adjust\", \"Night shift missed check-in could indicate guard distress\", \"Novel event — no precedents to anchor expectations\"], \"novelty_flag\": true, \"confidence_p_real\": 0.4, \"what_would_change_my_mind\": \"If the dispatched guard confirms the guard is safe and just forgot, I'd downgrade. If the guard doesn't respond to radio, I'd escalate to E2/E3 and commit a response.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2534,
+    "completionTokens": 732,
+    "totalTokens": 3266
+  },
+  "latencyMs": 9029,
+  "model": "deepseek-chat",
+  "costUsd": 0.00038234000000000006
+}
