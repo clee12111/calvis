@@ -1,85 +1,110 @@
-# Calvis Dispatch
+# Calvis
 
-AI dispatch agent for physical security operations. Watches a stream of real-world events from guards and robots across 40+ sites overnight, decides how to prioritize and respond, and learns from outcomes.
+AI dispatch agent for physical security operations. Watches a stream of sensor events from guards and robots across 40+ sites overnight, decides how much response each incident earns, and learns from outcomes.
 
-## 30-Second Demo
+> First load may take ~40s to wake if idle.
+
+## Demo (30 seconds)
 
 ```bash
+git clone https://github.com/clee12111/calvis.git
+cd calvis
 npm install
 npm run build
-npm start          # Production server at http://localhost:3000
+npm start
+# Open http://localhost:3000
 ```
 
-1. Click **Start Sim** — 273 incidents load in ~4 seconds
-2. Click the top incident (panic button, E4) — see the investigation trace: 5 system questions, evidence level chain, committed response
-3. Click **?** for an overview of evidence levels, cost model, and keyboard shortcuts
-4. Click **Override** on any incident, set tier to T0, enter "false alarm" — watch the prior update in the Learning panel (bottom-right)
-5. Switch arms with the **Agent / Scripted / Rules** buttons — same night, different strategies, instant cost comparison
+No API key or database required. Agent traces are committed and replayed deterministically.
 
-> Hosted demo may take ~40s to wake if idle.
+1. Click **Run Demo Night** — 273 incidents load in ~4 seconds
+2. The queue fills. Active incidents (E1+) float to top; resolved (E0) sink to bottom
+3. Click the top incident (panic button, E4) — see the full timeline:
+   - Sensor event arrives (Panic Button, S5, from guard)
+   - Agent checks delivery schedule, plate allowlist, prior probability, past incidents, camera coverage
+   - Agent commits: **Escalate to Human** at E4
+   - Agent analysis: P(real) 85% base → +0.3 adjustment → 88%. Reasons: "Duress mode is stronger signal," "Guard has 94% ack rate." Would change mind: "Radio check confirming false alarm."
+4. Click **Show full model thinking** — see the raw LLM response from DeepSeek
+5. Click **Override** on any incident → set tier to T0 → enter "false alarm" → watch the prior update in the panel (e.g. panic_button: 85% → 57%)
+6. Press **J/K** to navigate the queue
+
+**What you're looking at:** The main view is the ops layer — what the agent decided and why. Inside each incident's analysis block, one click reveals the engineer layer: which model tier ran, token counts, latency, cost, cache status. The queue separates active incidents from resolved ones, with ↑↓ arrows showing where evidence escalated or de-escalated during investigation.
 
 ## Local Development
 
 ```bash
-npm install
-npm run dev        # Dev server with hot reload at http://localhost:3000
-npm test           # 160 tests (20 files)
-npm run learn      # Run 30-night learning curve (~3 min, no API key needed)
+npm run dev        # Dev server at http://localhost:3000
+npm test           # 160 tests, 20 files
+npm run learn      # 30-night learning curve (~3 min, no API key)
+npm run eval       # Multi-arm eval with bootstrap CIs
 ```
 
-No API key or database required. DEMO=1 (default) uses in-memory PGlite and cached LLM traces.
+## Live Mode (optional)
 
-## Deploy to Render
+Set `DEMO=0` and provide an API key to run the agent against a real LLM:
 
-Push to GitHub, then on Render:
-
-- **Build command:** `npm install && npm run build`
-- **Start command:** `npm start`
-- **Environment:** `DEMO=1`
-
-Or use the included `render.yaml` for Blueprint deployment.
-
-## What This Is
-
-Three triage strategies compared on the same simulated night:
-
-| Arm | How it works | Cost (seed 42) |
-|-----|-------------|----------------|
-| **Scripted** | Fixed protocol: 5 system questions, then human questions if ambiguous. The ProQA/MPDS model used in emergency dispatch for 50 years. | $4,433 |
-| **Rules-only** | Static scorer: severity x site criticality x hour x zone. No investigation. | $12,516 |
-| **Agent** | LLM reasons about each incident — calls tools, checks priors, adjusts probabilities, explains reasoning. Two-tier model routing. | $1,513 (with API key) |
-
-Cost = response cost + harm cost (convex penalty for under-responding) + flood penalty (EEMUA 191).
-
-## The Feedback Loop
-
-The system maintains P(real) for each event type at each site as a Beta distribution. Operator overrides update the prior: "false alarm" pushes P(real) down, "confirmed real" pushes it up. The agent sees the observation count n — it trusts a prior backed by 50 observations more than a hand-set guess at n=0.
-
-**Honest result:** After 30 training nights, learned priors improve calibration (Brier 0.072 → 0.054) but don't reduce operational cost. Why: evidence levels (E0-E4) are determined by event types, not P(real). The cost depends on tier vs true level. This is a structural gap documented in DECISION.md (D-035).
+```bash
+DEMO=0
+LLM_PROVIDER=deepseek
+DEEPSEEK_API_KEY=sk-...
+AGENT_MAX_USD_PER_RUN=2.00    # Hard spend cap
+```
 
 ## Architecture
 
-- **Next.js 16** App Router, React 19, Tailwind CSS 4, shadcn/ui
-- **PGlite** (in-memory Postgres) — no external database needed
-- **LoopEngine** — 30-second tick intervals, evidence-state machine (E0-E4), investigation questions, flood-aware suppression
-- **Trace cache** — ~9,000 cached LLM responses for deterministic replay
-- **Beta counters** — Bayesian learned priors with hierarchical cold-start backoff
-- **Episodic memory** — past incident outcomes for find_precedent tool
+```
+Events (seed) → Ingest → Correlate → LoopEngine
+                                        │
+                              ┌─────────┼─────────┐
+                              │         │         │
+                          investigate  commit   defer
+                          (ask question) (respond) (recheck)
+                              │         │
+                         system/human   response map
+                         questions      E0→suppress
+                              │         E1→watch
+                         LLM agent      E2→notify
+                         (tool calls,   E3→dispatch
+                          prior adj)    E4→escalate
+                              │
+                         outcomes → Beta priors → learned P(real)
+                                   episodic memory → find_precedent
+```
 
-## Scripts
+## Repo Map
 
-| Script | Description |
-|--------|-------------|
-| `npm run dev` | Dev server with hot reload |
-| `npm run build` | Production build |
-| `npm start` | Production server |
-| `npm test` | 160 tests across 20 files |
-| `npm run learn` | 30-night learning curve with holdout eval |
-| `npm run eval` | Multi-arm evaluation with bootstrap CIs |
+| Path | What |
+|------|------|
+| `src/lib/loop/loop-engine.ts` | Tick-by-tick simulation engine |
+| `src/lib/loop/agent-decider.ts` | LLM agent: tool calls, prior adjustment, two-tier routing |
+| `src/lib/loop/agent-tools.ts` | Agent's retrieval tools (6 functions) |
+| `src/lib/loop/learned-priors.ts` | Beta counters with cold-start backoff |
+| `src/lib/loop/episodic-memory.ts` | k-nearest precedent retrieval |
+| `src/lib/eval/runner.ts` | 7-arm eval with paired bootstrap CIs |
+| `src/lib/eval/metrics.ts` | Cost model: response + harm + flood |
+| `src/lib/engine/baseline-scorer.ts` | Rules-only scorer |
+| `src/components/dispatch/` | UI components (timeline, queue, override) |
+| `demo-cache/` | 1,586 committed LLM traces for keyless demo |
+| `docs/DECISION.md` | 35+ decisions with rationale |
+| `docs/PROGRESS.md` | Phase checklist with executed evidence |
+| `WRITEUP.md` | Technical writeup (point of view, results, limitations) |
 
-## Key Decisions (from DECISION.md)
+## Deploy
 
-- **D-035:** Learning improves calibration but not cost — evidence levels are event-type-driven, not P(real)-driven
-- **D-032:** Progressive reveal of precomputed decisions (batch correlation too costly for live)
-- **D-033:** Override validation rejects incoherent submissions (false alarm + escalation)
-- **D-023:** Agent seam is the decider function — replaces `chooseNextMove` and nothing else
+Push to any Node host. Render config included:
+
+```yaml
+# render.yaml
+services:
+  - type: web
+    name: calvis-dispatch
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: DEMO
+        value: "1"
+```
+
+## Stack
+
+Next.js 16 · React 19 · TypeScript · Tailwind CSS 4 · shadcn/ui · Drizzle ORM · PGlite · Vitest · seedrandom

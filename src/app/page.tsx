@@ -33,10 +33,24 @@ export default function DispatchPage() {
   const eventSourceRef = useRef<EventSource | null>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Progressive reveal
+  // Progressive reveal + dynamic sort by evidence level (highest first)
   const visibleIncidents = useMemo(() => {
-    if (simState.time === 0 && !simState.running) return allIncidents;
-    return allIncidents.filter((inc) => inc.createdAt <= simState.time);
+    const filtered = simState.time === 0 && !simState.running
+      ? allIncidents
+      : allIncidents.filter((inc) => inc.createdAt <= simState.time);
+
+    // Sort: active (E1+) first by evidence desc, then resolved (E0)
+    return [...filtered].sort((a, b) => {
+      const eA = a.trace?.evidenceLevel ?? a.tier ?? 0;
+      const eB = b.trace?.evidenceLevel ?? b.tier ?? 0;
+      // Active before resolved
+      if (eA > 0 && eB === 0) return -1;
+      if (eA === 0 && eB > 0) return 1;
+      // Within active: higher evidence first
+      if (eA !== eB) return eB - eA;
+      // Same evidence: more recent first
+      return b.createdAt - a.createdAt;
+    });
   }, [allIncidents, simState.time, simState.running]);
 
   const fetchIncidents = useCallback(async () => {
