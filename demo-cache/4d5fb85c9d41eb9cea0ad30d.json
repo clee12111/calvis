@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze this situation:\n\n**Context:**\n- **Event**: `robot_offline` at site-010, zone-10-3 — a single event, severity 1, background noise\n- **Evidence level**: E0 (nothing to act on)\n- **Prior**: P(real) = 0.05, but n=0 — this is a hand-set assumption with zero observations behind it\n- **Precedents**: None — this is novel (no similar incidents at this site before)\n- **Board load**: 20 items/10min — **FLOOD conditions** (threshold is 6, we're at 20)\n- **Active rules**: Rule R-004 says under flood conditions (>6/10min), suppress E0-E1\n\n**Decision logic:**\n- E0 event — nothing to act on (benign / equipment malfunction)\n- Board load is 20 — severe flood. The operator is drowning.\n- Rule R-004 explicitly says suppress E0-E1 under flood conditions.\n- The prior is hand-set (n=0) so it's weak, but the event itself is E0 — a robot going offline with no other indicators.\n- Novelty flag should be set since find_precedent returned zero precedents.\n\nGiven flood conditions and E0, the right move is to **suppress** this. I'll use `suppress_ttl` (suppress with a time-to-live) rather than a permanent suppress, so it can recheck later if needed.",
+  "toolCalls": [
+    {
+      "id": "call_00_gfXbf4QWy53syxpFdjlE6213",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"defer\", \"action_id\": \"suppress_ttl\", \"prior_adjustment_log_odds\": -1.5, \"adjustment_reasons\": [\"E0 - no actionable evidence, benign equipment event\", \"Board load at 20 (flood) - Rule R-004 mandates suppress E0-E1\", \"Hand-set prior with n=0 - weak prior, but event is clearly E0\"], \"novelty_flag\": true, \"confidence_p_real\": 0.02, \"what_would_change_my_mind\": \"If this robot offline event was accompanied by other correlated alarms (e.g., motion, door contacts) or if the board load drops below threshold, I'd investigate further. Also if the robot was in a critical zone.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2576,
+    "completionTokens": 582,
+    "totalTokens": 3158
+  },
+  "latencyMs": 6553,
+  "model": "deepseek-chat",
+  "costUsd": 0.00034328
+}

@@ -1,0 +1,21 @@
+{
+  "text": "Let me check on guard availability too before deciding.",
+  "toolCalls": [
+    {
+      "id": "call_00_eoxC6cmM9hc4pgY7WMKU5655",
+      "type": "function",
+      "function": {
+        "name": "get_available_guards",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2471,
+    "completionTokens": 633,
+    "totalTokens": 3104
+  },
+  "latencyMs": 7374,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0025015
+}

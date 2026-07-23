@@ -1,0 +1,21 @@
+{
+  "text": "Let me assess the situation:\n\n1. **Event**: `robot_motion_anomaly` - a single event, severity 2, background data. This is a robot motion anomaly — could be a sensor glitch, a cleaning robot, or something else.\n2. **Evidence Level**: E0 (nothing to act on / equipment malfunction)\n3. **Prior**: P(real) = 0.1, but n=0 — this is a hand-set assumption with zero observations. Very weak prior.\n4. **Precedents**: None — this is novel for this site/zone.\n5. **Board Load**: 20 items/10min — this is FLOOD conditions (threshold is 6). The operator is drowning.\n6. **Active Rules**: Rule R-004 says under flood conditions (>6/10min), suppress E0-E1 to manage operator load.\n\nGiven the flood conditions (20 items, threshold 6), the E0 evidence level, and the policy rule R-004, the right move is to **suppress** this. It's a robot motion anomaly with background data only, no human presence confirmed, no threat. The operator is overloaded — surfacing this would waste their attention.\n\nLet me also check if there are guards available quickly.",
+  "toolCalls": [
+    {
+      "id": "call_00_6vaAveQfyIR7fTaubOel7989",
+      "type": "function",
+      "function": {
+        "name": "get_available_guards",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2459,
+    "completionTokens": 294,
+    "totalTokens": 2753
+  },
+  "latencyMs": 3836,
+  "model": "deepseek-chat",
+  "costUsd": 0.00025445000000000003
+}

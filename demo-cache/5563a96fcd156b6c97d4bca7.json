@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze this carefully.\n\n**Incident Summary:**\n- **Site:** site-009, zone-9-0\n- **Event:** robot_thermal_anomaly (severity 3)\n- **Evidence Level:** E1 (something happened, intent unknown)\n- **Prior:** P(real) = 0.25, but n=0 — this is a hand-set assumption with zero observations behind it\n- **Precedents:** None — this is a **novel** event for this site\n- **Board Load:** 0 items/10min — very low, operator has bandwidth\n- **Guards:** 2 available (Rosa Smith, Ashley Davis) — moderate reliability (~78-80% ack rate, ~4.5 min avg response)\n\n**Key observations:**\n1. n=0 means the prior is a pure assumption, not learned. I should be free to adjust.\n2. No precedents at all — this is genuinely novel (novelty_flag = true).\n3. Board load is 0 — operator has plenty of bandwidth to investigate.\n4. A thermal anomaly from a robot at severity 3 is notable — could be a fire, overheating equipment, or a false alarm from the robot's sensors.\n5. The raw data says `{\"background\": true}` — this might indicate it's a background/ambient reading, not a targeted detection.\n\nGiven the novelty (no precedents), the hand-set prior (n=0, weak), and the low board load, I think the right move is to **investigate** — ask a cheap question to gather more evidence before committing resources. A thermal anomaly with no history at this site warrants a quick check.\n\nLet me ask the guard to check in on this — it's a cheap question.\n\nActually, let me think about what question to ask. The event is a robot thermal anomaly. I could:\n- `request_photo` — ask the robot or a nearby camera for a photo\n- `ask_guard_radio` — ask a guard to check\n- `ask_client_confirm` — ask the client if they know about it\n\nGiven it's a robot thermal anomaly, `request_photo` seems most appropriate — the robot itself might have thermal imaging or a nearby camera could show what's happening.\n\nLet me decide.",
+  "toolCalls": [
+    {
+      "id": "call_00_1deKHGbo4u7Vq09p2KMY2640",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"investigate\", \"action_id\": \"request_photo\", \"prior_adjustment_log_odds\": 0.5, \"adjustment_reasons\": [\"n=0 hand-set prior — weak, free to adjust upward\", \"Novel event — no precedents at this site, warrants attention\", \"Thermal anomaly at severity 3 could indicate real issue (fire/overheat)\"], \"novelty_flag\": true, \"confidence_p_real\": 0.35, \"what_would_change_my_mind\": \"A clear photo showing no heat source or a guard confirming it's a known maintenance activity would lower my confidence. A photo showing flames, smoke, or overheating equipment would raise it to E3/E4 territory.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2595,
+    "completionTokens": 738,
+    "totalTokens": 3333
+  },
+  "latencyMs": 8768,
+  "model": "deepseek-chat",
+  "costUsd": 0.00038829
+}

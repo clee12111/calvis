@@ -1,0 +1,29 @@
+{
+  "text": "I need to assess this incident fully. Let me start gathering context.",
+  "toolCalls": [
+    {
+      "id": "call_00_H5Ot3roADNfjSlf352z91954",
+      "type": "function",
+      "function": {
+        "name": "get_incident_context",
+        "arguments": "{}"
+      }
+    },
+    {
+      "id": "call_01_8d60R6k7gDUniZ1fxSTt4937",
+      "type": "function",
+      "function": {
+        "name": "get_board_load",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 1871,
+    "completionTokens": 168,
+    "totalTokens": 2039
+  },
+  "latencyMs": 2109,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0012715
+}

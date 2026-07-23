@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze this:\n\n**Incident Summary:**\n- **Site:** site-003, zone-3-0\n- **Event:** Missed check-in (severity 2) — a guard didn't check in\n- **Evidence Level:** E1 (something happened, intent unknown)\n- **Prior:** P(real) = 0.3, but n=0 — this is a hand-set assumption with zero observations behind it\n- **Precedents:** None — this is novel for this site/event-type combination\n- **Board Load:** 0 items/10min — very low, operator has bandwidth\n- **Guards available:** 3 guards on shift, all with good ack rates\n\n**Analysis:**\n- A missed check-in from a guard is concerning. It could be:\n  1. The guard forgot (benign)\n  2. The guard is in trouble (real threat)\n  3. Equipment/radio issue (malfunction)\n- The prior is hand-set (n=0), so I should be freer in my adjustment.\n- No precedents exist — this is novel.\n- Board load is 0 — operator has capacity to investigate.\n- We have guards available — we can ask one to check.\n\n**Decision:** I'll **investigate** by asking the guard on radio. Let me ask the guard who missed the check-in to confirm their status. This is a cheap, free question that could quickly resolve E1 uncertainty.\n\nActually, let me think more carefully. The event is a missed check-in. We have guards on shift. The most natural investigation is to ask the guard via radio or ask another guard to check.\n\nLet me go with **investigate** — `ask_guard_radio` — to find out why the check-in was missed. This is the cheapest way to resolve this.\n\nThe prior is 0.3 with n=0 (hand-set). Given no precedents and a hand-set prior, I'll adjust slightly upward since missed check-ins from guards can be meaningful, but not too much since it's E1.\n\nWait — actually, I should think about what makes sense. A missed check-in at E1. The guard might just be busy. Let me set a moderate adjustment.",
+  "toolCalls": [
+    {
+      "id": "call_00_7VzLHmpeVDzR1CWyO0uh6128",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"investigate\", \"action_id\": \"ask_guard_radio\", \"prior_adjustment_log_odds\": 0.5, \"adjustment_reasons\": [\"Hand-set prior with n=0 — weak starting point, freer adjustment warranted\", \"No precedents at this site — novelty increases uncertainty\", \"Missed check-in from a guard could indicate a welfare issue, slightly raising P(real)\"], \"novelty_flag\": true, \"confidence_p_real\": 0.4, \"what_would_change_my_mind\": \"If the guard responds on radio confirming they simply forgot or had a radio issue, I'd suppress. If no response after radio call, I'd escalate to dispatch a guard to physically check.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2622,
+    "completionTokens": 723,
+    "totalTokens": 3345
+  },
+  "latencyMs": 8112,
+  "model": "deepseek-chat",
+  "costUsd": 0.00038598
+}

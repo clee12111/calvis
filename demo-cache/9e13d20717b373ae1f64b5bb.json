@@ -1,0 +1,21 @@
+{
+  "text": "Let me assess the situation:\n\n1. **Event**: A missed check-in from a guard at site-003, zone-3-1. Single event, severity 2.\n2. **Evidence level**: E1 (something happened, intent unknown)\n3. **Board load**: 20 items/10min — this is **FLOOD** conditions (threshold is 6). The operator is drowning.\n4. **Prior**: P(real) = 0.3, but n=0 — this is a hand-set assumption with zero observations. Very weak prior.\n5. **Precedents**: None — this is novel for this site/event-type combination.\n6. **Active rules**: Rule R-004 says under flood conditions (>6/10min), suppress E0-E1 to protect operator load.\n\nThis is an E1 event under flood conditions. The rule explicitly says to suppress E0-E1. A missed check-in could be a guard just forgetting, or it could be something more serious, but at E1 with no additional corroborating evidence and the operator at 20 items (flood), the right call is to suppress.\n\nHowever, since this is a guard safety-related event (missed check-in), I want to be careful. Let me check if there are guards available.",
+  "toolCalls": [
+    {
+      "id": "call_00_yaNzCy1p7UUQPQcs9auj5154",
+      "type": "function",
+      "function": {
+        "name": "get_available_guards",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2454,
+    "completionTokens": 296,
+    "totalTokens": 2750
+  },
+  "latencyMs": 3706,
+  "model": "deepseek-chat",
+  "costUsd": 0.00025466000000000003
+}

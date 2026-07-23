@@ -1,0 +1,21 @@
+{
+  "text": "Now let me check available guards for completeness.",
+  "toolCalls": [
+    {
+      "id": "call_00_YlTqQ1xv9HPN8lhtVKAw7296",
+      "type": "function",
+      "function": {
+        "name": "get_available_guards",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2469,
+    "completionTokens": 600,
+    "totalTokens": 3069
+  },
+  "latencyMs": 7056,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0024345
+}

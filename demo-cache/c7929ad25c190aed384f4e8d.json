@@ -1,0 +1,21 @@
+{
+  "text": "Now let me gather the full picture before deciding.",
+  "toolCalls": [
+    {
+      "id": "call_00_mP3Ub7OSKty4d735kacM9418",
+      "type": "function",
+      "function": {
+        "name": "get_active_rules",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2723,
+    "completionTokens": 1073,
+    "totalTokens": 3796
+  },
+  "latencyMs": 12668,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0035075
+}

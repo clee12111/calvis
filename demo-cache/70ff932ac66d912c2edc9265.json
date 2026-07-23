@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze this carefully.\n\n**Incident Summary:**\n- **Site:** site-000, zone-0-2\n- **Event:** `missed_check_in` (severity 2) — a guard didn't check in\n- **Evidence Level:** E1 (something happened, intent unknown)\n- **Prior:** P(real) = 0.3, but n=0 — this is a hand-set assumption with zero observations behind it\n- **Precedents:** None — this is novel for this site/event-type combination\n- **Board load:** 0/10min — operator is free\n- **Guards available:** 3 guards on shift\n\n**Analysis:**\n\nA missed check-in from a guard is interesting. The prior is 0.3 with n=0 — meaning it's a starting assumption, not a learned one. With zero precedents, this is genuinely novel.\n\nThe key question: is this a guard who forgot to check in (benign), or is something wrong (the guard is incapacitated, etc.)?\n\nSince:\n1. Board load is 0 — operator has bandwidth\n2. n=0 — the prior is a weak starting point, not a strong learned estimate\n3. No precedents — novel situation\n4. A missed check-in could be benign OR could indicate a guard in trouble\n\nI think the right move is to **investigate** — ask the guard on radio to confirm their status. This is a cheap, free question that could quickly resolve E1 to either E0 (guard just forgot) or escalate if no response.\n\nLet me adjust the prior slightly upward — a missed check-in with no precedents and a hand-set prior of 0.3... given that this is a guard who didn't check in, and guards are generally reliable (ack rates ~75-88%), a missed check-in is somewhat concerning. But the hand-set prior of 0.3 with n=0 means I should be free to adjust. I'll nudge it slightly up to account for the novelty and the fact that a missed check-in from a guard with good reliability stats is worth attention.\n\nActually, let me think about this differently. The prior is 0.3 with n=0. That's a weak starting point. The guards have ack rates of 75-88% — they're reasonably reliable. A missed check-in could be:\n- Guard forgot (most likely)\n- Guard is busy with something\n- Guard is incapacitated (less likely)\n\nI'll set a small positive adjustment to reflect that this is novel and worth attention, but not too high since missed check-ins are often benign.\n\n**Decision:** Investigate — ask the guard on radio to confirm their status.",
+  "toolCalls": [
+    {
+      "id": "call_00_izIUaIeA8g1NS04WwSzp9722",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"investigate\", \"action_id\": \"ask_guard_radio\", \"prior_adjustment_log_odds\": 0.3, \"adjustment_reasons\": [\"Hand-set prior with n=0 — weak starting point, free to adjust\", \"Novel event — no precedents at this site/zone\", \"Missed check-in from guard with good reliability stats warrants attention\"], \"novelty_flag\": true, \"confidence_p_real\": 0.35, \"what_would_change_my_mind\": \"If the guard responds on radio confirming they simply forgot, I'd suppress. If no response after 2-3 attempts, I'd escalate to dispatch a guard to physically check on them. If another sensor (motion, door) shows activity in their zone, that would reduce concern.\\\"\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2623,
+    "completionTokens": 836,
+    "totalTokens": 3459
+  },
+  "latencyMs": 9604,
+  "model": "deepseek-chat",
+  "costUsd": 0.0004176900000000001
+}

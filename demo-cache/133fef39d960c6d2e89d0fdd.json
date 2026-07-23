@@ -1,0 +1,29 @@
+{
+  "text": "Incident inc-00145 is active with a board load of 20 — that's well above the flood threshold of 6. Let me gather context systematically.",
+  "toolCalls": [
+    {
+      "id": "call_00_f06ujY1vf3WbGVeAKDgT4766",
+      "type": "function",
+      "function": {
+        "name": "get_incident_context",
+        "arguments": "{}"
+      }
+    },
+    {
+      "id": "call_01_nm6KBYj1YJHpe3HT8qG55160",
+      "type": "function",
+      "function": {
+        "name": "get_board_load",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 1871,
+    "completionTokens": 132,
+    "totalTokens": 2003
+  },
+  "latencyMs": 2027,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0011995
+}

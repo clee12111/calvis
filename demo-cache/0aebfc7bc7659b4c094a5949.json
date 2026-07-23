@@ -1,0 +1,21 @@
+{
+  "text": "Now let me analyze this carefully.",
+  "toolCalls": [
+    {
+      "id": "call_00_HQOrFnq74zRBQCHTXLJ35137",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"commit\", \"action_id\": \"dispatch_backup\", \"prior_adjustment_log_odds\": 1.5, \"adjustment_reasons\": [\"Coherent cascade of 7 events across 5 distinct sensor types (motion, thermal, door, plate, radio, panic, geofence) tells a compelling story of a breach\", \"Panic button + forced door + radio flag + geofence exit = guard in distress scenario with multiple corroborating signals\", \"No precedents means no learned bias toward false alarms — weak hand-set priors are easily outweighed by strong multi-source evidence\"], \"novelty_flag\": true, \"confidence_p_real\": 0.97, \"what_would_change_my_mind\": \"If radio transcript review or robot video shows the panic was a test/mistake and the forced door was maintenance, I'd downgrade to E2/E3 and investigate further. A guard check-in confirming everyone is safe would immediately reduce severity.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 3635,
+    "completionTokens": 1375,
+    "totalTokens": 5010
+  },
+  "latencyMs": 16599,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0045675
+}

@@ -1,0 +1,21 @@
+{
+  "text": "Let me assess the situation:\n\n1. **Incident**: E1 - robot_motion_anomaly at site-005, zone-5-0. Single event, severity 3.\n2. **Prior**: P(real) = 0.10, but n=0 — this is a hand-set assumption with zero observations. Very weak prior.\n3. **Precedents**: None — this is a **novel** event type at this site.\n4. **Board load**: 20 items/10min — **FLOOD conditions** (threshold is 6). The operator is drowning.\n5. **Active rules**: Rule R-004 says \"Under flood conditions (>6/10min), suppress E0-E1 to manage operator load.\"\n\nThis is E1 — something happened, intent unknown. Under flood conditions, the policy explicitly says to suppress E0-E1. The prior is a weak hand-set 0.10 with no data behind it. No precedents exist. The operator is at 20 items — triple the flood threshold.\n\nGiven the flood conditions and the policy rule, the right move is to **suppress** this E1 event. The novelty is worth flagging for future learning, but right now the operator needs protection from noise.",
+  "toolCalls": [
+    {
+      "id": "call_00_Ddg04JtAzumraSke6JTp6840",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"commit\", \"action_id\": \"suppress\", \"prior_adjustment_log_odds\": -1.5, \"adjustment_reasons\": [\"Board load at 20 (flood conditions) — R-004 mandates suppress E0-E1\", \"Hand-set prior with n=0 — no real data behind it, weak starting point\", \"Novel event type with zero precedents — no pattern to chase\"], \"novelty_flag\": true, \"confidence_p_real\": 0.05, \"what_would_change_my_mind\": \"If board load drops below 6, I'd investigate further. If a guard reports something unusual in that zone, I'd re-evaluate. If this event repeats within the shift, I'd escalate.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2466,
+    "completionTokens": 524,
+    "totalTokens": 2990
+  },
+  "latencyMs": 5849,
+  "model": "deepseek-chat",
+  "costUsd": 0.00031934000000000004
+}

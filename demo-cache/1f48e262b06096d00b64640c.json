@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze what I've gathered:\n\n**Incident Context:**\n- Site: site-000, Zone: zone-0-2\n- Event: `robot_thermal_anomaly` (severity 3, background data)\n- E1 evidence level — something happened, intent unknown\n- 5 questions already asked, 5 answered, 5 evidence items\n\n**Prior:**\n- P(real) = 0.25, but n=0 — this is a hand-set prior with NO observations behind it. Very weak starting point.\n- This is a thermal anomaly detected by a robot, background data.\n\n**Precedents:**\n- Zero precedents — this is novel for this site/event-type combination.\n\n**Board Load:**\n- 0 items/10min — operator is not overloaded. No flood condition.\n\n**Guards available:**\n- 3 guards on shift, all with reasonable ack rates (75-88%).\n\n**Analysis:**\n- This is a robot thermal anomaly with background data. The prior is hand-set (n=0), so it's a weak starting point.\n- No precedents exist — this is genuinely novel.\n- Board load is low (0), so we have bandwidth to investigate.\n- 5 questions already asked — we've already done some investigation.\n- The event is E1 — something happened, intent unknown. A thermal anomaly from a robot could be a fire risk (E3/E4) or a false alarm from equipment.\n\nGiven the novelty (no precedents), the weak prior (n=0), and the low board load, I think we should **investigate further** before committing. Let me ask for a photo to get visual confirmation of what the thermal anomaly looks like.\n\nActually, wait — 5 questions have already been asked. Let me think about what's been done. The system says \"5 questions asked (5 answered). 5 evidence items.\" So we've already done some investigation. \n\nGiven:\n- Novel event type at this site\n- Hand-set prior with n=0 (very weak)\n- Low board load\n- Thermal anomaly could be serious (fire)\n- Already asked 5 questions\n\nI think the right move is to **investigate** with a photo request to see what the robot is seeing. This is a cheap, free question that could move us from E1 to E2/E3.\n\nLet me set a moderate positive adjustment since thermal anomalies from robots are often worth taking seriously, but with n=0 I should be cautious.",
+  "toolCalls": [
+    {
+      "id": "call_00_3fe0sZPqcKwytgmdfjK88683",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"investigate\", \"action_id\": \"request_photo\", \"prior_adjustment_log_odds\": 0.5, \"adjustment_reasons\": [\"Hand-set prior with n=0 — very weak, free to adjust\", \"Thermal anomaly could indicate fire risk (E3/E4 potential)\", \"No precedents exist — novelty means we should gather more evidence before committing\"], \"novelty_flag\": true, \"confidence_p_real\": 0.35, \"what_would_change_my_mind\": \"A photo showing a clear heat source (person, equipment fire) would move me to commit. If the photo shows nothing unusual or a known benign heat pattern, I'd suppress. If the guard on-site confirms it's a known equipment quirk, I'd log_and_watch.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2635,
+    "completionTokens": 791,
+    "totalTokens": 3426
+  },
+  "latencyMs": 8416,
+  "model": "deepseek-chat",
+  "costUsd": 0.00040593000000000004
+}

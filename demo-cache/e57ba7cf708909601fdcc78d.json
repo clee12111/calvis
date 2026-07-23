@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze this situation:\n\n**Incident Summary:**\n- **Site:** site-008, zone-8-2\n- **Event:** Missed check-in (severity 2) from a guard\n- **Evidence Level:** E1 (something happened, intent unknown)\n- **Board Load:** 0 items/10min — very low, operator has bandwidth\n- **Prior:** P(real) = 0.3, but n=0 — this is a hand-set assumption with zero observations behind it\n- **Precedents:** None — this is a novel combination for this site\n- **Guards available:** Andre Thomas (armed, 97.8% ack rate) and Jamal Lopez (unarmed, 79.2% ack rate)\n\n**Analysis:**\n- A missed check-in from a guard is a common event. It could be the guard simply forgetting, being busy, or it could indicate a real problem.\n- The prior is hand-set (n=0), so it's a weak starting point — I should be free to adjust.\n- No precedents exist, so this is novel for this site.\n- Board load is 0 — operator has plenty of bandwidth.\n- There's a guard on site (Andre Thomas) with a 97.8% ack rate who could be asked.\n\n**Decision:** This is a good candidate for **investigate** — specifically, ask the guard on radio to confirm. The missed check-in could be innocent (guard forgot, distracted), and a quick radio check is cheap. If the guard doesn't respond, that escalates the situation significantly.\n\nLet me adjust the prior slightly upward — missed check-ins at night are slightly more concerning than during the day, and with n=0 I have freedom to adjust. But I'll keep it modest.",
+  "toolCalls": [
+    {
+      "id": "call_00_OgRh6YH81hsFHdKOcbfa3307",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"investigate\", \"action_id\": \"ask_guard_radio\", \"prior_adjustment_log_odds\": 0.3, \"adjustment_reasons\": [\"Hand-set prior with n=0 — weak starting point, free to adjust\", \"Night shift missed check-in slightly more concerning than daytime\", \"Novel event at this site — no precedents to anchor expectations\"], \"novelty_flag\": true, \"confidence_p_real\": 0.35, \"what_would_change_my_mind\": \"If the guard responds on radio confirming they're fine (just forgot), I'd suppress. If no response after radio check, I'd escalate to dispatch_backup. If Andre Thomas (high reliability) confirms the guard is okay, I'd log_and_watch.\\\"\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2584,
+    "completionTokens": 644,
+    "totalTokens": 3228
+  },
+  "latencyMs": 7294,
+  "model": "deepseek-chat",
+  "costUsd": 0.00036120000000000005
+}

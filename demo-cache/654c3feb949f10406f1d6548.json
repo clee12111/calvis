@@ -1,0 +1,21 @@
+{
+  "text": "Let me assess the situation:\n\n1. **Evidence level**: E0 (nothing to act on — photo showed empty area, likely animal/wind)\n2. **Event type**: `robot_thermal_anomaly` — single event, background reading\n3. **Prior**: P(real) = 0.25, but n=0 — this is a hand-set assumption with zero observations, so it's a weak starting point\n4. **Precedents**: None — this is novel for this site/zone\n5. **Board load**: 20 items/10min — **FLOOD conditions** (threshold is 6, we're at 20)\n6. **Active rules**: Rule R-004 says \"Under flood conditions (>6/10min), suppress E0-E1 to manage operator load\"\n7. **Questions asked**: 6 questions already asked and answered — the system has already investigated thoroughly\n8. **Hypothesis**: Photo shows empty area — likely animal or wind\n\nGiven the flood conditions (20 items, threshold 6), the active rule says to suppress E0-E1. This is E0. The investigation has already been thorough (6 questions). The prior is weak (n=0) but the evidence is E0 with a photo showing nothing.\n\nLet me commit to suppressing this.",
+  "toolCalls": [
+    {
+      "id": "call_00_6dHzQ4dTdgpTbmVnCzC86803",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"commit\", \"action_id\": \"suppress\", \"prior_adjustment_log_odds\": -1.5, \"adjustment_reasons\": [\"Board load at 20 (flood) — R-004 mandates suppress E0-E1\", \"Photo verification already done — empty area, likely animal/wind\", \"6 questions asked and answered — investigation exhausted\"], \"novelty_flag\": true, \"confidence_p_real\": 0.08, \"what_would_change_my_mind\": \"If a subsequent event at this zone showed a confirmed human presence or if the thermal anomaly reappeared with a different signature pattern\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2478,
+    "completionTokens": 509,
+    "totalTokens": 2987
+  },
+  "latencyMs": 5563,
+  "model": "deepseek-chat",
+  "costUsd": 0.00031598
+}

@@ -1,0 +1,21 @@
+{
+  "text": "Incident inc-00075 — let me start by pulling full context.",
+  "toolCalls": [
+    {
+      "id": "call_00_W1YPVznd2KdWBqu8RzcZ1905",
+      "type": "function",
+      "function": {
+        "name": "get_incident_context",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 1864,
+    "completionTokens": 73,
+    "totalTokens": 1937
+  },
+  "latencyMs": 1619,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.001078
+}

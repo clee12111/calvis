@@ -1,0 +1,21 @@
+{
+  "text": "Let me assess the situation:\n\n1. **Event**: `robot_thermal_anomaly` at site-007, zone-7-2. Single event, severity 3, background data.\n2. **Prior**: P(real) = 0.25, but n=0 — this is a hand-set assumption with zero observations. Very weak prior.\n3. **Precedents**: Zero precedents. This is **novel** — never seen this event type at this site before.\n4. **Board Load**: 20 items/10min — this is **flood conditions** (threshold is 6). The operator is drowning.\n5. **Active Rules**: Rule R-004 says under flood conditions (>6/10min), suppress E0-E1 to protect operator load.\n\nThis is an E1 event. Under flood conditions, the policy explicitly says to suppress E0-E1. The prior is a hand-set assumption (n=0) with no real data behind it. The event is a single thermal anomaly from a robot with background data — no human presence confirmed, no threat.\n\nGiven the flood conditions and the policy rule, I should suppress this. But since it's novel (no precedents), I should log it for future learning.\n\nLet me adjust the prior downward — the hand-set prior of 0.25 with n=0 is essentially a guess, and under flood conditions with a background thermal anomaly and no precedents, this is very likely nothing actionable.",
+  "toolCalls": [
+    {
+      "id": "call_00_SsKveplHBv1bcxEZUb217605",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"commit\", \"action_id\": \"suppress\", \"prior_adjustment_log_odds\": -1.5, \"adjustment_reasons\": [\"Flood conditions (20/10min) — policy R-004 mandates suppress E0-E1\", \"Hand-set prior with n=0 — no real data behind the 0.25 estimate\", \"Novel event with zero precedents — background thermal anomaly, no human confirmation\", \"Single event, background data only, no escalation signals\"], \"novelty_flag\": true, \"confidence_p_real\": 0.08, \"what_would_change_my_mind\": \"A second correlated event (e.g., motion + thermal), guard report of something unusual, or a drop in board load below threshold that would allow investigation.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2466,
+    "completionTokens": 573,
+    "totalTokens": 3039
+  },
+  "latencyMs": 6099,
+  "model": "deepseek-chat",
+  "costUsd": 0.00033306000000000004
+}

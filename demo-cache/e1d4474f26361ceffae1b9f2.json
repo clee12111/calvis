@@ -1,0 +1,21 @@
+{
+  "text": "",
+  "toolCalls": [
+    {
+      "id": "call_00_aErzl0gdvGhmom8sNxGu0827",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"defer\", \"action_id\": \"suppress_ttl\", \"prior_adjustment_log_odds\": -0.3, \"adjustment_reasons\": [\"Board overloaded at 20/10min — flood conditions (R-004)\", \"E1 with hand-set prior (n=0) — weak signal to act on\", \"Background-tagged radio transcript — likely low-significance chatter\"], \"novelty_flag\": true, \"confidence_p_real\": 0.4, \"what_would_change_my_mind\": \"If the radio transcript flag contained specific threat language (E2+ escalation), or if board load drops below threshold allowing proper investigation.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2459,
+    "completionTokens": 1099,
+    "totalTokens": 3558
+  },
+  "latencyMs": 12562,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0034275
+}

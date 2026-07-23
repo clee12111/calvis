@@ -1,0 +1,21 @@
+{
+  "text": "I'll systematically gather all the information I need.",
+  "toolCalls": [
+    {
+      "id": "call_00_Gk2yLgZmSdD5ZomzYdS40122",
+      "type": "function",
+      "function": {
+        "name": "get_incident_context",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 1871,
+    "completionTokens": 58,
+    "totalTokens": 1929
+  },
+  "latencyMs": 1279,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0010515
+}

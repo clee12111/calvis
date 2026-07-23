@@ -1,0 +1,29 @@
+{
+  "text": "I'll start by gathering all available context on this incident.",
+  "toolCalls": [
+    {
+      "id": "call_00_tSuHAZxa4kUNCtZW04RW9582",
+      "type": "function",
+      "function": {
+        "name": "get_incident_context",
+        "arguments": "{}"
+      }
+    },
+    {
+      "id": "call_01_RsvlNfeUrFfOH5Bsgu6q6964",
+      "type": "function",
+      "function": {
+        "name": "get_board_load",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 1871,
+    "completionTokens": 104,
+    "totalTokens": 1975
+  },
+  "latencyMs": 1920,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0011435
+}

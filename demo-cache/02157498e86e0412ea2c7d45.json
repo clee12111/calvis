@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze this carefully.\n\n**Context:**\n- **Site:** site-003, zone-3-0\n- **Event:** `robot_thermal_anomaly` — a robot detected a thermal anomaly (severity 3)\n- **Evidence level:** E1 (something happened, intent unknown)\n- **Prior:** P(real) = 0.25, but **n=0** — this is a hand-set assumption with zero observations behind it. Very weak prior.\n- **Precedents:** Zero. This is a **novel** event type at this site.\n- **Board load:** 0 items/10min — operator is free, no flood concerns.\n- **Guards available:** 3 guards on shift, all with decent ack rates.\n\n**Analysis:**\n- A robot thermal anomaly at severity 3 is notable — thermal anomalies can indicate fire, equipment overheating, or intrusion.\n- The prior is 0.25 but with n=0, meaning it's a pure assumption. With no data backing it, I should be more open to adjusting.\n- No precedents exist — this is genuinely novel.\n- Board load is 0 — operator has bandwidth.\n- The event is E1 — something happened, intent unknown. We have very little info.\n\n**Decision:**\nSince this is novel (no precedents), the prior is weak (n=0), and the operator has bandwidth, I should **investigate** — ask a cheap question to gather more evidence before committing. A robot thermal anomaly could be serious (fire risk) or benign (robot sensor glitch, environmental heat source). Let me ask the guard to check.\n\nI'll adjust the prior slightly upward from 0.25 — thermal anomalies at severity 3 are worth taking seriously, but with no data, I'll be modest.",
+  "toolCalls": [
+    {
+      "id": "call_00_qbTWbKtHwJ8iM4OcQx2a2815",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"investigate\", \"action_id\": \"ask_guard_radio\", \"prior_adjustment_log_odds\": 0.3, \"adjustment_reasons\": [\"Prior is hand-set with n=0 — very weak, free to adjust\", \"Thermal anomaly at severity 3 is potentially serious (fire/overheat risk)\", \"Novel event — no precedents to anchor expectations\"], \"novelty_flag\": true, \"confidence_p_real\": 0.35, \"what_would_change_my_mind\": \"If the guard confirms a visible heat source, fire, or unauthorized presence, I'd escalate. If the guard reports the robot is in a known hot zone or the sensor is known to be glitchy, I'd suppress or log-and-watch.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2634,
+    "completionTokens": 643,
+    "totalTokens": 3277
+  },
+  "latencyMs": 7127,
+  "model": "deepseek-chat",
+  "costUsd": 0.00036442000000000007
+}

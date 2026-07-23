@@ -1,0 +1,45 @@
+{
+  "text": "This is an E4 incident with a very high base prior. Let me gather all the context before making any decisions.",
+  "toolCalls": [
+    {
+      "id": "call_00_KwgF5BvNQ2WE1K81ujy50058",
+      "type": "function",
+      "function": {
+        "name": "get_incident_context",
+        "arguments": "{}"
+      }
+    },
+    {
+      "id": "call_01_nhM8vssCX8QWzoo7zbiS5262",
+      "type": "function",
+      "function": {
+        "name": "get_board_load",
+        "arguments": "{}"
+      }
+    },
+    {
+      "id": "call_02_WlplcefI4kpyT1eYjAcQ0447",
+      "type": "function",
+      "function": {
+        "name": "get_active_rules",
+        "arguments": "{}"
+      }
+    },
+    {
+      "id": "call_03_eyVuevSw6ec0Z1ZjuMlj9545",
+      "type": "function",
+      "function": {
+        "name": "get_available_guards",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 1871,
+    "completionTokens": 144,
+    "totalTokens": 2015
+  },
+  "latencyMs": 2037,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0012235
+}

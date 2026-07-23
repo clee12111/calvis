@@ -1,0 +1,21 @@
+{
+  "text": "Now let me analyze the full picture before deciding.\n\n**Incident inc-00212 Summary:**\n- **Site**: site-002, zone-2-1\n- **Event**: `radio_transcript_flag` (severity 3) — the system flagged something in a guard's radio transmission\n- **Source**: Guard's radio, marked `background: true`\n- **Evidence Level**: E1 — something happened, intent unknown\n- **Prior**: P(real)=0.5, but with n=0 — this is a hand-set assumption with zero resolved outcomes behind it\n- **Precedents**: None found — **this is novel for this site**\n- **Board load**: 0/10min — operator is free\n- **Questions asked**: 5 (all answered), 5 evidence items collected\n- **Guards**: 3 on shift (James Williams, Diego Harris, Antonio Williams)\n\nThe flag is from guard radio transcription with `background: true` — this could mean ambient audio picked up something concerning. With zero precedents and a hand-set prior (n=0), I need to be careful. The operator has bandwidth. Let's investigate by asking the relevant guard what was happening during that flagged transmission.",
+  "toolCalls": [
+    {
+      "id": "call_00_p0bDVZ10LYE1AVZyJ4Vx4218",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"investigate\", \"action_id\": \"ask_guard_radio\", \"prior_adjustment_log_odds\": 0.2, \"adjustment_reasons\": [\"Novel event — no precedents at this site to calibrate against\", \"Hand-set prior (n=0) is weak; severity 3 flag leans slightly toward real\", \"Board load is clear — we can afford to investigate\"], \"novelty_flag\": true, \"confidence_p_real\": 0.55, \"what_would_change_my_mind\": \"If the guard confirms it was routine communication or a false flag, I'd suppress. If the guard reports something unusual or concerning, I'd escalate to E2+ and notify guard or dispatch.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2758,
+    "completionTokens": 1273,
+    "totalTokens": 4031
+  },
+  "latencyMs": 12725,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.003925
+}

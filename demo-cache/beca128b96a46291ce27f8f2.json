@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze this:\n\n**Incident Context:**\n- Site 006, Zone 6-2\n- Event: `robot_offline` (severity 1, E0 level)\n- Single event, background noise\n- 5 questions already asked, 5 answered — so we've already investigated some\n\n**Prior:**\n- P(real) = 0.05, n=0 — this is a hand-set prior with NO observations behind it. Very weak starting point.\n\n**Precedents:**\n- Zero precedents — this is genuinely novel for this site/event-type combination.\n\n**Board Load:**\n- 0 items/10min — very low load, operator has bandwidth.\n\n**Analysis:**\n- A robot going offline at E0 level with background noise is likely a connectivity glitch or maintenance issue.\n- n=0 means the prior is a hand-set assumption, not learned data. With no precedents and no observations, this is a weak prior.\n- However, the event is E0 (nothing to act on), single event, background noise flagged. This strongly suggests a benign equipment hiccup.\n- 5 questions already asked — we've already investigated. Time to commit.\n\nGiven E0, single event, background noise, and 5 questions already exhausted, this is a **suppress** candidate. The prior is weak (n=0) but the evidence itself is very thin — a single robot offline event with background flag.\n\nLet me adjust the prior downward slightly since the raw data says \"background: true\" — this is flagged as background noise.\n\nI'll set novelty_flag = true since find_precedent returned zero precedents.\n\nLet me make the decision:",
+  "toolCalls": [
+    {
+      "id": "call_00_8H5RpD3q03hlvAAcUN805998",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"commit\", \"action_id\": \"suppress\", \"prior_adjustment_log_odds\": -1.0, \"adjustment_reasons\": [\"Background flag in raw data suggests benign connectivity issue\", \"Single event with no corroborating signals\", \"5 questions already answered with no escalation needed\"], \"novelty_flag\": true, \"confidence_p_real\": 0.02, \"what_would_change_my_mind\": \"A second correlated event (e.g., camera offline in same zone) or a guard report of unusual activity would change this to investigate/notify.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2576,
+    "completionTokens": 574,
+    "totalTokens": 3150
+  },
+  "latencyMs": 6459,
+  "model": "deepseek-chat",
+  "costUsd": 0.0003410400000000001
+}

@@ -1,0 +1,21 @@
+{
+  "text": "Good, I have context. Let me analyze:\n\n**The situation:** A single `geofence_exit` event at site-011, zone-11-3, sourced from a guard, with `background:true` flag. No precedents exist for this site/event combination — it's novel. The prior is hand-set at P=0.4 with n=0 (no real data behind it, so I should adjust freely). Board load is zero — operator is fresh. Two guards on shift.\n\n**My reasoning:** A guard-sourced geofence exit with a \"background\" flag could be a routine patrol movement. But I have no precedents to lean on, and the hand-set prior is unearned. With the operator free, this is the perfect time to ask a cheap question rather than commit blind.\n\nLet me investigate by asking the guard directly.",
+  "toolCalls": [
+    {
+      "id": "call_00_zojUy44NRcDTmCjIRkWg6827",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"investigate\", \"action_id\": \"ask_guard_radio\", \"prior_adjustment_log_odds\": -0.3, \"adjustment_reasons\": [\"Hand-set prior with n=0 — weak starting point, no real data behind it\", \"Guard-sourced event with background:true flag suggests routine patrol movement\", \"No precedents at this site — novelty warrants more information before committing\"], \"novelty_flag\": true, \"confidence_p_real\": 0.3, \"what_would_change_my_mind\": \"If the guard confirms this was an unauthorized departure from zone, that would raise confidence to E2/E3. If they confirm it was routine patrol movement, I'd suppress. Additional context from system logs would also help.\\\"\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2595,
+    "completionTokens": 1238,
+    "totalTokens": 3833
+  },
+  "latencyMs": 13488,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0037735
+}

@@ -1,0 +1,77 @@
+{
+  "text": "",
+  "toolCalls": [
+    {
+      "id": "call_00_JwoDOCPkamAzsiCDPPLO3432",
+      "type": "function",
+      "function": {
+        "name": "get_site_prior",
+        "arguments": "{\"event_type\": \"panic_button\"}"
+      }
+    },
+    {
+      "id": "call_01_LzpQHgZo1rS6tg8CHP5a1705",
+      "type": "function",
+      "function": {
+        "name": "get_site_prior",
+        "arguments": "{\"event_type\": \"door_forced\"}"
+      }
+    },
+    {
+      "id": "call_02_BNHI2MAiUggixcOf3AUG8791",
+      "type": "function",
+      "function": {
+        "name": "get_site_prior",
+        "arguments": "{\"event_type\": \"radio_transcript_flag\"}"
+      }
+    },
+    {
+      "id": "call_03_pjBRxjaqAIESqNP5xpR63038",
+      "type": "function",
+      "function": {
+        "name": "get_site_prior",
+        "arguments": "{\"event_type\": \"robot_motion_anomaly\"}"
+      }
+    },
+    {
+      "id": "call_04_LCvq2tvAaScxqSaH8yer6013",
+      "type": "function",
+      "function": {
+        "name": "get_site_prior",
+        "arguments": "{\"event_type\": \"robot_thermal_anomaly\"}"
+      }
+    },
+    {
+      "id": "call_05_dm9xHqYgJLNdUwo1W1bm1259",
+      "type": "function",
+      "function": {
+        "name": "get_site_prior",
+        "arguments": "{\"event_type\": \"geofence_exit\"}"
+      }
+    },
+    {
+      "id": "call_06_KmSIAcGBsdUMowpsdjvo0879",
+      "type": "function",
+      "function": {
+        "name": "get_site_prior",
+        "arguments": "{\"event_type\": \"plate_read_unknown\"}"
+      }
+    },
+    {
+      "id": "call_07_IFIkKdb0EItIfPmEuCSv4989",
+      "type": "function",
+      "function": {
+        "name": "find_precedent",
+        "arguments": "{\"k\": 5}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2745,
+    "completionTokens": 560,
+    "totalTokens": 3305
+  },
+  "latencyMs": 5222,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0024925
+}

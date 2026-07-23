@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze this carefully.\n\n**Incident Summary:**\n- **Site:** site-000, zone-0-1\n- **Event:** robot_motion_anomaly (severity 2), background data\n- **Evidence Level:** E0 (nothing to act on)\n- **Prior:** P(real) = 0.1, but n=0 — this is a hand-set assumption with zero observations\n- **Precedents:** None — this is novel for this site\n- **Board Load:** 0/10min — very low, operator has bandwidth\n- **Guards available:** 3 on shift\n\n**Analysis:**\n- E0 means \"nothing to act on\" — this is a background robot motion anomaly. The raw data says `background: true`.\n- The prior is hand-set (n=0), so it's a weak starting point, not a learned estimate.\n- No precedents exist — this is a novel event type at this site.\n- Board load is 0 — operator has plenty of bandwidth.\n- Since it's E0 with a background robot motion anomaly, this looks like a benign equipment event. But with n=0 and no precedents, there's some uncertainty.\n\nGiven E0 (nothing to act on), low severity, background data, and the fact that this is a robot motion anomaly that's likely benign — but novel — I think the right move is to **investigate** with a cheap question to gather more evidence before committing. Let me ask for a photo to see what the robot saw.\n\nActually, wait — E0 means \"nothing to act on.\" The system is already at E0. Let me think about what makes sense.\n\nThe event is a robot_motion_anomaly with `background: true`. This is likely a sensor glitch or the robot detecting something minor. With n=0 prior and no precedents, I should investigate with a cheap question to gather evidence.\n\nLet me request a photo from the robot to see what it detected.",
+  "toolCalls": [
+    {
+      "id": "call_00_GkKF7sPcd4QL2VUaZAjp5877",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"investigate\", \"action_id\": \"request_photo\", \"prior_adjustment_log_odds\": 0.0, \"adjustment_reasons\": [\"E0 - nothing to act on, background data\", \"Hand-set prior with n=0 — no real data behind it\", \"Novel event at this site — no precedents to learn from\"], \"novelty_flag\": true, \"confidence_p_real\": 0.05, \"what_would_change_my_mind\": \"If the photo shows a human or vehicle in the zone, that would raise this to E2+. If the photo shows nothing unusual, I'd suppress or log_and_watch.\\\"\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2628,
+    "completionTokens": 662,
+    "totalTokens": 3290
+  },
+  "latencyMs": 7542,
+  "model": "deepseek-chat",
+  "costUsd": 0.0003693200000000001
+}

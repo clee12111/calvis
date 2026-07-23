@@ -1,0 +1,29 @@
+{
+  "text": "Let me start by gathering all the context I need.",
+  "toolCalls": [
+    {
+      "id": "call_00_APAL3FacZqNdHOet45i39681",
+      "type": "function",
+      "function": {
+        "name": "get_incident_context",
+        "arguments": "{}"
+      }
+    },
+    {
+      "id": "call_01_dar5uA5XO2DTD11DeAws2125",
+      "type": "function",
+      "function": {
+        "name": "get_board_load",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 1871,
+    "completionTokens": 56,
+    "totalTokens": 1927
+  },
+  "latencyMs": 1122,
+  "model": "deepseek-chat",
+  "costUsd": 0.00014665000000000001
+}

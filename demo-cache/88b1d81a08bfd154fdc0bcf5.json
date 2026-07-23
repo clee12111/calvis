@@ -1,0 +1,21 @@
+{
+  "text": "Let me assess the situation:\n\n1. **Event**: `robot_thermal_anomaly` at site-009, zone-9-2. Single event, severity 3, background data.\n2. **Prior**: P(real) = 0.25, but n=0 — this is a hand-set assumption with zero observations. Very weak prior.\n3. **Precedents**: Zero precedents. This is a **novel** event-type/site combination.\n4. **Board Load**: 20 items/10min — threshold is 6. We're in **flood** conditions (20 >> 6).\n5. **Active Rules**: Rule R-004 says \"Under flood conditions (>6/10min), suppress E0-E1 to protect operator.\"\n\nThe event is at **E1** — something happened, intent unknown. Under flood conditions, the policy says suppress E0-E1. The prior is weak (n=0), and there's no precedent. A single thermal anomaly from a robot with background data — could be a sensor glitch, a warm spot, or nothing actionable.\n\nGiven the flood conditions (20 items!), the operator is drowning. Suppressing this E1 is the right call per policy.",
+  "toolCalls": [
+    {
+      "id": "call_00_UK8ZDwQYMTGPmhzK8y0S6726",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"commit\", \"action_id\": \"suppress\", \"prior_adjustment_log_odds\": -1.5, \"adjustment_reasons\": [\"Board load at 20 (flood conditions) — R-004 mandates suppress E0-E1\", \"n=0 prior is a hand-set assumption with no data backing\", \"Zero precedents — no history of this being real at this site\", \"Single background thermal anomaly — low signal value\"], \"novelty_flag\": true, \"confidence_p_real\": 0.08, \"what_would_change_my_mind\": \"A second corroborating sensor, a guard report of something unusual in that zone, or a pattern of thermal anomalies at this site that resolved as real.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2466,
+    "completionTokens": 513,
+    "totalTokens": 2979
+  },
+  "latencyMs": 5664,
+  "model": "deepseek-chat",
+  "costUsd": 0.00031626
+}

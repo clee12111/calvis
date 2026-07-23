@@ -1,0 +1,53 @@
+{
+  "text": "Let me gather more context on these event types and precedents.",
+  "toolCalls": [
+    {
+      "id": "call_00_pAxrGrTS5dwg9mnpiCi41372",
+      "type": "function",
+      "function": {
+        "name": "get_site_prior",
+        "arguments": "{\"event_type\": \"area_advisory\"}"
+      }
+    },
+    {
+      "id": "call_01_poPrMpMriUTRirSHE1Gp8032",
+      "type": "function",
+      "function": {
+        "name": "get_site_prior",
+        "arguments": "{\"event_type\": \"robot_offline\"}"
+      }
+    },
+    {
+      "id": "call_02_oQSj4croFOD9QLpXDajA4794",
+      "type": "function",
+      "function": {
+        "name": "find_precedent",
+        "arguments": "{\"k\": 5}"
+      }
+    },
+    {
+      "id": "call_03_d3PgtLQBhRCPTb0hihaT0231",
+      "type": "function",
+      "function": {
+        "name": "get_board_load",
+        "arguments": "{}"
+      }
+    },
+    {
+      "id": "call_04_XytiOYi3wBdSL26Afpkg2863",
+      "type": "function",
+      "function": {
+        "name": "get_active_rules",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2038,
+    "completionTokens": 160,
+    "totalTokens": 2198
+  },
+  "latencyMs": 1737,
+  "model": "deepseek-chat",
+  "costUsd": 0.00018746000000000002
+}

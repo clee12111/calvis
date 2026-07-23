@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze this carefully.\n\n**Context:**\n- **Site:** site-009, zone-9-1\n- **Event:** `robot_thermal_anomaly` — severity 3, background sensor data\n- **Evidence level:** E1 (something happened, intent unknown)\n- **Prior:** P(real) = 0.25, but n=0 — this is a hand-set assumption with zero observations behind it\n- **Precedents:** None — this is novel for this site/event-type combination\n- **Board load:** 20 items/10min — FLOOD conditions (threshold is 6)\n- **Active rule R-004:** Under flood conditions (>6/10min), suppress E0-E1\n\n**Analysis:**\n1. **Board load is 20** — well into flood territory. The operator is drowning.\n2. **Rule R-004** explicitly says: suppress E0-E1 under flood conditions.\n3. **E1** — something happened, intent unknown. This is within the suppression scope.\n4. **Prior n=0** — this is a hand-set prior with no real data behind it. Very weak.\n5. **No precedents** — novel event, but that doesn't change the flood protocol.\n6. **Background thermal anomaly from a robot** — could be a sensor glitch, environmental heat, or the robot's own thermal signature. At E1 with no human confirmation, it's low urgency.\n\nUnder flood conditions, the right call is to suppress this E1 event to protect the operator's attention for higher-priority items.",
+  "toolCalls": [
+    {
+      "id": "call_00_RooEqSpk2O8VHOIceMmI3828",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"commit\", \"action_id\": \"suppress\", \"prior_adjustment_log_odds\": -1.5, \"adjustment_reasons\": [\"Board load at 20 (flood conditions) — R-004 mandates suppress E0-E1\", \"Prior is hand-set with n=0 — no real data backing it\", \"No precedents at this site — thermal anomaly from robot, likely benign\"], \"novelty_flag\": true, \"confidence_p_real\": 0.08, \"what_would_change_my_mind\": \"A follow-up event at the same zone (e.g., motion + thermal), or a guard report confirming something unusual. If board load drops below 6, I'd re-evaluate with a recheck timer instead of suppressing.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2466,
+    "completionTokens": 598,
+    "totalTokens": 3064
+  },
+  "latencyMs": 6320,
+  "model": "deepseek-chat",
+  "costUsd": 0.00034006000000000005
+}

@@ -1,0 +1,21 @@
+{
+  "text": "Let me assess the situation:\n\n1. **Incident**: Single `robot_motion_anomaly` event at site-006, zone-6-2. E1 level. Severity 3.\n2. **Prior**: P(real) = 0.10, but n=0 — this is a hand-set assumption with zero observations. Very weak prior.\n3. **Precedents**: Zero precedents. This is a **novel** event type at this site.\n4. **Board Load**: 20 items/10min — **FLOOD conditions** (threshold is 6). The operator is drowning.\n5. **Active Rules**: Rule R-004 says \"Under flood conditions (>6/10min), suppress E0-E1 to manage operator load.\"\n\nThe rule is clear: under flood conditions, suppress E0-E1. This is E1. The prior is weak (n=0), but the board load is extreme at 20 items (3x flood threshold). The operator's attention is the scarcest resource.\n\nHowever, this is a **novel** event type (robot_motion_anomaly) with no precedents. I should consider that novelty means we might want to at least log it for future learning. But the flood condition rule explicitly says suppress E0-E1.\n\nGiven the flood conditions, the right call is to suppress this E1 event. But I'll log it with a note for future learning since it's novel.\n\nLet me set a small positive adjustment since it's novel (no precedents means we can't rule it out), but the flood condition overrides to suppress.\n\nActually, re-reading the rules: \"Under flood conditions (≥6), suppress E0-E1 to protect the operator.\" This is a hard policy rule. I should follow it.\n\nLet me use `suppress_ttl` (suppress with a time-to-live) rather than just `suppress` — this way it can come back if conditions change.\n\nWait, `suppress_ttl` is listed under defer actions. Let me think about this more carefully.\n\nThe options for commit are: suppress, log_and_watch, notify_guard, dispatch_backup, escalate_overwatch.\n\nGiven flood conditions and E1, `suppress` is the right commit action per R-004.",
+  "toolCalls": [
+    {
+      "id": "call_00_MBbQZOBIrstmLgz2JIln2409",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"commit\", \"action_id\": \"suppress\", \"prior_adjustment_log_odds\": 0.5, \"adjustment_reasons\": [\"Novel event type with zero precedents — slight upward adjustment for uncertainty\", \"Hand-set prior with n=0 is weak, warrants some flexibility\", \"Flood conditions (20/10min) trigger R-004 suppression policy\"], \"novelty_flag\": true, \"confidence_p_real\": 0.15, \"what_would_change_my_mind\": \"If board load drops below 6, this novel event would warrant investigation. If a guard reports seeing something unusual in zone-6-2, that would escalate to E2+ and require action. If additional sensor events corroborate the anomaly, that would raise the evidence level above E1.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2466,
+    "completionTokens": 753,
+    "totalTokens": 3219
+  },
+  "latencyMs": 8276,
+  "model": "deepseek-chat",
+  "costUsd": 0.00038346
+}

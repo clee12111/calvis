@@ -1,0 +1,21 @@
+{
+  "text": "Let me look at the full picture.",
+  "toolCalls": [
+    {
+      "id": "call_00_TunfzBsMo7eOQhRr3sxn4445",
+      "type": "function",
+      "function": {
+        "name": "get_incident_context",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2603,
+    "completionTokens": 1648,
+    "totalTokens": 4251
+  },
+  "latencyMs": 18725,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0045975
+}

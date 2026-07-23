@@ -1,0 +1,21 @@
+{
+  "text": "",
+  "toolCalls": [
+    {
+      "id": "call_00_W1mI5Rn6nBe6YvOrrMj30531",
+      "type": "function",
+      "function": {
+        "name": "get_active_rules",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2281,
+    "completionTokens": 29,
+    "totalTokens": 2310
+  },
+  "latencyMs": 1026,
+  "model": "deepseek-chat",
+  "costUsd": 0.00016779000000000002
+}

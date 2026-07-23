@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze this situation:\n\n**Context:**\n- **Site:** site-007, zone-7-5\n- **Event:** `plate_read_unknown` — a license plate read that didn't match any known plate\n- **Severity:** 2 (moderate)\n- **Source:** Robot (automated patrol)\n- **Evidence Level:** E1 (something happened, intent unknown)\n- **Board Load:** 0/10min — operator is free, no flood concerns\n- **Guards available:** 2 guards on shift, both with good ack rates\n\n**Prior Analysis:**\n- P(real) = 0.15, but n=0 — this is a hand-set prior with NO observations behind it. It's a starting assumption, not learned data. I should treat this as weak and be freer to adjust.\n- **Precedents:** Zero — this is a genuinely novel event type at this site. No history to learn from.\n\n**Decision logic:**\n- E1 with no precedents, hand-set prior (n=0), board load is 0 — operator has bandwidth.\n- A plate read unknown from a robot patrol could be: a visitor's car, a new vehicle, a misread, or an actual unknown vehicle.\n- Since n=0, the prior is a guess. I should investigate to gather more info before committing.\n- The cheapest investigation move is `request_photo` — the robot likely has a camera feed I can pull to see the vehicle.\n\nLet me ask for a photo to visually confirm what's happening.",
+  "toolCalls": [
+    {
+      "id": "call_00_y8ETQ7u8p4hHEcvuDEOv4935",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"investigate\", \"action_id\": \"request_photo\", \"prior_adjustment_log_odds\": 0.0, \"adjustment_reasons\": [\"Hand-set prior with n=0 — no real data behind it\", \"No precedents at this site — genuinely novel event\", \"Board load is 0 — operator has bandwidth to investigate\"], \"novelty_flag\": true, \"confidence_p_real\": 0.15, \"what_would_change_my_mind\": \"A photo showing a known vehicle (e.g., employee car, delivery truck) would lower P(real). A photo showing a suspicious vehicle, or guard radio confirmation of an unknown vehicle loitering, would raise it. Multiple unknown plate reads from the same vehicle pattern would also increase concern.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2585,
+    "completionTokens": 591,
+    "totalTokens": 3176
+  },
+  "latencyMs": 7205,
+  "model": "deepseek-chat",
+  "costUsd": 0.00034643000000000006
+}

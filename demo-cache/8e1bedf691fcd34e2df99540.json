@@ -1,0 +1,21 @@
+{
+  "text": "",
+  "toolCalls": [
+    {
+      "id": "call_00_UTDLF6t5bqQUcJKriETG8275",
+      "type": "function",
+      "function": {
+        "name": "get_available_guards",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2459,
+    "completionTokens": 31,
+    "totalTokens": 2490
+  },
+  "latencyMs": 1036,
+  "model": "deepseek-chat",
+  "costUsd": 0.00018081000000000003
+}

@@ -1,0 +1,29 @@
+{
+  "text": "Incident inc-00070 is coming in hot. Let me start gathering context.",
+  "toolCalls": [
+    {
+      "id": "call_00_sdtah9zTQMRnqKdMfApt8106",
+      "type": "function",
+      "function": {
+        "name": "get_incident_context",
+        "arguments": "{}"
+      }
+    },
+    {
+      "id": "call_01_F1Eq4TDRHmnYDilJAnC82082",
+      "type": "function",
+      "function": {
+        "name": "get_board_load",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 1871,
+    "completionTokens": 129,
+    "totalTokens": 2000
+  },
+  "latencyMs": 2355,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0011935
+}

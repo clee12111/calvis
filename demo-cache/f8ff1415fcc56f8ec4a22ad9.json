@@ -1,0 +1,21 @@
+{
+  "text": "",
+  "toolCalls": [
+    {
+      "id": "call_00_rpO4A0MbCBXJZEo6Up2I0336",
+      "type": "function",
+      "function": {
+        "name": "get_incident_context",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 1871,
+    "completionTokens": 50,
+    "totalTokens": 1921
+  },
+  "latencyMs": 1251,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0010355
+}

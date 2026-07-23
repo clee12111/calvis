@@ -165,6 +165,12 @@ HOW P(REAL) WORKS — READ CAREFULLY:
 - n=50+ means a LEARNED ESTIMATE backed by real data. Your adjustment should be MORE CONSERVATIVE — the prior has earned its weight.
 - Your prior_adjustment_log_odds shifts the prior: the decision uses sigmoid(logit(prior) + your_adjustment). Your confidence_p_real is logged but NOT used for the decision.
 
+VALID ACTION IDs — you MUST use exactly one of these in action_id:
+  For investigate: request_photo, ask_guard_radio, ask_client_confirm
+  For commit: suppress, log_and_watch, notify_guard, dispatch_backup, escalate_overwatch
+  For defer: recheck_5min, suppress_ttl
+  Do NOT invent action IDs. Use only the ones listed above.
+
 RULES:
 - Never auto-dial emergency services. E4 responses require human confirmation.
 - Under flood conditions (board load ≥ 6), suppress E0-E1 to protect the operator.

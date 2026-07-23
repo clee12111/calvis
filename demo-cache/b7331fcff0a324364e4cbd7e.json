@@ -1,0 +1,21 @@
+{
+  "text": "",
+  "toolCalls": [
+    {
+      "id": "call_00_B9I50zDTQpyTjZz71txL0786",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"commit\", \"action_id\": \"suppress\", \"prior_adjustment_log_odds\": -1.0, \"adjustment_reasons\": [\"Guard confirmed all clear via radio (E0 confirmed)\", \"Board load is 20/6 — critical flood conditions, protect operator attention\", \"6 questions already answered — sufficient investigation performed\"], \"novelty_flag\": true, \"confidence_p_real\": 0.1, \"what_would_change_my_mind\": \"A second sensor corroborating the thermal anomaly, or a guard reporting actual signs of fire/heat while on patrol. Also, if board load drops below flood threshold before recheck, I'd revisit.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2652,
+    "completionTokens": 1128,
+    "totalTokens": 3780
+  },
+  "latencyMs": 13111,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.003582
+}

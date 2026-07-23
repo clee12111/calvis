@@ -1,0 +1,21 @@
+{
+  "text": "Good evening, operator. Let me gather the full picture on inc-00010.",
+  "toolCalls": [
+    {
+      "id": "call_00_LxIqqWMUF8yxJIrBUzCV4891",
+      "type": "function",
+      "function": {
+        "name": "get_incident_context",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 1871,
+    "completionTokens": 111,
+    "totalTokens": 1982
+  },
+  "latencyMs": 1867,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0011575
+}

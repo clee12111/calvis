@@ -1,0 +1,21 @@
+{
+  "text": "",
+  "toolCalls": [
+    {
+      "id": "call_00_32GhWhglOIYWlCosJUQi9783",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"commit\", \"action_id\": \"notify_guard\", \"prior_adjustment_log_odds\": 0.0, \"adjustment_reasons\": [\"Hand-set prior with n=0 — no local data to adjust against\", \"E3 classification indicates confirmed threat to property\", \"No precedents at this site for door_forced events\"], \"novelty_flag\": true, \"confidence_p_real\": 0.6, \"what_would_change_my_mind\": \"If a guard reports visual confirmation that the door is intact/secure, or if subsequent sensor data shows no breach. Conversely, additional alarmed sensors (glass break, motion) would confirm a real intrusion.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2625,
+    "completionTokens": 1240,
+    "totalTokens": 3865
+  },
+  "latencyMs": 14405,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0037925
+}

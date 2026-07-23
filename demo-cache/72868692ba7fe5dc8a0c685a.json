@@ -1,0 +1,21 @@
+{
+  "text": "This is an interesting case. Let me walk through my reasoning.\n\n**Context:** We've got a `no_show_at_shift_start` event at site-011, zone-11-4. It's marked `background: true` in the raw data — meaning this is a routine system check-in that didn't fire, not an active alarm.\n\n**Board Load:** 20 items/10min — we're in flood conditions. The operator is drowning.\n\n**Prior:** P(real) = 0.7, but critically **n=0**. This is a hand-set assumption with zero observations behind it — a guess, not a learned estimate.\n\n**Precedents:** Zero. This combination has never been seen at this site before.\n\n**What's actually happening?** A guard didn't \"show up\" at a shift start. This is likely a guard who's late, forgot to clock in, or had a scheduling issue. It's not an intrusion — it's an *absence*. The E2 classification seems aggressive since no human presence was confirmed; rather, a human *failed to appear*.\n\nGiven flood conditions, this is low-leverage. But I can't just suppress E2 under the flood rules (those only cover E0-E1). Best move: ask a cheap question to buy information.",
+  "toolCalls": [
+    {
+      "id": "call_00_1q8vhLCJiN5Se75iSDEO4933",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"investigate\", \"action_id\": \"ask_guard_radio\", \"prior_adjustment_log_odds\": -0.3, \"adjustment_reasons\": [\"n=0 hand-set prior with no observations—weak starting point\", \"Event is an absence (no-show), not a confirmed human presence, making E2 debatable\", \"Zero precedents—novel event with no historical signal\"], \"novelty_flag\": true, \"confidence_p_real\": 0.45, \"what_would_change_my_mind\": \"If the guard's radio is answered and they confirm their colleague called in sick or is running late, this drops to E0 (benign). If Lucia or Brianna report that the missing guard never arrived AND their phone is going to voicemail, that raises concern and I'd escalate to dispatch_backup.\\\"\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2603,
+    "completionTokens": 1820,
+    "totalTokens": 4423
+  },
+  "latencyMs": 19554,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0049415
+}

@@ -1,0 +1,45 @@
+{
+  "text": "Let me gather more context. This is a massive number of events - 200 robot_motion_anomaly events with a stuck sensor reading of 0.42, plus a robot_thermal_anomaly (severity 3). Let me check the priors and precedents.",
+  "toolCalls": [
+    {
+      "id": "call_00_ok7uBXjo4w6ZwzHdFl5W7980",
+      "type": "function",
+      "function": {
+        "name": "get_site_prior",
+        "arguments": "{\"event_type\": \"robot_motion_anomaly\"}"
+      }
+    },
+    {
+      "id": "call_01_P9KajltWCGxQCiCwTaBt3769",
+      "type": "function",
+      "function": {
+        "name": "get_site_prior",
+        "arguments": "{\"event_type\": \"robot_thermal_anomaly\"}"
+      }
+    },
+    {
+      "id": "call_02_hp9dbau3Vqc47AsgeGIL4825",
+      "type": "function",
+      "function": {
+        "name": "find_precedent",
+        "arguments": "{\"k\": 5}"
+      }
+    },
+    {
+      "id": "call_03_RFHwkcXCLbPNu6yDFerD9700",
+      "type": "function",
+      "function": {
+        "name": "get_board_load",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 12869,
+    "completionTokens": 198,
+    "totalTokens": 13067
+  },
+  "latencyMs": 2563,
+  "model": "deepseek-chat",
+  "costUsd": 0.0009562700000000001
+}

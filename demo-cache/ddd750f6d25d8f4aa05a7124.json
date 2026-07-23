@@ -1,0 +1,21 @@
+{
+  "text": "Let me assess the situation:\n\n1. **Board load**: 20 items/10min — this is a **flood** condition (threshold is 6). Rule R-004 says: \"Under flood conditions, suppress E0-E1 to protect the operator.\"\n2. **Evidence level**: E1 — \"something happened, intent unknown\"\n3. **Event type**: `robot_thermal_anomaly` — a single event, severity 3, background data\n4. **Prior**: P(real) = 0.25, but n=0 — this is a hand-set assumption with zero observations. Very weak prior.\n5. **Precedents**: None — this is novel for this site.\n6. **Questions asked**: 6 already asked and answered. No more cheap info to gather.\n\nGiven the flood condition (20 items, threshold 6), the rule explicitly says suppress E0-E1. This is E1. The prior is weak (n=0), the event is a single thermal anomaly with background data, and the operator is drowning in alerts. Suppressing this with a TTL (time-to-live) so it can recheck later is the right call — it's not worth the operator's attention right now.\n\nLet me adjust the prior downward slightly since it's a background thermal anomaly (not a foreground detection), n=0 (weak prior), and we're in flood conditions.",
+  "toolCalls": [
+    {
+      "id": "call_00_5WXbn8WWYor79m5YAg3f9564",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"defer\", \"action_id\": \"suppress_ttl\", \"prior_adjustment_log_odds\": -1.0, \"adjustment_reasons\": [\"Board load at 20 (flood) — R-004 directs suppress E0-E1\", \"Background thermal anomaly, not foreground detection\", \"n=0 prior — hand-set assumption with no real data behind it\"], \"novelty_flag\": true, \"confidence_p_real\": 0.12, \"what_would_change_my_mind\": \"If this thermal anomaly repeats or escalates, or if a guard reports something unusual in that zone, I'd re-evaluate. Also if board load drops below flood threshold.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2466,
+    "completionTokens": 542,
+    "totalTokens": 3008
+  },
+  "latencyMs": 5906,
+  "model": "deepseek-chat",
+  "costUsd": 0.00032438
+}

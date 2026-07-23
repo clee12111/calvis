@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze this carefully.\n\n**Situation:**\n- **Site:** site-009, zone-9-2\n- **Event:** `robot_motion_anomaly` — single event, severity 2, background data\n- **Evidence level:** E0 (nothing to act on)\n- **Prior:** P(real) = 0.1, but n=0 — this is a hand-set assumption with zero observations. Very weak prior.\n- **Precedents:** None — this is novel for this site/event-type combination.\n- **Board load:** 20 items/10min — this is **FLOOD** conditions (threshold is 6, we're at 20).\n- **Active rules:** Rule R-004 says under flood conditions (>6/10min), suppress E0-E1.\n\n**Analysis:**\n- E0 means nothing to act on — benign or equipment malfunction.\n- Board load is 20 — way over the flood threshold of 6.\n- The rule explicitly says: suppress E0-E1 under flood conditions.\n- The prior is a hand-set assumption (n=0), so it's weak, but the evidence level is E0 and the board is flooded.\n- Novelty flag should be set since find_precedent returned zero precedents.\n\n**Decision:** Under flood conditions with E0 evidence, the right move is to **commit** with **suppress** (or **suppress_ttl** for defer). Given the flood, I'll suppress it entirely to protect operator attention.\n\nLet me go with `suppress` as a commit action — this is a clear case where the policy rule says to suppress E0 under flood.",
+  "toolCalls": [
+    {
+      "id": "call_00_uDGMxdRU6fG2ldSaUKvO0990",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"commit\", \"action_id\": \"suppress\", \"prior_adjustment_log_odds\": -1.5, \"adjustment_reasons\": [\"Board load at 20 (flood conditions) — R-004 mandates suppressing E0-E1\", \"E0 evidence level — nothing actionable\", \"Hand-set prior with n=0 — weak prior, easily overridden by flood policy\"], \"novelty_flag\": true, \"confidence_p_real\": 0.05, \"what_would_change_my_mind\": \"If evidence level rose to E2+ (human presence confirmed), or if board load dropped below threshold, I would investigate further. Also if a guard reported something unusual in that zone.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2459,
+    "completionTokens": 600,
+    "totalTokens": 3059
+  },
+  "latencyMs": 6286,
+  "model": "deepseek-chat",
+  "costUsd": 0.00034013000000000007
+}

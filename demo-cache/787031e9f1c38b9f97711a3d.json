@@ -1,0 +1,21 @@
+{
+  "text": "Let me assess the situation:\n\n1. **Event**: `robot_offline` in zone-6-2 at site-006 — a patrol robot went offline. Severity 1, E0 level.\n2. **Prior**: P(real) = 0.05, but n=0 — this is a hand-set assumption with zero observations. Very weak prior.\n3. **Precedents**: None — this is novel for this site/event-type combination.\n4. **Board load**: 20 items/10min — **FLOOD conditions** (threshold is 6). The operator is drowning.\n5. **Active rules**: Rule R-004 says under flood conditions (>6/10min), suppress E0-E1 to protect the operator.\n\nThis is E0 (nothing to act on — equipment malfunction/benign). Under flood conditions, the policy is clear: suppress E0-E1. The robot going offline could be a network glitch, battery drain, or maintenance — at E0 with no evidence of human presence or threat, and the operator is at 20 items (3x flood threshold), this needs to be suppressed.\n\nSince there are no precedents, this is novel — I'll flag that for future learning.",
+  "toolCalls": [
+    {
+      "id": "call_00_MGnNxqgQbr0Pt0ilsBSp5050",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"commit\", \"action_id\": \"suppress\", \"prior_adjustment_log_odds\": -1.5, \"adjustment_reasons\": [\"Board load at 20/10min — flood conditions, suppress per R-004\", \"E0 — equipment offline, no threat indicators\", \"Hand-set prior with n=0 — weak prior, adjusting down for benign equipment event\"], \"novelty_flag\": true, \"confidence_p_real\": 0.02, \"what_would_change_my_mind\": \"If the robot was in a high-security zone and the offline event was preceded by motion or tamper alerts, that would raise this to E1+ and warrant investigation despite flood conditions.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2447,
+    "completionTokens": 508,
+    "totalTokens": 2955
+  },
+  "latencyMs": 5797,
+  "model": "deepseek-chat",
+  "costUsd": 0.00031353
+}

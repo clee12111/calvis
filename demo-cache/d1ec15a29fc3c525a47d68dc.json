@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze this situation:\n\n**Incident Summary:**\n- Site 006, Zone 6-2\n- Event: `robot_offline` (severity 1, E0 level)\n- Single event, no time span — a patrol robot went offline\n- Background data only — no alarm, no human detection\n\n**Prior:** P(real) = 0.05, but n=0 — this is a hand-set assumption with zero observations. Very weak prior.\n\n**Precedents:** Zero precedents. This is a **novel** event-type/site combination.\n\n**Board Load:** 0/10min — operator is free. No flood conditions.\n\n**Available Guards:** Two guards on shift. David Martinez is armed with 94% ack rate.\n\n**Analysis:**\n- A robot going offline at E0 could be a dead battery, network glitch, mechanical failure, or (rarely) something more concerning like tampering.\n- With n=0, the prior of 0.05 is just a guess. I should be somewhat skeptical but not dismissive.\n- No precedents means this is genuinely novel — worth noting for future learning.\n- Board load is low, so we have bandwidth to investigate cheaply.\n- The cheapest, freest question: we can ask the guard to check on it, or request a photo from the robot's last known position.\n\nLet me think about the adjustment. The prior is 0.05 with n=0 — it's a hand-set assumption. A robot going offline at a site with no history... it's probably a technical glitch. But with no data behind the prior, I should adjust slightly upward since we have zero evidence it's *not* real either. Let me set a small positive adjustment to account for the novelty and the weak prior.\n\nActually, let me reconsider. E0 means \"nothing to act on\" — this is a background robot offline event. The most common cause is technical. But since it's novel and the prior is unweighted, I'll investigate with a cheap question first.\n\nLet me go with **investigate** — ask the guard to radio in about the robot's status. This is a cheap question that costs the operator minimal attention.",
+  "toolCalls": [
+    {
+      "id": "call_00_lofXobYtGf1n5cCOmgar7898",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"investigate\", \"action_id\": \"ask_guard_radio\", \"prior_adjustment_log_odds\": 0.3, \"adjustment_reasons\": [\"n=0 prior is unweighted hand-set assumption, not learned data\", \"Novel event-type/site combination — no precedents to anchor expectations\", \"Robot offline could be benign (battery/network) but warrants a quick check given low board load\"], \"novelty_flag\": true, \"confidence_p_real\": 0.08, \"what_would_change_my_mind\": \"If the guard confirms the robot is simply on a charging dock or has a known network issue, I'd suppress. If the guard can't raise the robot or finds it in an unexpected location, I'd escalate to E1/E2 and consider dispatch.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2576,
+    "completionTokens": 736,
+    "totalTokens": 3312
+  },
+  "latencyMs": 10123,
+  "model": "deepseek-chat",
+  "costUsd": 0.0003864
+}

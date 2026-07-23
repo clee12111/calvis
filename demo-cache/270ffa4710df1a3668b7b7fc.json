@@ -1,0 +1,21 @@
+{
+  "text": "Let me assess the situation:\n\n1. **Event**: `robot_motion_anomaly` at site-002, zone-2-2. Single event, severity 2, background data.\n2. **Evidence level**: E0 (nothing to act on / equipment malfunction)\n3. **Prior**: P(real) = 0.1, but n=0 — this is a hand-set assumption with zero observations. Very weak prior.\n4. **Precedents**: None — this is novel for this site/event-type combination.\n5. **Board load**: 20 items/10min — this is FLOOD conditions (threshold is 6). The operator is drowning.\n6. **Active rules**: Rule R-004 says under flood conditions (>6/10min), suppress E0-E1 to manage operator load.\n\nGiven the flood conditions (20 items, threshold 6), the E0 evidence level, and the policy rule R-004, the right move is to **suppress** this. It's a single robot motion anomaly with background data — likely a sensor glitch or robot calibration issue. No point burning operator attention on this at 2am when they're already overloaded.\n\nSince n=0 (hand-set prior), I'll adjust slightly downward — the prior is a weak assumption and the evidence is E0 with no precedents.",
+  "toolCalls": [
+    {
+      "id": "call_00_Cwzlr1rC22nKxAD97mUx2444",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"commit\", \"action_id\": \"suppress\", \"prior_adjustment_log_odds\": -1.0, \"adjustment_reasons\": [\"Board load at 20 (flood conditions) — R-004 mandates suppress E0-E1\", \"E0 evidence level — nothing actionable\", \"Hand-set prior with n=0 — no real data behind it\", \"Single robot motion anomaly with background data — likely equipment noise\"], \"novelty_flag\": true, \"confidence_p_real\": 0.04, \"what_would_change_my_mind\": \"A guard report confirming human presence, or escalation to E2+ evidence level. Also, if board load drops below flood threshold, this could be re-evaluated.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2459,
+    "completionTokens": 539,
+    "totalTokens": 2998
+  },
+  "latencyMs": 5820,
+  "model": "deepseek-chat",
+  "costUsd": 0.0003230500000000001
+}

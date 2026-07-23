@@ -1,0 +1,21 @@
+{
+  "text": "This is a heavy-load situation — board load at 20, more than 3x the threshold of 6. Let me gather context systematically.",
+  "toolCalls": [
+    {
+      "id": "call_00_vjWVEceZBClNf4vXBqRD4364",
+      "type": "function",
+      "function": {
+        "name": "get_incident_context",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 1871,
+    "completionTokens": 122,
+    "totalTokens": 1993
+  },
+  "latencyMs": 2014,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0011795
+}

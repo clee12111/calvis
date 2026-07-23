@@ -1,0 +1,21 @@
+{
+  "text": "Now let me look at all the evidence carefully.",
+  "toolCalls": [
+    {
+      "id": "call_00_3m5awd8mpYhLcrHiQjLg7350",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"investigate\", \"action_id\": \"ask_guard_radio\", \"prior_adjustment_log_odds\": -0.3, \"adjustment_reasons\": [\"n=0 means hand-set prior with no data weight — free to adjust\", \"geofence exit from guard device with background:true — likely routine movement, not malicious\", \"zero precedents at this site — no local pattern to reinforce the prior\"], \"novelty_flag\": true, \"confidence_p_real\": 0.33, \"what_would_change_my_mind\": \"If the guard does not respond or gives an evasive answer, that would raise suspicion. If the guard confirms they stepped out for a legitimate reason (patrol route, escort), I'd suppress. If they don't acknowledge and the geofence alarm persists, escalate.\\\"\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2593,
+    "completionTokens": 980,
+    "totalTokens": 3573
+  },
+  "latencyMs": 11603,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0032565
+}

@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze this carefully.\n\n**Incident Summary:**\n- Site: site-009, Zone: zone-9-2\n- Event: robot_thermal_anomaly (severity 3)\n- Current evidence level: E1 (something happened, intent unknown)\n- Prior P(real): 0.25 — but n=0, meaning this is a hand-set assumption with zero observations behind it\n- No precedents found — this is a **novel** event-type/site combination\n- Board load: 0/10min — operator is free\n- 2 guards available (Rosa Smith, Ashley Davis) — both have ~78-80% ack rates, ~4.5 min avg response\n\n**Key observations:**\n1. **n=0 prior**: This is a hand-set assumption, not a learned estimate. I should be freer to adjust.\n2. **Novelty**: No precedents at all — this is genuinely new. The novelty_flag should be true.\n3. **Board load is 0** — operator has bandwidth. No flood conditions.\n4. **E1 level** — something happened, intent unknown. A thermal anomaly from a robot could be anything from a sensor glitch to an actual heat source.\n\n**Decision logic:**\n- The prior is 0.25 with n=0 — very weak. A thermal anomaly from a robot at night could be a real issue (fire, equipment overheating) or a false alarm.\n- Since there are no precedents and the prior is hand-set with no data, I should lean toward investigating further before committing resources.\n- The operator is not overloaded, so asking a question is cheap.\n- I could ask the guard to check or request a photo from the robot.\n\nLet me go with **investigate** — ask for a photo from the robot to get more evidence before deciding.",
+  "toolCalls": [
+    {
+      "id": "call_00_t8A0U92Pdw5qAiHUxNk95077",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"investigate\", \"action_id\": \"request_photo\", \"prior_adjustment_log_odds\": 0.0, \"adjustment_reasons\": [\"Hand-set prior with n=0 — no data behind it\", \"Novel event — no precedents to learn from\", \"Thermal anomaly at night could be significant but needs more evidence\"], \"novelty_flag\": true, \"confidence_p_real\": 0.25, \"what_would_change_my_mind\": \"A photo showing a clear heat source (fire, overheating equipment) would push me to commit. If the robot's thermal sensor is in a known blind spot or the zone is normally unoccupied at this hour, I'd lower confidence. Guard radio confirmation of a visible issue would also escalate.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2595,
+    "completionTokens": 653,
+    "totalTokens": 3248
+  },
+  "latencyMs": 8056,
+  "model": "deepseek-chat",
+  "costUsd": 0.00036449000000000003
+}

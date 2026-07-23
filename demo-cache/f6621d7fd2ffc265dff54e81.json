@@ -1,0 +1,29 @@
+{
+  "text": "Incident inc-00265. Board load is 20 — well over the threshold of 6. That's a flood condition. Let me gather all the context before deciding.",
+  "toolCalls": [
+    {
+      "id": "call_00_SLMyXUfXiPrcy1hH49Mg1015",
+      "type": "function",
+      "function": {
+        "name": "get_incident_context",
+        "arguments": "{}"
+      }
+    },
+    {
+      "id": "call_01_ElN8BruL6IO1CGc7rT7K0763",
+      "type": "function",
+      "function": {
+        "name": "get_board_load",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 1871,
+    "completionTokens": 130,
+    "totalTokens": 2001
+  },
+  "latencyMs": 1980,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0011955
+}

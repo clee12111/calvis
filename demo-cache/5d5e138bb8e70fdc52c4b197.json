@@ -1,0 +1,21 @@
+{
+  "text": "Let me gather the remaining context on this incident.",
+  "toolCalls": [
+    {
+      "id": "call_00_ZxOTcsRMMs8RPKKhZjXd5502",
+      "type": "function",
+      "function": {
+        "name": "find_precedent",
+        "arguments": "{\"k\": 5}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 3169,
+    "completionTokens": 1488,
+    "totalTokens": 4657
+  },
+  "latencyMs": 16754,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0045605
+}

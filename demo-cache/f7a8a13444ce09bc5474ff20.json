@@ -1,0 +1,21 @@
+{
+  "text": "Let me assess the situation:\n\n1. **Evidence level**: E0 (nothing to act on — photo showed empty area, likely animal or wind)\n2. **Event type**: robot_thermal_anomaly — a thermal sensor trigger from a robot\n3. **Prior**: P(real) = 0.25, but n=0 — this is a hand-set assumption with zero observations, so it's a weak starting point\n4. **Precedents**: None — this is novel for this site/zone\n5. **Board load**: 20 items/10min — FLOOD conditions (threshold is 6). The operator is drowning.\n6. **Active rules**: Rule R-004 says under flood conditions (>6/10min), suppress E0-E1 to manage operator load.\n7. **Already investigated**: 6 questions asked, all answered. The photo verification showed an empty area.\n\nGiven the flood conditions (20 items, threshold 6), the active rule R-004 explicitly directs me to suppress E0-E1 events. This is E0 — already investigated thoroughly (6 questions), photo showed empty area. The prior is a weak hand-set assumption (n=0), and the investigation has already been done. No need to burn more operator attention.\n\nI'll suppress this with a TTL so it doesn't re-alert.",
+  "toolCalls": [
+    {
+      "id": "call_00_FOtrwpkPts7sJqtHxzOY2997",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"defer\", \"action_id\": \"suppress_ttl\", \"prior_adjustment_log_odds\": -1.5, \"adjustment_reasons\": [\"Board load at 20 (flood conditions) — R-004 directs suppress E0-E1\", \"Photo verification already showed empty area — evidence resolved to E0\", \"Hand-set prior with n=0 — weak starting point, investigation already done\"], \"novelty_flag\": true, \"confidence_p_real\": 0.08, \"what_would_change_my_mind\": \"A subsequent alarm from the same zone within the TTL window, or a guard report of activity in that area.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2478,
+    "completionTokens": 525,
+    "totalTokens": 3003
+  },
+  "latencyMs": 5890,
+  "model": "deepseek-chat",
+  "costUsd": 0.00032046000000000006
+}

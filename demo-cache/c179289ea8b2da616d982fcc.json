@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze this carefully.\n\n**Context:**\n- **Site:** site-008, zone-8-1\n- **Event:** `area_advisory` (severity 1) — a background sensor advisory\n- **Evidence level:** E0 (nothing to act on)\n- **Prior:** P(real) = 0.05, n=0 (hand-set prior, no real data behind it)\n- **Precedents:** None — this is a novel event-type/site combination\n- **Board load:** 0/10min — operator is free\n- **5 questions already asked, 5 answered** — the system has already investigated\n\n**Analysis:**\n- E0 means \"nothing to act on\" — benign or equipment malfunction\n- The prior is hand-set (n=0), so it's a weak starting point, not learned\n- No precedents exist — this is novel\n- Board load is 0 — operator has bandwidth\n- 5 questions already asked — we've already investigated some\n\nGiven E0 (nothing to act on), a hand-set prior of 0.05 with no data behind it, and no precedents — this is a very low-signal event. The area_advisory with background=true is likely a routine sensor advisory. With 5 questions already answered, we've done our due diligence.\n\nSince it's E0 and the prior is low, and we've already investigated (5 questions asked), the right move is to **suppress** this — it's benign.\n\nLet me adjust the prior slightly downward since the evidence level is E0 (nothing to act on) and the event is a background sensor advisory.",
+  "toolCalls": [
+    {
+      "id": "call_00_SwH2uKt9SVllGWpjYDuV7081",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"commit\", \"action_id\": \"suppress\", \"prior_adjustment_log_odds\": -1.0, \"adjustment_reasons\": [\"E0 evidence level - nothing to act on\", \"Background sensor advisory with no human presence indicators\", \"5 questions already investigated with no escalation triggers\"], \"novelty_flag\": true, \"confidence_p_real\": 0.02, \"what_would_change_my_mind\": \"A follow-up event with higher severity, a guard report confirming activity, or a correlated sensor trigger in the same zone would change my assessment.\\\"\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2444,
+    "completionTokens": 570,
+    "totalTokens": 3014
+  },
+  "latencyMs": 6363,
+  "model": "deepseek-chat",
+  "costUsd": 0.0003306800000000001
+}

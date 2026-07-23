@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze this carefully.\n\n**Incident Summary:**\n- Site 6, Zone 6-1\n- Event: `robot_motion_anomaly` — a security robot detected a motion anomaly\n- Severity 3 (moderate)\n- E1 evidence level — something happened, intent unknown\n- No precedents — this is novel for this site\n- Prior P(real) = 0.10, but n=0 — this is a hand-set assumption with zero observations behind it\n- Board load = 0/10min — operator is free\n- 2 guards available, one armed (David Martinez, 94% ack rate)\n\n**Key reasoning:**\n1. **Novelty**: find_precedent returned zero precedents. This site/event-type combo has never been seen before. So novelty_flag = true.\n2. **Prior is weak**: n=0 means this is a hand-set assumption, not a learned estimate. I should be freer to adjust.\n3. **Board load is 0** — operator has bandwidth. No flood conditions.\n4. **Robot motion anomaly** at severity 3 — a robot patrol detected something anomalous. This could be a real intrusion or a false alarm (animal, equipment issue, etc.).\n5. With no precedents and a weak prior, the smart move is to **investigate** — ask a cheap question to gather more evidence before committing.\n\nLet me ask for a photo from the robot to see what it detected.",
+  "toolCalls": [
+    {
+      "id": "call_00_KEJh8EUPtgLWCgM846K19055",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"investigate\", \"action_id\": \"request_photo\", \"prior_adjustment_log_odds\": 0.0, \"adjustment_reasons\": [\"No precedents exist — novel event, weak prior (n=0)\", \"Board load is 0 — operator has bandwidth to investigate\", \"Robot motion anomaly at severity 3 warrants visual confirmation\"], \"novelty_flag\": true, \"confidence_p_real\": 0.15, \"what_would_change_my_mind\": \"A photo showing a human figure or vehicle would raise this to E2/E3 and trigger guard dispatch. A photo showing nothing (false alarm from sensor glitch, animal, debris) would lower confidence and suggest suppression or log-and-watch.\\\"\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2595,
+    "completionTokens": 568,
+    "totalTokens": 3163
+  },
+  "latencyMs": 6216,
+  "model": "deepseek-chat",
+  "costUsd": 0.00034069000000000005
+}

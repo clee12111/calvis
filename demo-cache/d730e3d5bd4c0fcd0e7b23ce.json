@@ -1,0 +1,21 @@
+{
+  "text": "",
+  "toolCalls": [
+    {
+      "id": "call_00_lKIaakS6rRwKkknh1aKm7604",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"commit\", \"action_id\": \"suppress\", \"prior_adjustment_log_odds\": -1.5, \"adjustment_reasons\": [\"Guard radioed in 'all clear' - direct human confirmation\", \"Evidence level already E0 (nothing to act on)\", \"Board load at 20/10min - flood conditions, policy R-004 triggers suppression\"], \"novelty_flag\": true, \"confidence_p_real\": 0.12, \"what_would_change_my_mind\": \"A second guard reporting something anomalous in the same zone, or a different sensor type triggering at the same zone with conflicting data.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2636,
+    "completionTokens": 1010,
+    "totalTokens": 3646
+  },
+  "latencyMs": 11244,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.003338
+}

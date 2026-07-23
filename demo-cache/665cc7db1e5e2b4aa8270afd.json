@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze this carefully.\n\n**Context:**\n- **Event**: Missed check-in at site-011, zone-11-1\n- **Evidence Level**: E1 (something happened, intent unknown)\n- **Board Load**: 20 items/10min — this is **FLOOD** conditions (threshold is 6)\n- **Prior**: P(real) = 0.3, but n=0 — this is a hand-set assumption with zero observations\n- **Precedents**: None — this is novel for this site\n- **Active Rule R-004**: Under flood conditions (>6/10min), suppress E0-E1\n\n**Analysis:**\n- The board is at 20 items — that's severe overload/flood. The operator is drowning.\n- Rule R-004 explicitly says: suppress E0-E1 under flood conditions.\n- This is E1 — a missed check-in. No other corroborating events.\n- The prior is n=0 (hand-set), so it's a weak starting point.\n- No precedents at this site for missed check-ins.\n- A missed check-in from a guard could be a guard who's just running late, forgot, or is in a dead zone. It's low-severity (severity 2).\n\nGiven the flood conditions and the explicit rule to suppress E0-E1, the right move is to **suppress** this. The operator's attention is better spent on higher-severity items.\n\nHowever, since this is novel (no precedents), I should note that. But the flood rule is clear.\n\nLet me set a small negative adjustment since n=0 means the prior is weak, and a missed check-in with no other signals is likely benign.",
+  "toolCalls": [
+    {
+      "id": "call_00_rilJw1hJ1iTOzMiKSrJP7116",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"commit\", \"action_id\": \"suppress\", \"prior_adjustment_log_odds\": -1.0, \"adjustment_reasons\": [\"Board load at 20 (flood) — R-004 mandates suppress E0-E1\", \"Missed check-in with no corroborating events — likely benign\", \"n=0 prior is weak hand-set assumption, no learned data behind it\"], \"novelty_flag\": true, \"confidence_p_real\": 0.15, \"what_would_change_my_mind\": \"A follow-up event (e.g., duress alarm, motion in zone) or a second missed check-in from the same guard would escalate this. Also, if board load drops below flood threshold, this could be re-evaluated.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2454,
+    "completionTokens": 624,
+    "totalTokens": 3078
+  },
+  "latencyMs": 6821,
+  "model": "deepseek-chat",
+  "costUsd": 0.0003465000000000001
+}

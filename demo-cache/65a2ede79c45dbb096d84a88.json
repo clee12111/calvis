@@ -1,0 +1,21 @@
+{
+  "text": "Let me assess the situation:\n\n1. **Evidence level**: E0 (lowest) — \"Guard reports all clear\"\n2. **Event type**: `robot_thermal_anomaly` — a robot thermal sensor anomaly\n3. **Prior**: P(real) = 0.25, but n=0 — this is a hand-set assumption with zero observations, so it's a weak starting point\n4. **Precedents**: None — this is novel for this site\n5. **Board load**: 20 items/10min — **FLOOD conditions** (threshold is 6)\n6. **Active rules**: Rule R-004 says \"Under flood conditions (>6/10min), suppress E0-E1 to manage operator load\"\n\nThe incident is already at E0 (guard confirmed all clear). The board is severely overloaded at 20 items (threshold 6). The rule explicitly says to suppress E0-E1 under flood conditions. The prior is a hand-set assumption with no real data behind it.\n\nGiven the guard has already confirmed \"all clear\" and the evidence level is E0, and we're in flood conditions, the right move is to **suppress** this.\n\nLet me also check if there are guards available.",
+  "toolCalls": [
+    {
+      "id": "call_00_6VNgDaFpWbYR5mVFM2ZE9672",
+      "type": "function",
+      "function": {
+        "name": "get_available_guards",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2476,
+    "completionTokens": 289,
+    "totalTokens": 2765
+  },
+  "latencyMs": 3456,
+  "model": "deepseek-chat",
+  "costUsd": 0.00025424000000000003
+}

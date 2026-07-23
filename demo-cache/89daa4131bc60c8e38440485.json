@@ -1,0 +1,29 @@
+{
+  "text": "Let me start gathering information on this incident.",
+  "toolCalls": [
+    {
+      "id": "call_00_9ScAc2zaS3WbR7Ce5zig3292",
+      "type": "function",
+      "function": {
+        "name": "get_incident_context",
+        "arguments": "{}"
+      }
+    },
+    {
+      "id": "call_01_5j8zETlOvaSymqgcC5Ge6106",
+      "type": "function",
+      "function": {
+        "name": "get_board_load",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 1871,
+    "completionTokens": 75,
+    "totalTokens": 1946
+  },
+  "latencyMs": 1294,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0010855
+}

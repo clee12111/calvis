@@ -1,0 +1,21 @@
+{
+  "text": "Now I have a clear picture. Let me summarize my analysis:\n\n**Incident:** Guard no-show at shift start at site-007, zone-7-5. Night shift. E2 (human confirmed absent, intent unknown).\n\n**Prior:** 0.7, but critically **n=0** — this is a hand-set assumption, not a learned estimate. No data backs it up.\n\n**Precedents:** Zero. This is a **novel** event for this site.\n\n**Board load:** 0/10min — operator has bandwidth.\n\n**Guards available:** Elena Garcia (armed, 92.6% ack) and Valentina Martin (unarmed, 89.9% ack) — both on shift.\n\nThe prior of 0.7 with n=0 is a weak starting point, so I'll adjust it downward. A guard no-show is often benign (slept in, transport issue, forgot schedule) — especially when there are still two guards operational on site. But it's novel, so the right first move is investigation — a cheap radio check to find out what happened.",
+  "toolCalls": [
+    {
+      "id": "call_00_ENX0zRJCZUWwKypeX4bq9563",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"investigate\", \"action_id\": \"ask_guard_radio\", \"prior_adjustment_log_odds\": -0.5, \"adjustment_reasons\": [\"Hand-set prior (n=0) is unreliable — no data backing it\", \"No-shows at shift start are frequently benign (slept in, transport, forgot schedule)\", \"Two other guards still on site — site coverage not compromised\"], \"novelty_flag\": true, \"confidence_p_real\": 0.55, \"what_would_change_my_mind\": \"If the responding guard reports the missing guard is unreachable by phone AND there are no personal/transport explanations, I'd escalate. If physical signs of forced entry or disturbance are found at the guard's post, that raises it to E3.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2603,
+    "completionTokens": 1503,
+    "totalTokens": 4106
+  },
+  "latencyMs": 16347,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0043075
+}

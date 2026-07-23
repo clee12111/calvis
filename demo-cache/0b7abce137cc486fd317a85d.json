@@ -1,0 +1,21 @@
+{
+  "text": "Let me look up more details before deciding.",
+  "toolCalls": [
+    {
+      "id": "call_00_PbC0ACmh1svZUzO0CcjD3094",
+      "type": "function",
+      "function": {
+        "name": "get_incident_context",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2628,
+    "completionTokens": 960,
+    "totalTokens": 3588
+  },
+  "latencyMs": 11999,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.003234
+}

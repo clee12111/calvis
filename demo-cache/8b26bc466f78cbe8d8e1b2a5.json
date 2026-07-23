@@ -1,0 +1,37 @@
+{
+  "text": "Board load is 20 — that's a **flood** condition (well above 6). Let me get the priors and precedents.",
+  "toolCalls": [
+    {
+      "id": "call_00_Zq4hALrUkpnMDus9aUux1661",
+      "type": "function",
+      "function": {
+        "name": "get_site_prior",
+        "arguments": "{\"event_type\": \"robot_motion_anomaly\"}"
+      }
+    },
+    {
+      "id": "call_01_JVfkziHlXQ9KbWYU5BKn3831",
+      "type": "function",
+      "function": {
+        "name": "get_site_prior",
+        "arguments": "{\"event_type\": \"robot_thermal_anomaly\"}"
+      }
+    },
+    {
+      "id": "call_02_uEYb2IrLp7kMCQOHp5HV8594",
+      "type": "function",
+      "function": {
+        "name": "find_precedent",
+        "arguments": "{\"k\": 5}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2143,
+    "completionTokens": 153,
+    "totalTokens": 2296
+  },
+  "latencyMs": 1755,
+  "model": "deepseek-chat",
+  "costUsd": 0.00019285000000000003
+}

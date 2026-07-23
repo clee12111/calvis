@@ -1,0 +1,21 @@
+{
+  "text": "Let me assess the situation:\n\n1. **Incident**: Single `robot_thermal_anomaly` event at site-005, zone-5-0. Severity 3. E1 level.\n2. **Prior**: P(real) = 0.25, but n=0 — this is a hand-set assumption with zero observations. Very weak prior.\n3. **Precedents**: Zero precedents. This is **novel** — never seen this event type at this site before.\n4. **Board load**: 20 items/10min — **FLOOD conditions** (threshold is 6). The operator is drowning.\n5. **Active rules**: Rule R-004 says under flood conditions (>6/10min), suppress E0-E1 to protect operator.\n\nThe rule is clear: under flood conditions, suppress E0-E1. This is E1. The prior is weak (n=0), and there's no precedent. A single thermal anomaly from a robot with `background: true` suggests it could be a sensor glitch or environmental reading, not a threat.\n\nHowever, since n=0 and it's novel, I should be cautious about outright suppression. But the flood condition is severe (20 vs threshold 6) — the operator is at 3x overload. The policy says suppress E0-E1 in flood conditions.\n\nLet me check if there are guards available as a cheap lookup.",
+  "toolCalls": [
+    {
+      "id": "call_00_zKj763F8BjScd1P1z3gs6867",
+      "type": "function",
+      "function": {
+        "name": "get_available_guards",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2466,
+    "completionTokens": 325,
+    "totalTokens": 2791
+  },
+  "latencyMs": 3886,
+  "model": "deepseek-chat",
+  "costUsd": 0.00026362
+}

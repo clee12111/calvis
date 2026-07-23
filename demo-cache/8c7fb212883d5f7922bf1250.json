@@ -1,0 +1,37 @@
+{
+  "text": "Let me gather the context to make an informed decision.",
+  "toolCalls": [
+    {
+      "id": "call_00_9BZRh9lLNCMEMly9cDEr2577",
+      "type": "function",
+      "function": {
+        "name": "get_site_prior",
+        "arguments": "{\"event_type\": \"geofence_exit\"}"
+      }
+    },
+    {
+      "id": "call_01_CuLJpNOPNVqQpK4x62cj4927",
+      "type": "function",
+      "function": {
+        "name": "find_precedent",
+        "arguments": "{\"k\": 3}"
+      }
+    },
+    {
+      "id": "call_02_TQ6jOAAdVqEBJHeo0hNm0248",
+      "type": "function",
+      "function": {
+        "name": "get_board_load",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2013,
+    "completionTokens": 329,
+    "totalTokens": 2342
+  },
+  "latencyMs": 3815,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0016645
+}

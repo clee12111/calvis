@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze this situation:\n\n**Context:**\n- **Event**: Missed check-in by a guard at site-001, zone-1-0\n- **Evidence Level**: E1 (something happened, intent unknown)\n- **Prior**: P(real) = 0.3, but n=0 — this is a hand-set assumption with zero observations behind it\n- **Precedents**: None — this is novel for this site/event-type combination\n- **Board Load**: 0 items/10min — very low, operator has bandwidth\n- **Guards available**: 3 on shift, including Maria Garcia (armed, 75% ack rate, ~5min avg response)\n\n**Analysis:**\nA missed check-in at E1 is ambiguous. It could be:\n- A guard who forgot or is busy (benign)\n- A guard in trouble (serious)\n- Equipment/radio issue\n\nThe prior is 0.3 but with n=0, it's a weak starting point — I should be free to adjust. No precedents exist, so this is genuinely novel.\n\nSince board load is 0 (very low), I have room to investigate. The cheapest, most informative next step is to ask the guard on radio — specifically Maria Garcia who's armed and has a reasonable response time. Let me ask the guard to confirm their status.\n\nActually, I should investigate first — ask a question to gather more evidence before committing.\n\nLet me go with **investigate** — ask the guard on radio to confirm their status.",
+  "toolCalls": [
+    {
+      "id": "call_00_kFkmDUP5O9B0QlBVNaZ69144",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"investigate\", \"action_id\": \"ask_guard_radio\", \"prior_adjustment_log_odds\": 0.0, \"adjustment_reasons\": [\"n=0 prior is a hand-set assumption with no data behind it — neutral adjustment until we get evidence\", \"No precedents exist — this is a novel situation\", \"Board load is 0 — we have capacity to investigate before committing\"], \"novelty_flag\": true, \"confidence_p_real\": 0.3, \"what_would_change_my_mind\": \"If the guard responds and confirms they're okay (benign), I'd suppress. If they don't respond after a reasonable wait, I'd escalate to dispatch a guard to check. If they respond with a distress signal, I'd escalate immediately.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2622,
+    "completionTokens": 587,
+    "totalTokens": 3209
+  },
+  "latencyMs": 6797,
+  "model": "deepseek-chat",
+  "costUsd": 0.00034790000000000005
+}

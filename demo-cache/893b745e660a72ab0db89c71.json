@@ -1,0 +1,21 @@
+{
+  "text": "Let me gather the full context on this incident first.",
+  "toolCalls": [
+    {
+      "id": "call_00_a59kKDQOt1FBzDLS1UZN8702",
+      "type": "function",
+      "function": {
+        "name": "get_incident_context",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 1881,
+    "completionTokens": 59,
+    "totalTokens": 1940
+  },
+  "latencyMs": 1412,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0010585
+}

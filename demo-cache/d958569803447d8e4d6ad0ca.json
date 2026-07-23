@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze this carefully.\n\n**Incident Summary:**\n- **Site:** site-002, zone-2-0\n- **Event:** `robot_motion_anomaly` — a single event, severity 2, source is a robot, background data\n- **Evidence Level:** E0 (nothing to act on)\n- **Prior:** P(real) = 0.10, but n=0 — this is a hand-set assumption with zero observations behind it\n- **Precedents:** None — this is novel (never seen this event type at this site before)\n- **Board Load:** 0 items/10min — operator is not overloaded\n- **5 questions already asked, 5 answered, 5 evidence items gathered**\n\n**Analysis:**\n- E0 means nothing to act on — benign or equipment malfunction\n- The prior is hand-set (n=0), so it's a weak starting point, not a learned estimate\n- No precedents exist — this is genuinely novel\n- Board load is 0 — operator has bandwidth\n- 5 questions already asked — we've already investigated some\n\nGiven E0 (nothing to act on), the hand-set prior of 0.10 with n=0, and no precedents, this looks like a benign robot motion anomaly. The robot detected some motion but it's background data. With E0, the appropriate move is to **suppress** or **log_and_watch**.\n\nSince it's E0 and the prior is weak (n=0), I'll adjust slightly downward from the hand-set 0.10. The event is a robot motion anomaly with background data — likely a sensor glitch or routine robot movement.\n\nLet me check available guards too.",
+  "toolCalls": [
+    {
+      "id": "call_00_CqTda6QSOL77TbnABgWX0376",
+      "type": "function",
+      "function": {
+        "name": "get_available_guards",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2459,
+    "completionTokens": 389,
+    "totalTokens": 2848
+  },
+  "latencyMs": 4783,
+  "model": "deepseek-chat",
+  "costUsd": 0.0002810500000000001
+}

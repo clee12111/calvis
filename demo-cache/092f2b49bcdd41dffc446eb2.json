@@ -1,0 +1,45 @@
+{
+  "text": "",
+  "toolCalls": [
+    {
+      "id": "call_00_1Kr50ELXf62TgOZo6JiQ9167",
+      "type": "function",
+      "function": {
+        "name": "get_site_prior",
+        "arguments": "{\"event_type\": \"geofence_exit\"}"
+      }
+    },
+    {
+      "id": "call_01_ZdcmtvTcKrZjnWyBfYBD8254",
+      "type": "function",
+      "function": {
+        "name": "find_precedent",
+        "arguments": "{\"k\": 5}"
+      }
+    },
+    {
+      "id": "call_02_6ATrugw3RU8qQ1Md2wKP0619",
+      "type": "function",
+      "function": {
+        "name": "get_board_load",
+        "arguments": "{}"
+      }
+    },
+    {
+      "id": "call_03_N9sRNZubWGTqXTIh2qn52532",
+      "type": "function",
+      "function": {
+        "name": "get_active_rules",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2003,
+    "completionTokens": 315,
+    "totalTokens": 2318
+  },
+  "latencyMs": 3891,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0016315
+}

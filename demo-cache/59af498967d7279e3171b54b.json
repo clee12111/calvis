@@ -1,0 +1,37 @@
+{
+  "text": "",
+  "toolCalls": [
+    {
+      "id": "call_00_qGt2jV0JlIw9BEQS9AaK9651",
+      "type": "function",
+      "function": {
+        "name": "get_site_prior",
+        "arguments": "{\"event_type\": \"robot_offline\"}"
+      }
+    },
+    {
+      "id": "call_01_X2b9bNvSzR1GoNcW17Y38494",
+      "type": "function",
+      "function": {
+        "name": "find_precedent",
+        "arguments": "{\"k\": 5}"
+      }
+    },
+    {
+      "id": "call_02_OOCfpqLq6gOkPLKb0LSb5255",
+      "type": "function",
+      "function": {
+        "name": "get_board_load",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 1993,
+    "completionTokens": 96,
+    "totalTokens": 2089
+  },
+  "latencyMs": 1233,
+  "model": "deepseek-chat",
+  "costUsd": 0.00016639
+}

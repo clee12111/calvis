@@ -1,0 +1,21 @@
+{
+  "text": "Let me gather the last bit of information before deciding.",
+  "toolCalls": [
+    {
+      "id": "call_00_ZgE091ERV6yftRX9NLdn0820",
+      "type": "function",
+      "function": {
+        "name": "get_site_prior",
+        "arguments": "{\"event_type\": \"geofence_exit\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2632,
+    "completionTokens": 982,
+    "totalTokens": 3614
+  },
+  "latencyMs": 10628,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.00328
+}

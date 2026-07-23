@@ -1,0 +1,21 @@
+{
+  "text": "Now let me analyze everything before deciding.",
+  "toolCalls": [
+    {
+      "id": "call_00_KGZ5awkPN8VdtqwuiUXm1236",
+      "type": "function",
+      "function": {
+        "name": "get_site_prior",
+        "arguments": "{\"event_type\": \"geofence_exit\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2634,
+    "completionTokens": 1164,
+    "totalTokens": 3798
+  },
+  "latencyMs": 13924,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.003645
+}

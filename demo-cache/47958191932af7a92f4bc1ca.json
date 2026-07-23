@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze what I've gathered:\n\n**Incident Context:**\n- Site: site-006, zone-6-1\n- Event: `robot_thermal_anomaly` (severity 3, background sensor)\n- Evidence level: E1 (something happened, intent unknown)\n- Board load: 0/10min — very low, operator has bandwidth\n\n**Prior:** P(real) = 0.25, but n=0 — this is a hand-set assumption with zero observations. Very weak prior, should be treated as a starting guess, not a learned estimate.\n\n**Precedents:** Zero precedents. This is genuinely novel — no similar incident has ever been seen at this site/zone.\n\n**Available Guards:** Two guards on shift. David Martinez (armed, 94% ack rate) and Omar Lopez (unarmed, 82% ack rate).\n\n**Analysis:**\n- This is a thermal anomaly detected by a robot (background sensor). Severity 3 is moderate.\n- n=0 means the prior of 0.25 is just a guess — I should be free to adjust.\n- Zero precedents means this is novel — no historical pattern to rely on.\n- Board load is 0 — operator has capacity.\n- We have 5 evidence items already and 5 questions asked. We're at E1.\n\nGiven the novelty (no precedents), the weak prior (n=0), and the low board load, I think this warrants investigation. A thermal anomaly from a robot could be anything from a sensor glitch to an actual heat source (fire, equipment failure, etc.). Let me ask for more info before committing.\n\nLet me ask for a photo or check with the guard to get more clarity.",
+  "toolCalls": [
+    {
+      "id": "call_00_XPnkkUQelObun1hHq1gf8226",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"investigate\", \"action_id\": \"request_photo\", \"prior_adjustment_log_odds\": 0.5, \"adjustment_reasons\": [\"n=0 prior is a hand-set assumption with no data backing it — weak starting point\", \"Zero precedents means this is genuinely novel, no historical pattern to anchor on\", \"Thermal anomaly at severity 3 could indicate equipment failure or fire risk — warrants cautious attention\"], \"novelty_flag\": true, \"confidence_p_real\": 0.35, \"what_would_change_my_mind\": \"A clear photo showing no heat source would lower my confidence. Guard radio confirmation of a false alarm (e.g., robot near a warm pipe) would also reduce concern. Conversely, a photo showing flames or smoke would escalate to E3/E4 immediately.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2595,
+    "completionTokens": 636,
+    "totalTokens": 3231
+  },
+  "latencyMs": 7837,
+  "model": "deepseek-chat",
+  "costUsd": 0.00035973
+}

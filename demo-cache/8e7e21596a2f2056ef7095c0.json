@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze what I've gathered:\n\n**Incident Summary:**\n- **Site:** site-011, zone-11-3\n- **Event:** `robot_thermal_anomaly` (severity 3) — a single event, background source\n- **Evidence Level:** E1 (something happened, intent unknown)\n- **Prior:** P(real) = 0.25, but n=0 — this is a hand-set assumption with zero observations. Very weak prior.\n- **Precedents:** None — this is a **novel** event type at this site.\n- **Board Load:** 0 items/10min — very low, operator has bandwidth.\n- **Guards:** 2 available (Lucia Martin, armed, 93% ack rate; Brianna Martin, unarmed, 89% ack rate)\n\n**Analysis:**\n- n=0 means the prior of 0.25 is a pure assumption with no data behind it. I should be free to adjust.\n- No precedents at all — this is genuinely novel (novelty_flag = true).\n- A thermal anomaly from a robot at severity 3 is notable. Severity 3 out of... presumably 5? That's moderately concerning.\n- Board load is 0 — operator has capacity. No flood conditions.\n- The event is a single background thermal anomaly from a robot. Could be a sensor glitch, could be something real.\n\n**Decision logic:**\n- E1 with no precedents and a hand-set prior — I should investigate further before committing.\n- The cheapest, most informative next step: I could ask the robot/guard to check. But since it's a robot thermal anomaly, asking for a photo (request_photo) would be a cheap investigation to gather more evidence.\n- Alternatively, I could ask the guard on radio to check it out.\n\nLet me go with **investigate** — ask for a photo to get visual confirmation of what the thermal anomaly is.\n\nActually, let me think about this more carefully. The prior is 0.25 with n=0 — that's a weak starting point. No precedents. Novelty. Board load is low. This is a good candidate for a cheap investigation to gather evidence.\n\nI'll adjust the prior slightly upward (thermal anomaly at severity 3 is more concerning than a random E1) but not too much since we have no data.\n\nLet me set prior_adjustment_log_odds to +0.5 (slightly more likely real given severity 3 on a thermal anomaly).",
+  "toolCalls": [
+    {
+      "id": "call_00_NIytVd2EJ4SShNWUQr096597",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"investigate\", \"action_id\": \"request_photo\", \"prior_adjustment_log_odds\": 0.5, \"adjustment_reasons\": [\"n=0 hand-set prior — weak, free to adjust\", \"Severity 3 thermal anomaly is moderately concerning\", \"No precedents — novel event needs more evidence\"], \"novelty_flag\": true, \"confidence_p_real\": 0.35, \"what_would_change_my_mind\": \"A photo showing a clear heat source (human/vehicle) would push me to commit. A photo showing nothing unusual or a known benign heat signature (equipment, sun reflection) would let me suppress. Guard radio confirmation of a real threat would escalate.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2597,
+    "completionTokens": 782,
+    "totalTokens": 3379
+  },
+  "latencyMs": 9159,
+  "model": "deepseek-chat",
+  "costUsd": 0.00040075
+}

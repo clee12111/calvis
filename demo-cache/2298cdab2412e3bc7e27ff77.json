@@ -1,0 +1,21 @@
+{
+  "text": "Now let me synthesize everything.",
+  "toolCalls": [
+    {
+      "id": "call_00_A3RY9OjBRpJIF6PIrtRL1075",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"commit\", \"action_id\": \"notify_guard\", \"prior_adjustment_log_odds\": 0.5, \"adjustment_reasons\": [\"Three correlated events in 45s (vehicle approach + obscured plate + forced pry door) strongly point to active break-in\", \"All three priors are hand-set (n=0) — weak priors with no data backing, freeing adjustment\", \"Novel combination (zero precedents) but E3 door_forced with pry method is intrinsically high-confidence signal\"], \"novelty_flag\": true, \"confidence_p_real\": 0.85, \"what_would_change_my_mind\": \"A guard reporting back that the dock door is intact and the vehicle was verified as a scheduled delivery would downgrade this to E1/E2. Guard video confirmation of no forced entry would change my assessment significantly.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2985,
+    "completionTokens": 1306,
+    "totalTokens": 4291
+  },
+  "latencyMs": 15555,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0041045
+}

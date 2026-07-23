@@ -1,0 +1,61 @@
+{
+  "text": "Good, I have the incident context. Two events at site-000, zone-0-1: a robot motion anomaly (severity 2) and a robot thermal anomaly (severity 3), both with background raw data. Let me gather more info.",
+  "toolCalls": [
+    {
+      "id": "call_00_g1D7N23bgXN2FUfS113U5338",
+      "type": "function",
+      "function": {
+        "name": "get_site_prior",
+        "arguments": "{\"event_type\": \"robot_motion_anomaly\"}"
+      }
+    },
+    {
+      "id": "call_01_LHms7ClVI6zVgZfrgZhI5928",
+      "type": "function",
+      "function": {
+        "name": "get_site_prior",
+        "arguments": "{\"event_type\": \"robot_thermal_anomaly\"}"
+      }
+    },
+    {
+      "id": "call_02_mGrCivAFvc7BO5NX9E556404",
+      "type": "function",
+      "function": {
+        "name": "find_precedent",
+        "arguments": "{\"k\": 5}"
+      }
+    },
+    {
+      "id": "call_03_l68OhxyQY5S2oXifm3lu8119",
+      "type": "function",
+      "function": {
+        "name": "get_board_load",
+        "arguments": "{}"
+      }
+    },
+    {
+      "id": "call_04_XBAcmd8KcVdXOlCRYQri2799",
+      "type": "function",
+      "function": {
+        "name": "get_active_rules",
+        "arguments": "{}"
+      }
+    },
+    {
+      "id": "call_05_Fd9XrQqWcYfKLadVyPIa0228",
+      "type": "function",
+      "function": {
+        "name": "get_available_guards",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2058,
+    "completionTokens": 226,
+    "totalTokens": 2284
+  },
+  "latencyMs": 2081,
+  "model": "deepseek-chat",
+  "costUsd": 0.00020734
+}

@@ -1,0 +1,21 @@
+{
+  "text": "Let me assess the situation:\n\n1. **Event**: `robot_offline` at site-010, zone-10-3 — a single E0 event (severity 1, background)\n2. **Prior**: P(real) = 0.05, but n=0 — this is a hand-set assumption with zero observations. Very weak prior.\n3. **Precedents**: None — this is novel for this site/event-type combination.\n4. **Board load**: 20 items/10min — **FLOOD conditions** (threshold is 6, we're at 20).\n5. **Active rules**: Rule R-004 says under flood conditions (>6/10min), suppress E0-E1 to protect the operator.\n\nThe board is severely overloaded (20 vs threshold of 6). The event is E0 (robot offline, background, no human presence indicated). The prior is a hand-set 0.05 with n=0 — essentially no data behind it. Under flood conditions, the policy says to suppress E0-E1.\n\nGiven the flood conditions and the E0 level, the right move is to **suppress** this. The operator is drowning at 20 items/10min. A robot going offline with no other indicators is almost certainly a technical glitch, not a security event.\n\nLet me also check if there are guards available quickly.",
+  "toolCalls": [
+    {
+      "id": "call_00_RYcHDhlsbVHA55oJ4p1O3625",
+      "type": "function",
+      "function": {
+        "name": "get_available_guards",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2447,
+    "completionTokens": 316,
+    "totalTokens": 2763
+  },
+  "latencyMs": 4153,
+  "model": "deepseek-chat",
+  "costUsd": 0.00025977000000000004
+}

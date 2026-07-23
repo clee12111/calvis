@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze the situation:\n\n**Context:**\n- **Site**: site-010, zone-10-4\n- **Event**: robot_thermal_anomaly (severity 3, background reading)\n- **Evidence level**: E1 (something happened, intent unknown)\n- **Prior**: P(real) = 0.25, but n=0 — this is a hand-set assumption with zero observations behind it\n- **Precedents**: None — this is a novel event type for this site\n- **Board load**: 20 items/10min — FLOOD conditions (threshold is 6)\n- **Active rule R-004**: Under flood conditions (>6/10min), suppress E0-E1\n\n**Analysis:**\n- The board is severely overloaded (20 vs threshold of 6). The operator is drowning.\n- This is E1 — something happened, intent unknown. A robot thermal anomaly with background data, severity 3.\n- The prior is hand-set (n=0), so it's a weak starting point — but the event is a thermal anomaly from a robot, which could be a sensor glitch or a real heat source.\n- No precedents exist, so this is novel.\n- Rule R-004 explicitly says: under flood conditions, suppress E0-E1.\n\nGiven the flood conditions and the E1 level, the right move per policy is to suppress this. The operator cannot afford to investigate every E1 thermal anomaly when they're at 3x flood level.\n\nHowever, since this is novel (no precedents), I should note that for future learning.\n\nLet me set a small negative adjustment since the prior is hand-set (n=0) and we're in flood conditions — the prior is weak, but the flood rule is clear.\n\nActually, let me reconsider. The prior is 0.25 with n=0. Under flood conditions, R-004 says suppress E0-E1. This is E1. The move is clear: suppress.\n\nBut I could also consider a quick investigate (ask a cheap question) — but the board is at 20, which is extreme flood. Every additional item costs operator attention. Suppression is the right call.\n\nLet me use `suppress_ttl` as a defer action — it suppresses with a time-to-live, meaning it'll come back if it persists, but clears the board now.\n\nActually, `suppress` is a commit action. Let me check the action IDs again.\n\nFor commit: suppress, log_and_watch, notify_guard, dispatch_backup, escalate_overwatch\nFor defer: recheck_5min, suppress_ttl\n\nGiven flood conditions and E1, `suppress` (commit) is appropriate per R-004.\n\nWait - `suppress_ttl` is a defer action that suppresses with a time-to-live. That might be better since it'll recheck later. But R-004 says \"suppress E0-E1\" under flood conditions. Let me go with `suppress` as the cleanest application of the rule.",
+  "toolCalls": [
+    {
+      "id": "call_00_UZswTfYMECzcMHCPnCTF3944",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"commit\", \"action_id\": \"suppress\", \"prior_adjustment_log_odds\": -1.5, \"adjustment_reasons\": [\"Board load at 20 (flood conditions) — R-004 mandates suppress E0-E1\", \"Hand-set prior with n=0 — weak prior, easily overridden by flood policy\", \"Novel event with no precedents — low urgency for a first-time thermal anomaly\"], \"novelty_flag\": true, \"confidence_p_real\": 0.12, \"what_would_change_my_mind\": \"If this event repeats or escalates to E2+ (human presence confirmed), or if board load drops below threshold, I would investigate further. A second thermal anomaly in the same zone within the hour would also warrant attention.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2595,
+    "completionTokens": 907,
+    "totalTokens": 3502
+  },
+  "latencyMs": 11006,
+  "model": "deepseek-chat",
+  "costUsd": 0.00043561
+}

@@ -1,0 +1,21 @@
+{
+  "text": "Let me gather the remaining context.",
+  "toolCalls": [
+    {
+      "id": "call_00_VI2mthWdAb2ft6imiKn93844",
+      "type": "function",
+      "function": {
+        "name": "get_incident_context",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 3033,
+    "completionTokens": 1100,
+    "totalTokens": 4133
+  },
+  "latencyMs": 14303,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0037165
+}

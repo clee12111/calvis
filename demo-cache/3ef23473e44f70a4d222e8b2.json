@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze this carefully.\n\n**Incident Summary:**\n- **Site:** site-007, zone-7-1\n- **Event:** robot_motion_anomaly (severity 2) — a background robot motion anomaly\n- **Evidence Level:** E0 (nothing to act on)\n- **Prior:** P(real) = 0.1, but n=0 — this is a hand-set prior with zero observations, so it's a weak starting assumption\n- **Precedents:** None — this is novel (never seen this event type at this site before)\n- **Board Load:** 0/10min — operator is not busy at all\n- **Guards:** 2 available, both reliable\n\n**Analysis:**\n- E0 means \"nothing to act on\" — benign or equipment malfunction\n- The event is a robot motion anomaly with background data — likely a patrol robot detecting something unusual in its environment, or a false trigger\n- n=0 means the prior of 0.1 is a hand-set assumption with no real data behind it\n- No precedents exist — this is genuinely novel\n- Board load is 0 — operator has bandwidth\n\n**Decision logic:**\n- E0 is the lowest evidence level. The prior is weak (n=0). No precedents.\n- Since board load is 0 (not flooded), I don't need to suppress.\n- With no precedents and a weak prior, this is worth a cheap investigation to gather more info before committing.\n- A quick photo request or asking the robot/guard to confirm would be a low-cost investigate move.\n\nLet me go with **investigate** — ask for a photo to gather evidence. This is a cheap question that costs little attention.",
+  "toolCalls": [
+    {
+      "id": "call_00_lNEsps4RK1zgJUnVehFv2865",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"investigate\", \"action_id\": \"request_photo\", \"prior_adjustment_log_odds\": 0.0, \"adjustment_reasons\": [\"n=0 hand-set prior with no data behind it — weak starting point\", \"No precedents exist — genuinely novel event\", \"E0 level — nothing actionable yet, cheap investigation warranted\"], \"novelty_flag\": true, \"confidence_p_real\": 0.1, \"what_would_change_my_mind\": \"A photo showing a human figure or intrusion would raise this to E2+. Guard radio confirmation of nothing unusual would let me suppress. Multiple similar events in sequence would suggest a pattern worth escalating.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2590,
+    "completionTokens": 607,
+    "totalTokens": 3197
+  },
+  "latencyMs": 7055,
+  "model": "deepseek-chat",
+  "costUsd": 0.00035126
+}

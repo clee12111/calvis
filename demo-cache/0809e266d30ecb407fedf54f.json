@@ -1,0 +1,29 @@
+{
+  "text": "Let me check the active rules and available guards too.",
+  "toolCalls": [
+    {
+      "id": "call_00_NrK6DEsrp1GRybLDRgij8800",
+      "type": "function",
+      "function": {
+        "name": "get_active_rules",
+        "arguments": "{}"
+      }
+    },
+    {
+      "id": "call_01_a5aekJZl6huSdZrFkL2q8270",
+      "type": "function",
+      "function": {
+        "name": "get_available_guards",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2281,
+    "completionTokens": 57,
+    "totalTokens": 2338
+  },
+  "latencyMs": 1159,
+  "model": "deepseek-chat",
+  "costUsd": 0.00017563000000000002
+}

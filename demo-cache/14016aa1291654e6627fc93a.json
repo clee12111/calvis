@@ -1,0 +1,21 @@
+{
+  "text": "Let me assess the situation:\n\n**Context:**\n- **Site:** site-003, zone-3-0\n- **Event:** `robot_thermal_anomaly` — severity 3, background reading\n- **Evidence level:** E1 (something happened, intent unknown)\n- **Board load:** 20 items/10min — **FLOOD conditions** (threshold is 6)\n- **Prior:** P(real) = 0.25, but n=0 — this is a hand-set assumption with zero observations\n- **Precedents:** None — this is novel for this site\n- **Active rule R-004:** Under flood conditions (>6/10min), suppress E0-E1\n\n**Analysis:**\n- This is E1 — something happened, intent unknown. A robot thermal anomaly with background data, severity 3.\n- Board load is 20 — way over the 6 threshold. The operator is drowning.\n- Rule R-004 explicitly says: suppress E0-E1 under flood conditions.\n- The prior is hand-set (n=0), so it's a weak starting point. But the event is a background thermal reading from a robot — likely a sensor glitch or environmental heat source, not a threat.\n- No precedents exist, so this is novel — but novelty alone doesn't make it real.\n\nGiven flood conditions and E1, the policy says suppress. Let me adjust the prior downward since this is a background thermal reading with no precedents and flood conditions.",
+  "toolCalls": [
+    {
+      "id": "call_00_RpScOvBun67RNMzQJtVJ9240",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"commit\", \"action_id\": \"suppress\", \"prior_adjustment_log_odds\": -1.5, \"adjustment_reasons\": [\"Flood conditions (board load 20, threshold 6) — R-004 mandates suppress E0-E1\", \"Background thermal reading from robot — low likelihood of real threat\", \"Hand-set prior with n=0 — weak starting point, adjusted downward freely\", \"No precedents at this site for this event type\"], \"novelty_flag\": true, \"confidence_p_real\": 0.08, \"what_would_change_my_mind\": \"A follow-up event at the same zone (e.g., motion or glass break) would change this. Also, if board load drops below flood threshold, a recheck would be warranted.\\\"\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2466,
+    "completionTokens": 584,
+    "totalTokens": 3050
+  },
+  "latencyMs": 6197,
+  "model": "deepseek-chat",
+  "costUsd": 0.00033613999999999996
+}

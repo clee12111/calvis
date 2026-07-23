@@ -1,0 +1,21 @@
+{
+  "text": "Let me assess the situation:\n\n1. **Event**: `robot_motion_anomaly` - a single event, severity 2, background data. This is E0 level.\n2. **Prior**: P(real) = 0.1, but n=0 — this is a hand-set assumption with zero observations. Very weak prior.\n3. **Precedents**: Zero precedents. This is novel for this site/event-type combination.\n4. **Board load**: 20 items/10min — this is **FLOOD** conditions (threshold is 6, we're at 20). The operator is drowning.\n5. **Active rules**: Rule R-004 says under flood conditions (>6/10min), suppress E0-E1 to manage operator load.\n\nThis is E0 evidence level. The board is in flood. The rule explicitly says suppress E0-E1 under flood. The prior is a hand-set assumption with no data behind it. No precedents exist.\n\nGiven the flood conditions, the right move is to **suppress** this — it's E0, it's a robot motion anomaly with background data, and the operator is overloaded at 20 items.\n\nLet me set novelty_flag = true since find_precedent returned zero precedents (this site/event-type combo has never been seen before).",
+  "toolCalls": [
+    {
+      "id": "call_00_A8Vq3Y9FbCboQutLUF7e4114",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"commit\", \"action_id\": \"suppress\", \"prior_adjustment_log_odds\": -1.5, \"adjustment_reasons\": [\"Board load at 20 (flood conditions) — R-004 mandates suppress E0-E1\", \"E0 evidence level — nothing actionable\", \"Robot motion anomaly with background data only — benign pattern\", \"Hand-set prior with n=0 — no real data behind it\"], \"novelty_flag\": true, \"confidence_p_real\": 0.03, \"what_would_change_my_mind\": \"If a guard reported seeing something, or if subsequent events escalated the evidence level above E1. Also if board load dropped below flood threshold.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2459,
+    "completionTokens": 527,
+    "totalTokens": 2986
+  },
+  "latencyMs": 6200,
+  "model": "deepseek-chat",
+  "costUsd": 0.0003196900000000001
+}

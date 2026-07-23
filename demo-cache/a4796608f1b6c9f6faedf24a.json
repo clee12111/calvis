@@ -1,0 +1,21 @@
+{
+  "text": "Let me assess the situation:\n\n1. **Event**: `robot_motion_anomaly` - a single event, severity 2, background data. This is E0 level.\n2. **Prior**: P(real) = 0.10, but n=0 — this is a hand-set assumption with zero observations. Very weak prior.\n3. **Precedents**: None — this is a **novel** event type for this site.\n4. **Board load**: 20 items/10min — this is **FLOOD** conditions (threshold is 6). The operator is drowning.\n5. **Active rules**: Rule R-004 says \"Under flood conditions (>6/10min), suppress E0-E1 to manage operator load.\"\n\nThe evidence level is E0 (nothing to act on — equipment malfunction/benign). The board is at 20 items (flood). The rule explicitly says suppress E0-E1 under flood conditions. This is a clear case.\n\nHowever, since n=0 (hand-set prior) and there are no precedents (novelty), I should note this for future learning. But the operator is overloaded — surfacing a low-confidence E0 event would be harmful.\n\nLet me set a small negative adjustment since the prior is weak (n=0) and there's no precedent, but the board is flooded so I'll suppress.",
+  "toolCalls": [
+    {
+      "id": "call_00_43B8qGBu7BdMchP38rUh1352",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"commit\", \"action_id\": \"suppress\", \"prior_adjustment_log_odds\": -1.5, \"adjustment_reasons\": [\"Board load at 20 (flood) — R-004 mandates suppress E0-E1\", \"E0 level — no actionable evidence\", \"Novel event with zero prior observations — low confidence\"], \"novelty_flag\": true, \"confidence_p_real\": 0.03, \"what_would_change_my_mind\": \"If board load were normal, I'd investigate further since this is a novel event type. If a guard reported something unusual in zone-2-0, that would raise the evidence level and warrant attention.\\\"\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2459,
+    "completionTokens": 537,
+    "totalTokens": 2996
+  },
+  "latencyMs": 5896,
+  "model": "deepseek-chat",
+  "costUsd": 0.00032249
+}

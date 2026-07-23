@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze this carefully.\n\n**Incident Summary:**\n- Site: site-005, Zone: zone-5-1\n- Event: `robot_motion_anomaly` — a robot detected some motion anomaly\n- Severity: 2 (moderate)\n- Current evidence level: E0 (nothing to act on)\n- 5 questions already asked, all answered\n- 5 evidence items collected\n- Board load: 0/10min — very low, operator has bandwidth\n\n**Prior Analysis:**\n- P(real) = 0.10, but n=0 — this is a hand-set prior with zero observations. It's a starting assumption, not learned from data.\n- No precedents found — this is a **novel** event-type/site combination.\n\n**What we know:**\n- A robot detected a motion anomaly (background data)\n- We've already asked 5 questions and gathered 5 evidence items\n- Still at E0 — nothing actionable has emerged\n- Board load is low (0 items), so we have room to investigate further\n- No flood conditions, so no need to suppress\n\n**Decision:**\nWe're at E0 with a hand-set prior (n=0) and no precedents. We've already asked 5 questions and still have nothing actionable. The prior is weak (n=0), and the event is novel. Given we've exhausted cheap investigation and still have E0, this looks like a false alarm / equipment quirk. But since it's novel and the prior is uncalibrated, I should be slightly conservative.\n\nI'll **commit** with `log_and_watch` — log it for future learning (since it's novel) but don't escalate. The adjustment should be slightly negative since 5 questions yielded nothing.\n\nLet me set a small negative adjustment: the prior is 0.10 (hand-set), and after 5 unanswered questions with no evidence, I'm leaning toward it being benign.",
+  "toolCalls": [
+    {
+      "id": "call_00_yeqpdMnPwZTeFJmL8ecR8479",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"commit\", \"action_id\": \"log_and_watch\", \"prior_adjustment_log_odds\": -0.5, \"adjustment_reasons\": [\"5 questions asked, all answered — no evidence of real activity surfaced\", \"Hand-set prior with n=0 — weak starting assumption, easily adjusted\", \"Novel event type at this site — worth logging for future calibration\"], \"novelty_flag\": true, \"confidence_p_real\": 0.06, \"what_would_change_my_mind\": \"A guard report confirming visual contact, a second sensor corroborating the anomaly, or a recheck showing escalation to E1+\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2629,
+    "completionTokens": 650,
+    "totalTokens": 3279
+  },
+  "latencyMs": 8361,
+  "model": "deepseek-chat",
+  "costUsd": 0.0003660300000000001
+}

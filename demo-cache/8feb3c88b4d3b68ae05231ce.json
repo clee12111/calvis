@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze this situation:\n\n**Incident**: A missed check-in from a guard at site-002, zone-2-2. E1 level — something happened, intent unknown.\n\n**Prior**: P(real) = 0.3, but n=0 — this is a hand-set assumption with zero observations behind it. Very weak prior.\n\n**Precedents**: Zero precedents. This is a novel combination for this site.\n\n**Board load**: 0 items/10min — very low. Operator has bandwidth.\n\n**Available guards**: 3 guards on shift. James Williams (armed, 84% ack rate, ~9min avg response), Diego Harris (armed, 71% ack rate, ~5min avg response), Antonio Williams (unarmed, 95% ack rate, ~8min avg response).\n\n**Analysis**: A missed check-in could be:\n1. Guard forgot or is delayed (benign)\n2. Guard is in trouble (serious)\n3. Equipment/radio issue (malfunction)\n\nWith n=0, the prior of 0.3 is just a starting guess. No precedents means this is novel. The board is quiet, so we have room to investigate.\n\nThe best move here is to **investigate** — ask the guard on radio to confirm their status. This is a cheap, free question that costs little attention. Let me ask the guard directly.\n\nActually, I could also ask for a photo or ask the guard on radio. Since it's a missed check-in, asking the guard on radio is the most direct approach.\n\nLet me adjust the prior slightly upward — missed check-ins at night could be more concerning (guard fatigue, potential issue), but with n=0 I should be cautious. I'll set a small positive adjustment.\n\nWait — the guard who missed the check-in... I don't know which guard it is. Let me ask the guard on radio to check in.",
+  "toolCalls": [
+    {
+      "id": "call_00_d7r1WlmDVUtJlBfUOlWS0533",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"investigate\", \"action_id\": \"ask_guard_radio\", \"prior_adjustment_log_odds\": 0.3, \"adjustment_reasons\": [\"n=0 prior is a hand-set assumption with no data behind it — weak starting point\", \"No precedents exist for this event type at this site — novelty increases uncertainty\", \"Night shift missed check-in could indicate guard distress or fatigue — slight upward tilt warranted\"], \"novelty_flag\": true, \"confidence_p_real\": 0.35, \"what_would_change_my_mind\": \"If the guard responds promptly and confirms they simply forgot or had a brief distraction, I'd suppress. If no response after radio call, I'd escalate to dispatch_backup. If the guard sounds distressed or unusual, I'd escalate to E3/E4 response.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2622,
+    "completionTokens": 677,
+    "totalTokens": 3299
+  },
+  "latencyMs": 8284,
+  "model": "deepseek-chat",
+  "costUsd": 0.0003731
+}

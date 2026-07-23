@@ -1,0 +1,21 @@
+{
+  "text": "Incident inc-00265 is on my board. Let me gather context systematically.",
+  "toolCalls": [
+    {
+      "id": "call_00_xZ1BRJxDPAs2ODLfBahZ7534",
+      "type": "function",
+      "function": {
+        "name": "get_incident_context",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 1871,
+    "completionTokens": 85,
+    "totalTokens": 1956
+  },
+  "latencyMs": 1796,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0011055
+}

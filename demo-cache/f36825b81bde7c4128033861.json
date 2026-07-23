@@ -1,0 +1,21 @@
+{
+  "text": "",
+  "toolCalls": [
+    {
+      "id": "call_00_zpdM7IYoSZb8l47OASX69146",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"commit\", \"action_id\": \"notify_guard\", \"prior_adjustment_log_odds\": -0.3, \"adjustment_reasons\": [\"Hand-set prior with n=0 — no observational weight behind it, freer adjustment warranted\", \"No-show events at shift start are often benign (lateness, sickness, schedule error)\", \"No precedents found for this event type at this site — uncertainty is high\"], \"novelty_flag\": true, \"confidence_p_real\": 0.58, \"what_would_change_my_mind\": \"If the guard on radio check reports the missing guard uncontactable or their vehicle missing from the lot, that raises P(real). If the missing guard radios in as just running late, P(real) drops to near zero.\\\"\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2603,
+    "completionTokens": 1757,
+    "totalTokens": 4360
+  },
+  "latencyMs": 18471,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0048155
+}

@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze this carefully.\n\n**Situation:**\n- **Event**: `robot_thermal_anomaly` at site-005, zone-5-0 — a single event, severity 3, background reading\n- **Evidence level**: E1 (something happened, intent unknown)\n- **Prior**: P(real) = 0.25, but n=0 — this is a hand-set assumption with zero observations. Very weak prior.\n- **Precedents**: Zero — this is a novel event type at this site.\n- **Board load**: 20 items/10min — FLOOD conditions (threshold is 6). The operator is drowning.\n- **Active rules**: Rule R-004 says \"Under flood conditions (>6/10min), suppress E0-E1 to protect operator load.\"\n\n**Analysis:**\n- This is E1 — something happened, intent unknown. A single thermal anomaly reading from a robot, background data.\n- Under flood conditions (20 items, threshold 6), the policy explicitly says suppress E0-E1.\n- The prior is hand-set (n=0) so it's weak, but the event itself is low-severity — a single background thermal reading from a robot.\n- No precedents exist, so this is novel — but novelty doesn't mean it's urgent.\n- The operator is at 20 items — 3x over the flood threshold. Every item I surface costs their attention.\n\n**Decision**: Per R-004, suppress E0-E1 under flood conditions. This is E1, so I should suppress it. However, since it's novel (no precedents), I'll log it with a note so we can learn from it later.\n\nLet me set a small negative adjustment since the prior is hand-set (n=0) and this is a single background thermal reading — likely a sensor glitch or environmental heat source.\n\nActually, per R-004: \"suppress E0-E1\" — I'll use `suppress_ttl` to suppress with a time-to-live, so it can be re-evaluated later if needed.\n\nWait — `suppress_ttl` is a defer action. Let me think about which action to use.\n\nFor commit, `suppress` is available. Under flood conditions with E1, suppress is appropriate.\n\nLet me set novelty_flag = true since find_precedent returned zero precedents.",
+  "toolCalls": [
+    {
+      "id": "call_00_ZLRrNGbbipuMMqC69CD55963",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"commit\", \"action_id\": \"suppress\", \"prior_adjustment_log_odds\": -1.0, \"adjustment_reasons\": [\"Board load at 20 (flood conditions) — R-004 mandates suppress E0-E1\", \"Single background thermal reading — likely sensor/environmental noise\", \"Hand-set prior with n=0 — weak prior, but event is low-severity E1\"], \"novelty_flag\": true, \"confidence_p_real\": 0.12, \"what_would_change_my_mind\": \"A second correlated event (e.g., motion + thermal in same zone), or a guard report confirming something unusual in zone-5-0. Under normal load I'd investigate further, but flood conditions force triage.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2636,
+    "completionTokens": 763,
+    "totalTokens": 3399
+  },
+  "latencyMs": 8209,
+  "model": "deepseek-chat",
+  "costUsd": 0.00039816000000000005
+}

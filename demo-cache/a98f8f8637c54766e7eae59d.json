@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze this carefully.\n\n**Context:**\n- **Site:** site-011, zone-11-0\n- **Event:** `robot_motion_anomaly` — severity 2, single event, background data\n- **Evidence Level:** E0 (nothing to act on)\n- **Prior:** P(real) = 0.1, but n=0 — this is a hand-set assumption with zero observations behind it\n- **Precedents:** None — this is novel (no similar incidents at this site before)\n- **Board Load:** 0/10min — very low, operator has bandwidth\n- **5 questions already asked, 5 answered, 5 evidence items**\n\nThe event is a robot motion anomaly — a robot detected something unusual in its patrol. But it's E0, meaning nothing actionable yet. The prior is a hand-set 0.1 with n=0, so it's a weak starting point. No precedents exist.\n\nSince board load is 0 (very low), there's no flood condition to trigger suppression. The operator has bandwidth.\n\nGiven:\n- E0 level — nothing to act on\n- Single event, background data\n- No precedents\n- Hand-set prior with n=0 (weak)\n- Low board load\n\nThis seems like a good candidate for **investigate** — ask a cheap question to gather more evidence. Since it's a robot motion anomaly, I could ask the guard on radio or request a photo to see what the robot detected.\n\nActually, let me check available guards.",
+  "toolCalls": [
+    {
+      "id": "call_00_NoFH9MQV6yw6l2AsUTnj6959",
+      "type": "function",
+      "function": {
+        "name": "get_available_guards",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2459,
+    "completionTokens": 351,
+    "totalTokens": 2810
+  },
+  "latencyMs": 4611,
+  "model": "deepseek-chat",
+  "costUsd": 0.00027041
+}

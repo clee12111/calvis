@@ -1,0 +1,21 @@
+{
+  "text": "Now let me analyze all the context.",
+  "toolCalls": [
+    {
+      "id": "call_00_tZ2OQbjvyjj2ypaPOAwU2712",
+      "type": "function",
+      "function": {
+        "name": "get_incident_context",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2640,
+    "completionTokens": 1621,
+    "totalTokens": 4261
+  },
+  "latencyMs": 21115,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.004562
+}

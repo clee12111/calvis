@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze this carefully.\n\n**Incident Summary:**\n- Site: site-000, Zone: zone-0-1\n- Event: `robot_motion_anomaly` (severity 2) — a background robot motion anomaly\n- Evidence level: E0 (nothing to act on)\n- Prior: P(real) = 0.1, but n=0 — this is a hand-set prior with zero observations, so it's a weak starting assumption\n- Precedents: **zero** — this is genuinely novel (no prior incidents of this type at this site)\n- Board load: 0/10min — operator is not busy at all\n\n**Key observations:**\n1. n=0 means the prior is a hand-set assumption, not learned. I should be freer to adjust.\n2. Zero precedents means this IS novel — novelty_flag = true.\n3. Board load is 0 — no flood conditions, so no need to suppress.\n4. E0 means nothing to act on currently — but with n=0 and no precedents, this is a learning opportunity.\n\nSince this is E0 (benign/equipment malfunction), the standard move would be to suppress or log_and_watch. But with zero precedents and a hand-set prior, this is a chance to gather information cheaply. The operator is not overloaded.\n\nLet me check what guards are available.",
+  "toolCalls": [
+    {
+      "id": "call_00_E2Hfr11ON2Y4Yhcp27an7949",
+      "type": "function",
+      "function": {
+        "name": "get_available_guards",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2459,
+    "completionTokens": 323,
+    "totalTokens": 2782
+  },
+  "latencyMs": 4264,
+  "model": "deepseek-chat",
+  "costUsd": 0.00026257000000000006
+}

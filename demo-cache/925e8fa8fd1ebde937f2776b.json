@@ -1,0 +1,53 @@
+{
+  "text": "This is very revealing. Let me analyze what I'm seeing:\n\n1. **Site**: site-011, zone-11-0\n2. **202 events total** - mostly `robot_motion_anomaly` with `stuck: true` and `reading: 0.42` - this is a **stuck robot sensor** firing repeatedly (200 events over ~2 hours)\n3. One `robot_thermal_anomaly` severity 3 event mixed in\n4. The motion anomaly events are all severity 1, same reading 0.42, same stuck flag - classic sensor malfunction pattern\n\nLet me get the priors and precedents.",
+  "toolCalls": [
+    {
+      "id": "call_00_rpZhbv6IyXjHM8qCeF215497",
+      "type": "function",
+      "function": {
+        "name": "get_site_prior",
+        "arguments": "{\"event_type\": \"robot_motion_anomaly\"}"
+      }
+    },
+    {
+      "id": "call_01_sEmGcUpE17OSzRqwUbYe8058",
+      "type": "function",
+      "function": {
+        "name": "get_site_prior",
+        "arguments": "{\"event_type\": \"robot_thermal_anomaly\"}"
+      }
+    },
+    {
+      "id": "call_02_LZ5d8E5h6fPn8VWOOG004375",
+      "type": "function",
+      "function": {
+        "name": "find_precedent",
+        "arguments": "{\"k\": 5}"
+      }
+    },
+    {
+      "id": "call_03_SssCuuDibVNwEVIndGYS6366",
+      "type": "function",
+      "function": {
+        "name": "get_board_load",
+        "arguments": "{}"
+      }
+    },
+    {
+      "id": "call_04_dc3vMJESE1tcucW3c5tr6732",
+      "type": "function",
+      "function": {
+        "name": "get_active_rules",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 12859,
+    "completionTokens": 293,
+    "totalTokens": 13152
+  },
+  "latencyMs": 3696,
+  "model": "deepseek-chat",
+  "costUsd": 0.00098217
+}

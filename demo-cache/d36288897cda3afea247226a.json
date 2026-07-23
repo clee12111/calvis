@@ -1,0 +1,21 @@
+{
+  "text": "",
+  "toolCalls": [
+    {
+      "id": "call_00_o9x4AKDH4Fh3fqM7hM0G2943",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"commit\", \"action_id\": \"notify_guard\", \"prior_adjustment_log_odds\": 0.5, \"adjustment_reasons\": [\"E3 assessment already confirms threat to property\", \"No precedents at this site (novel) - cannot assume benign\", \"Hand-set prior with n=0, weak anchor - adjusting upward freely\", \"Low board load (0 items) - operator has bandwidth to handle\"], \"novelty_flag\": true, \"confidence_p_real\": 0.72, \"what_would_change_my_mind\": \"A guard radio check confirming the door is secure and the forced door alert was a sensor fault. Alternatively, video footage showing the door is intact.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2625,
+    "completionTokens": 1309,
+    "totalTokens": 3934
+  },
+  "latencyMs": 12945,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0039305
+}

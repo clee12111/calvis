@@ -1,0 +1,21 @@
+{
+  "text": "Let me assess the situation:\n\n**Context:**\n- **Event**: `robot_thermal_anomaly` at site-001, zone-1-3, severity 3\n- **Evidence level**: E1 (something happened, intent unknown)\n- **Prior**: P(real) = 0.25, but n=0 — this is a hand-set assumption with zero observations, so it's a weak starting point\n- **Precedents**: None — this is novel for this site\n- **Board load**: 20 items/10min — **FLOOD conditions** (threshold is 6, we're at 20)\n- **Active rule R-004**: Under flood conditions (>6/10min), suppress E0-E1\n\n**Analysis:**\n- The board is severely overloaded (20 vs threshold 6). The operator is drowning.\n- Rule R-004 explicitly says: suppress E0-E1 under flood conditions.\n- This is E1 — \"something happened, intent unknown.\" A thermal anomaly from a robot could be a sensor glitch, environmental heat, or an actual issue.\n- The prior is hand-set (n=0), so it's weak. No precedents exist — this is novel.\n- But the flood condition is the dominant factor here. The operator cannot afford to investigate every E1 thermal anomaly when they're at 3x flood level.\n\n**Decision**: Under flood conditions, per R-004, suppress E0-E1. This is E1. I'll suppress with a TTL so it can recheck later when load is lower.\n\nWait — let me reconsider. The rule says \"suppress E0-E1\" under flood. But this is a novel event (no precedents) with a hand-set prior. However, the operator's load is critical — 20 items is extreme. I'll suppress with a TTL to protect the operator's attention.\n\nActually, let me think about this more carefully. The novelty flag should be set since find_precedent returned zero precedents. But the flood condition overrides — we need to protect the operator.\n\nLet me go with suppress_ttl — this suppresses the alert temporarily with a time-to-live, so it'll come back when the board load might be lower.",
+  "toolCalls": [
+    {
+      "id": "call_00_F99T4xljugioVGwA4uo94510",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"defer\", \"action_id\": \"suppress_ttl\", \"prior_adjustment_log_odds\": -1.5, \"adjustment_reasons\": [\"Board load at 20 (flood conditions) — R-004 mandates suppress E0-E1\", \"Hand-set prior with n=0 — weak starting point, no learned weight\", \"Novel event with zero precedents — no pattern to act on yet\"], \"novelty_flag\": true, \"confidence_p_real\": 0.12, \"what_would_change_my_mind\": \"If board load drops below 6, this should be re-evaluated. If a second corroborating sensor (e.g., smoke detector or visual camera) fires in the same zone, that would escalate to E2-E3 and warrant investigation regardless of load.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2466,
+    "completionTokens": 746,
+    "totalTokens": 3212
+  },
+  "latencyMs": 8430,
+  "model": "deepseek-chat",
+  "costUsd": 0.0003815
+}

@@ -1,0 +1,21 @@
+{
+  "text": "Now let me check if there's more nuance by looking at what happened around the no-show.",
+  "toolCalls": [
+    {
+      "id": "call_00_hcvRiq16gZxRF1EWa33U6370",
+      "type": "function",
+      "function": {
+        "name": "get_site_prior",
+        "arguments": "{\"event_type\": \"no_show_at_shift_start\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2603,
+    "completionTokens": 1027,
+    "totalTokens": 3630
+  },
+  "latencyMs": 11099,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0033555
+}

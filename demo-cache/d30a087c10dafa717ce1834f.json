@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze this situation:\n\n**Incident Summary:**\n- **Site:** site-009, zone-9-1\n- **Event:** Missed check-in (guard Rosa Smith or Ashley Davis didn't check in)\n- **Evidence Level:** E1 (something happened, intent unknown)\n- **Severity:** 2\n- **Board Load:** 0/10min — very low, operator has bandwidth\n- **Precedents:** None — this is novel for this site/event-type combo\n- **Prior:** P(real) = 0.3, but n=0 — this is a hand-set assumption with zero observations behind it. Very weak prior.\n\n**Analysis:**\nA missed check-in from a guard is a common event. With n=0, the prior is just a starting guess. The fact that there are zero precedents means this specific site hasn't had this event before — but missed check-ins are common across the industry.\n\nThe board load is 0 — operator has plenty of bandwidth. This is a good time to investigate rather than suppress or defer.\n\nThe guards available: Rosa Smith (78% ack rate, ~4.5 min avg response) and Ashley Davis (80% ack rate, ~4.6 min avg response). Both have reasonable but not stellar response times.\n\n**Decision:** I'll **investigate** by asking the guard to radio in. Since we don't know which guard missed the check-in, I'll ask via guard radio to confirm their status. This is a cheap, free question that costs little.\n\nGiven n=0 (hand-set prior), I should be free to adjust. A missed check-in from a guard with decent reliability stats... the prior of 0.3 seems reasonable but I'll nudge it slightly down since missed check-ins are often procedural (guard got distracted, system glitch, etc.) rather than real threats.\n\nLet me set a small negative adjustment.",
+  "toolCalls": [
+    {
+      "id": "call_00_N6wotFPYpRYKh8gFmMc67470",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"investigate\", \"action_id\": \"ask_guard_radio\", \"prior_adjustment_log_odds\": -0.3, \"adjustment_reasons\": [\"Hand-set prior with n=0 — weak starting point, free to adjust\", \"Missed check-ins are often procedural (distraction, system glitch) rather than security events\", \"Guards have ~80% ack rate — moderate reliability, not alarming\"], \"novelty_flag\": true, \"confidence_p_real\": 0.25, \"what_would_change_my_mind\": \"If the guard doesn't respond to radio, that raises suspicion. If both guards are unresponsive, that's a significant escalation. A guard responding with a simple explanation (bathroom break, forgot) would confirm it's benign.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2583,
+    "completionTokens": 671,
+    "totalTokens": 3254
+  },
+  "latencyMs": 7841,
+  "model": "deepseek-chat",
+  "costUsd": 0.0003686900000000001
+}

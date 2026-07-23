@@ -1,0 +1,21 @@
+{
+  "text": "Let me reconsider one more time. Actually, a \"no_show_at_shift_start\" with E2 evidence level - human presence confirmed, intent unknown. This means there's evidence a person ISN'T where they should be, and we don't know why. \n\nUnder board load 21, the operator is already way overloaded. We've asked 7 questions which is a lot. Let's log it and move on.",
+  "toolCalls": [
+    {
+      "id": "call_00_Wt6liOc8uyJSnFaRPJBI5988",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"commit\", \"action_id\": \"log_and_watch\", \"prior_adjustment_log_odds\": 0.0, \"adjustment_reasons\": [\"Hand-set prior (n=0) at 0.7 is reasonable for guard no-show\", \"Board load at 21 (extreme flood) - preserve operator attention\", \"Guard no-show is an operational issue, not a security threat\"], \"novelty_flag\": true, \"confidence_p_real\": 0.7, \"what_would_change_my_mind\": \"Confirmation from another guard that shift coverage has been arranged, or a call from the missing guard explaining the absence\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2603,
+    "completionTokens": 1628,
+    "totalTokens": 4231
+  },
+  "latencyMs": 17123,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0045575
+}

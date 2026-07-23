@@ -1,0 +1,29 @@
+{
+  "text": "",
+  "toolCalls": [
+    {
+      "id": "call_00_F2N6iZVFCaiBx8UUn3Ck5877",
+      "type": "function",
+      "function": {
+        "name": "get_incident_context",
+        "arguments": "{}"
+      }
+    },
+    {
+      "id": "call_01_bON7hlz9JXvbg7w1MOrh3861",
+      "type": "function",
+      "function": {
+        "name": "get_board_load",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 1871,
+    "completionTokens": 100,
+    "totalTokens": 1971
+  },
+  "latencyMs": 1624,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0011355
+}

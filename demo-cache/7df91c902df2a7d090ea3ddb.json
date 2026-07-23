@@ -1,0 +1,21 @@
+{
+  "text": "Now let me gather a bit more context from the site prior since there's only one event type.",
+  "toolCalls": [
+    {
+      "id": "call_00_9QtBQq0HX45pzsRXgjHh7599",
+      "type": "function",
+      "function": {
+        "name": "get_site_prior",
+        "arguments": "{\"event_type\": \"no_show_at_shift_start\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2603,
+    "completionTokens": 1287,
+    "totalTokens": 3890
+  },
+  "latencyMs": 15759,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0038755
+}

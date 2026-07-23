@@ -1,0 +1,29 @@
+{
+  "text": "Incident inc-00005. Let me start gathering context systematically.",
+  "toolCalls": [
+    {
+      "id": "call_00_CaNn5Ycrcwr9zDCkiM766449",
+      "type": "function",
+      "function": {
+        "name": "get_incident_context",
+        "arguments": "{}"
+      }
+    },
+    {
+      "id": "call_01_XbX3dO0zZmZL9j7Ns0Ad5321",
+      "type": "function",
+      "function": {
+        "name": "get_board_load",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 1871,
+    "completionTokens": 101,
+    "totalTokens": 1972
+  },
+  "latencyMs": 2063,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0011375
+}

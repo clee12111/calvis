@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze this carefully.\n\n**Context:**\n- **Event:** `robot_motion_anomaly` at site-000, zone-0-0\n- **Evidence Level:** E0 (nothing to act on)\n- **Severity:** 2 (moderate severity for the event type, but E0 means no actionable evidence)\n- **Prior:** P(real) = 0.10, but n=0 — this is a hand-set assumption with zero observations\n- **Precedents:** None — this is novel for this site\n- **Board Load:** 0/10min — very low, operator is not overloaded\n- **Guards available:** 3 guards on shift\n\n**Analysis:**\n- E0 means \"nothing to act on\" — benign or equipment malfunction\n- The prior is hand-set (n=0), so it's a weak starting point\n- No precedents exist — this is a novel event type at this site\n- Board load is very low (0 items), so we have bandwidth to investigate\n- The event is a robot motion anomaly — could be a sensor glitch, a robot bumping into something, or a calibration issue\n\nSince this is E0 (nothing to act on), the default move would be to suppress or log. But with n=0 and no precedents, this is genuinely novel — we should gather a bit more info to understand what this event means before committing to suppression.\n\nLet me ask a cheap question to investigate.\n\nActually, E0 means \"nothing to act on\" — the system is telling me this is likely benign. With n=0 prior and no precedents, I should be cautious but not overreact. Let me ask a quick question to see if there's more context.",
+  "toolCalls": [
+    {
+      "id": "call_00_j5I8uZuom179PahLlbWP9695",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"investigate\", \"action_id\": \"ask_guard_radio\", \"prior_adjustment_log_odds\": 0.0, \"adjustment_reasons\": [\"E0 - no actionable evidence yet\", \"Novel event - no precedents at this site\", \"Hand-set prior with n=0 - weak starting point\"], \"novelty_flag\": true, \"confidence_p_real\": 0.05, \"what_would_change_my_mind\": \"If the guard confirms the robot is behaving oddly or if there's a physical obstruction detected, I'd escalate. If the guard says everything is normal, I'd suppress.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2628,
+    "completionTokens": 602,
+    "totalTokens": 3230
+  },
+  "latencyMs": 6648,
+  "model": "deepseek-chat",
+  "costUsd": 0.00035252
+}

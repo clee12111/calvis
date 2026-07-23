@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze this situation:\n\n**Incident Summary:**\n- **Site:** site-010, zone-10-2\n- **Event:** Missed check-in (severity 3) — a guard didn't check in\n- **Evidence Level:** E1 (something happened, intent unknown)\n- **Prior:** P(real) = 0.3, but n=0 — this is a hand-set assumption with zero observations behind it\n- **Precedents:** None — this is novel for this site/event-type combination\n- **Board Load:** 0/10min — operator is free\n- **Guards available:** Michael Johnson (armed, 74% ack, 250s avg response) and Tyler Rodriguez (unarmed, 91% ack, 166s avg response)\n\n**Analysis:**\n- A missed check-in from a guard is concerning. It could be:\n  - The guard forgot (benign)\n  - The guard is in trouble (real threat)\n  - Equipment/radio issue (malfunction)\n- The prior is hand-set (n=0), so I should be free to adjust.\n- No precedents exist — this is novel.\n- Board load is 0 — plenty of operator attention available.\n- We have two guards on shift. We could radio the guard who missed the check-in.\n\n**Decision:**\nSince this is a missed check-in (E1), the guard might just be distracted or have radio issues. But it could also mean the guard is in trouble. With n=0 prior and no precedents, I should investigate first — ask the guard via radio to confirm their status. This is a cheap, free question.\n\nLet me investigate by asking the guard on radio.",
+  "toolCalls": [
+    {
+      "id": "call_00_hCLmwG0lWfq39J7XqLPx4799",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"investigate\", \"action_id\": \"ask_guard_radio\", \"prior_adjustment_log_odds\": 0.5, \"adjustment_reasons\": [\"Hand-set prior with n=0 — weak starting point, free to adjust upward\", \"Missed check-in from a guard is a higher-concern event type (potential guard safety issue)\", \"No precedents exist — novelty means we should be cautious and not dismiss\"], \"novelty_flag\": true, \"confidence_p_real\": 0.4, \"what_would_change_my_mind\": \"If the guard responds on radio and confirms they simply forgot or had a radio issue, I'd downgrade. If no response after radio attempt, I'd escalate to dispatch_backup. If Tyler or Michael reports seeing something unusual in that zone, I'd escalate.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2583,
+    "completionTokens": 638,
+    "totalTokens": 3221
+  },
+  "latencyMs": 7131,
+  "model": "deepseek-chat",
+  "costUsd": 0.00035945000000000004
+}

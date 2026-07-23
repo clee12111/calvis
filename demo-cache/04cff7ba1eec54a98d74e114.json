@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze this situation:\n\n**Context:**\n- **Site:** site-003, zone-3-3\n- **Event:** Single `area_advisory` event, severity 1, from a sensor (background)\n- **Evidence Level:** E0 (nothing to act on)\n- **Prior:** P(real) = 0.05, but n=0 — this is a hand-set assumption with zero observations behind it\n- **Precedents:** None — this is a novel combination (site-003 + area_advisory has never been seen)\n- **Board Load:** 0 items/10min — operator is not under pressure\n- **5 questions already asked, 5 answered** — the system has already done some investigation\n\n**Analysis:**\n- E0 means \"nothing to act on\" — this is a benign/equipment-level event\n- The prior is 0.05 but with n=0, meaning it's a weak starting assumption, not learned data\n- No precedents exist — this is genuinely novel\n- Board load is 0 — no flood conditions, so no need to suppress\n- 5 questions already asked — the system has already gathered info\n\nGiven E0 (nothing to act on), a hand-set prior with no data, and no precedents, this is a very low-signal event. The 5 questions already asked suggest the system has already investigated. With E0, the appropriate move is to **suppress** or **log_and_watch**. Since it's E0 and the prior is very low, and we have no reason to believe this is real, I'll suppress it.\n\nWait — let me check if there are guards available too.",
+  "toolCalls": [
+    {
+      "id": "call_00_40Z6cIERh3A8ibr4tBjI5232",
+      "type": "function",
+      "function": {
+        "name": "get_available_guards",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2444,
+    "completionTokens": 381,
+    "totalTokens": 2825
+  },
+  "latencyMs": 5069,
+  "model": "deepseek-chat",
+  "costUsd": 0.00027776
+}

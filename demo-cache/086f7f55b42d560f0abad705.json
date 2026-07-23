@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze the situation:\n\n**Context:**\n- **Site:** site-008, zone-8-3\n- **Event:** `robot_thermal_anomaly` — severity 3, single event, background data\n- **Evidence level:** E1 (something happened, intent unknown)\n- **Board load:** 20 items/10min — **FLOOD conditions** (threshold is 6)\n- **Prior:** P(real) = 0.25, n=0 (hand-set prior, no real data behind it)\n- **Precedents:** None — this is novel for this site\n- **Active rules:** Rule R-004 says under flood conditions (>6/10min), suppress E0-E1\n\n**Analysis:**\n1. Board load is 20 — that's severe overload (flood conditions). The operator is drowning.\n2. Rule R-004 explicitly says: suppress E0-E1 under flood conditions.\n3. This is E1 — \"something happened, intent unknown.\" A single thermal anomaly from a robot with background data.\n4. The prior is hand-set (n=0), so it's a weak starting point. No precedents exist.\n5. The event is a single thermal anomaly — could be a robot sensor glitch, environmental heat, or something real. But at E1 with flood conditions, the policy is clear.\n\n**Decision:** Under flood conditions, suppress E0-E1. This is E1. The prior is weak (n=0), and there are no precedents, but the flood rule is explicit. I'll suppress with a TTL so it can recheck later if needed.\n\nWait — let me reconsider. The rule says \"suppress E0-E1\" under flood. But this is a novel event (no precedents). Novelty might argue for at least logging it. However, the operator is at 20 items — they can't handle more. I'll suppress with a TTL so it comes back when the flood subsides.\n\nActually, `suppress_ttl` is a defer action. Let me think about what's best.\n\nGiven flood conditions (20 items, threshold 6), the operator needs relief. Rule R-004 says suppress E0-E1. This is E1. I'll suppress with TTL so it rechecks later when load might be lower.",
+  "toolCalls": [
+    {
+      "id": "call_00_nJfkvXvxo7oPMFUy2y8Y3950",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"defer\", \"action_id\": \"suppress_ttl\", \"prior_adjustment_log_odds\": -1.5, \"adjustment_reasons\": [\"Flood conditions: board load 20/6 — operator overloaded\", \"Rule R-004: suppress E0-E1 under flood conditions\", \"Hand-set prior (n=0) — weak starting point, no learned weight to override policy\"], \"novelty_flag\": true, \"confidence_p_real\": 0.12, \"what_would_change_my_mind\": \"If board load drops below 6, this should be re-evaluated. If additional corroborating events (e.g., motion, audio) come in from the same zone, that would raise it to E2+ and warrant investigation despite flood conditions.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2596,
+    "completionTokens": 761,
+    "totalTokens": 3357
+  },
+  "latencyMs": 8403,
+  "model": "deepseek-chat",
+  "costUsd": 0.00039480000000000006
+}

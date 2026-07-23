@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze this situation:\n\n**Context:**\n- **Site:** site-008, zone-8-3\n- **Event:** A single `missed_check_in` event (severity 2) from a guard source\n- **Evidence Level:** E1 (something happened, intent unknown)\n- **Prior:** P(real) = 0.3, but n=0 — this is a hand-set assumption with zero observations behind it. Very weak prior.\n- **Precedents:** Zero precedents — this is a **novel** event for this site/zone.\n- **Board Load:** 0 items/10min — operator is free, no flood conditions.\n- **Guards:** Andre Thomas (armed, 97.8% ack rate, ~9min avg response) and Jamal Lopez (unarmed, 79.2% ack rate, ~8.9min avg response)\n\n**Analysis:**\n- A missed check-in from a guard is potentially significant. It could be:\n  1. Guard forgot to check in (benign)\n  2. Guard is in trouble (serious)\n  3. Equipment/radio issue (benign)\n- With n=0, the prior of 0.3 is just a starting guess — I should be free to adjust.\n- No precedents means this is novel — I should flag that.\n- Board load is 0 — operator has bandwidth.\n- Andre Thomas has excellent reliability (97.8% ack rate). If he's the one who missed the check-in, that's more concerning.\n\n**Decision:** This is a guard safety issue with no precedents and a weak prior. The operator has bandwidth. I should **investigate** — ask a cheap question to gather more info before committing. Let me ask the guard via radio to confirm their status.\n\nActually, let me think about this more carefully. A missed check-in at E1 with n=0 prior... The prior is weak. Given that Andre has a 97.8% ack rate, a missed check-in from him would be unusual. But I don't know which guard it is. Let me investigate by asking the guard on radio.",
+  "toolCalls": [
+    {
+      "id": "call_00_K4jMnCYBeadr5v53NL2a2952",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"investigate\", \"action_id\": \"ask_guard_radio\", \"prior_adjustment_log_odds\": 0.5, \"adjustment_reasons\": [\"n=0 prior is a hand-set assumption with no data — weak starting point\", \"Novel event — no precedents at this site/zone\", \"Guard missed check-in could indicate safety issue; Andre has 97.8% ack rate making this unusual\"], \"novelty_flag\": true, \"confidence_p_real\": 0.35, \"what_would_change_my_mind\": \"If the guard responds and confirms they're okay (just forgot), I'd suppress. If no response after radio call, I'd escalate to dispatch_backup. If equipment malfunction is confirmed, I'd log_and_watch.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2584,
+    "completionTokens": 722,
+    "totalTokens": 3306
+  },
+  "latencyMs": 8074,
+  "model": "deepseek-chat",
+  "costUsd": 0.0003830400000000001
+}

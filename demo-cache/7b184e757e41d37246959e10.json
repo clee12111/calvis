@@ -1,0 +1,21 @@
+{
+  "text": "",
+  "toolCalls": [
+    {
+      "id": "call_00_61kIdK6FhXEvh7Li37tk2886",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"investigate\", \"action_id\": \"ask_guard_radio\", \"prior_adjustment_log_odds\": -0.4, \"adjustment_reasons\": [\"Event source is a guard's own device, not an unknown entity — lowers likelihood of actionable threat\", \"background:true flag suggests a routine/system event rather than an intentional breach\", \"Hand-set prior (n=0) with no site history — weak prior, free to adjust downward\"], \"novelty_flag\": true, \"confidence_p_real\": 0.25, \"what_would_change_my_mind\": \"If Andre Thomas (armed, 98% reliable) confirms he deliberately exited the zone for a valid reason (e.g., investigating perimeter, escorting someone out), I'd suppress. If he's unaccounted for or doesn't respond, I'd escalate to E2/E3 and dispatch backup.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2594,
+    "completionTokens": 1220,
+    "totalTokens": 3814
+  },
+  "latencyMs": 13698,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.003737
+}

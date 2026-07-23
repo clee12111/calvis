@@ -1,0 +1,21 @@
+{
+  "text": "This is an interesting case. Let me lay out the analysis.\n\n**Context:** A guard no-show at shift start (site-007, zone-7-5). E2 — human presence is confirmed absent, intent unknown. Prior P(real)=0.7 but **n=0** — this is a pure hand-set assumption with zero observational data behind it. Zero precedents in history — this is genuinely novel.\n\n**Board load:** 1/10min — low, operator has bandwidth.\n\n**Available guards:** Two on shift — Elena Garcia (armed, 92.6% ack) and Valentina Martin (unarmed, 89.9% ack). We have people who can check.\n\n**Decision logic:** With n=0 and zero precedents, the 0.7 prior has no empirical weight. A no-show at shift start could be a scheduling error, a miscommunication, or a real problem. The cheapest, highest-value move is to radio a guard to check — no dispatch needed yet, just a quick inquiry. Let's go investigate.",
+  "toolCalls": [
+    {
+      "id": "call_00_zOjSpyIJsOGDiktymBKC9552",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"investigate\", \"action_id\": \"ask_guard_radio\", \"prior_adjustment_log_odds\": -0.3, \"adjustment_reasons\": [\"n=0 prior has no empirical weight — treat as weak starting point\", \"Zero precedents — novel situation, no pattern to anchor on\", \"Shift-start no-show could be benign schedule issue as easily as real problem\"], \"novelty_flag\": true, \"confidence_p_real\": 0.55, \"what_would_change_my_mind\": \"If the guard reports the missing guard uncontactable and their vehicle is missing from the lot → E3. If the guard confirms a schedule mixup or the missing guard answers their phone and says they're running late → E0-E1, suppress. If the guard finds signs of a struggle or the missing guard's vehicle is still there but they're nowhere to be found → E4.\\\"\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2603,
+    "completionTokens": 1260,
+    "totalTokens": 3863
+  },
+  "latencyMs": 16347,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0038215
+}

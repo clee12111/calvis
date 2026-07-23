@@ -1,0 +1,21 @@
+{
+  "text": "Let me start by gathering all the context I need.",
+  "toolCalls": [
+    {
+      "id": "call_00_JR2z217v3Vpq8mTirPPp8529",
+      "type": "function",
+      "function": {
+        "name": "get_incident_context",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 1871,
+    "completionTokens": 41,
+    "totalTokens": 1912
+  },
+  "latencyMs": 1108,
+  "model": "deepseek-chat",
+  "costUsd": 0.00014245
+}

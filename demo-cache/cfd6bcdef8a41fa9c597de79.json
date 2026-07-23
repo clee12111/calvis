@@ -1,0 +1,21 @@
+{
+  "text": "Let me gather the remaining context before deciding.",
+  "toolCalls": [
+    {
+      "id": "call_00_gfWSjDAtjFyefzSV9Tg86256",
+      "type": "function",
+      "function": {
+        "name": "get_incident_context",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2774,
+    "completionTokens": 1764,
+    "totalTokens": 4538
+  },
+  "latencyMs": 20253,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.004915
+}

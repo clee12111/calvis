@@ -2,7 +2,6 @@
 
 const ARM_LABELS: Record<string, { label: string; color: string }> = {
   agent: { label: "Agent", color: "text-orange-400 border-orange-500/50 bg-orange-500/10" },
-  "scripted-interrogation": { label: "Scripted", color: "text-blue-400 border-blue-500/50 bg-blue-500/10" },
   "rules-only": { label: "Rules", color: "text-zinc-400 border-zinc-500/50 bg-zinc-500/10" },
 };
 
@@ -14,12 +13,14 @@ interface ArmSelectorProps {
 }
 
 export function ArmSelector({ activeArm, availableArms, onSwitch, disabled }: ArmSelectorProps) {
-  if (availableArms.length === 0) return null;
+  // Only show agent and rules-only
+  const visibleArms = availableArms.filter((arm) => arm === "agent" || arm === "rules-only");
+  if (visibleArms.length === 0) return null;
 
   return (
     <div className="flex items-center gap-1">
-      <span className="text-[9px] font-mono text-zinc-600 uppercase tracking-wider mr-1">Arm</span>
-      {availableArms.map((arm) => {
+      <span className="text-[9px] font-mono text-zinc-600 uppercase tracking-wider mr-1">Compare</span>
+      {visibleArms.map((arm) => {
         const config = ARM_LABELS[arm] ?? { label: arm, color: "text-zinc-400 border-zinc-600/50" };
         const isActive = arm === activeArm;
         return (

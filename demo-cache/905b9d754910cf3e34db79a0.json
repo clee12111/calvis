@@ -1,0 +1,21 @@
+{
+  "text": "I need to gather context before making any decision. Let me start.",
+  "toolCalls": [
+    {
+      "id": "call_00_zZTWaWiVCW8PqNo8pXjx0685",
+      "type": "function",
+      "function": {
+        "name": "get_incident_context",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 1871,
+    "completionTokens": 69,
+    "totalTokens": 1940
+  },
+  "latencyMs": 1377,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0010735
+}

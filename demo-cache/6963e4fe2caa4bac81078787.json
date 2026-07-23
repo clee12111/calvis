@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze what I've gathered:\n\n**Incident Context:**\n- Site: site-011, Zone: zone-11-3\n- Event: `robot_thermal_anomaly` (severity 3) — a single event, background reading\n- Evidence level: E1 (something happened, intent unknown)\n- 5 questions already asked, 5 answered\n\n**Prior:**\n- P(real) = 0.25, but n=0 — this is a hand-set prior with NO real data behind it. Very weak starting point.\n- The prior says thermal anomalies from robots are unlikely to be real, but we have zero observations to back that up.\n\n**Precedents:**\n- Zero precedents — this is a **novel** event type for this site. No history to learn from.\n\n**Board Load:**\n- 0 items/10min — operator is free. No flood conditions.\n\n**Guards:**\n- Lucia Martin (armed, 93% ack rate, ~9min avg response)\n- Brianna Martin (unarmed, 89% ack rate, ~6min avg response)\n\n**Analysis:**\n- This is a thermal anomaly detected by a robot. Severity 3 (moderate-high severity).\n- The prior is weak (n=0) — it's an assumption, not learned.\n- No precedents at all — truly novel.\n- Board load is 0 — operator has bandwidth.\n- 5 questions already asked — we've gathered some context already.\n\nGiven the novelty (no precedents), the weak prior (n=0), and the fact that thermal anomalies from robots could indicate a fire or equipment failure (threat to property), I think we should **investigate** further. The operator has bandwidth, and a thermal anomaly at severity 3 is worth a closer look before committing.\n\nLet me ask for a photo to get visual confirmation.",
+  "toolCalls": [
+    {
+      "id": "call_00_IuXlF86IjPxTwGUjR2Dk0559",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"investigate\", \"action_id\": \"request_photo\", \"prior_adjustment_log_odds\": 0.5, \"adjustment_reasons\": [\"No precedents at this site — novelty means we can't rely on past patterns\", \"Hand-set prior with n=0 is a weak assumption, not a learned estimate\", \"Thermal anomaly at severity 3 could indicate fire/equipment failure — threat to property possible\"], \"novelty_flag\": true, \"confidence_p_real\": 0.35, \"what_would_change_my_mind\": \"A clear photo showing no actual heat source (false alarm) would drop confidence. A photo showing flames or overheating equipment would confirm E3 and trigger dispatch. Guard radio confirmation of a routine maintenance event would also resolve this.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2597,
+    "completionTokens": 663,
+    "totalTokens": 3260
+  },
+  "latencyMs": 7388,
+  "model": "deepseek-chat",
+  "costUsd": 0.0003674300000000001
+}

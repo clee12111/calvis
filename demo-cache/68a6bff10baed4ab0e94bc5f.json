@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze this carefully.\n\n**Incident Summary:**\n- **Site:** site-000, zone-0-0\n- **Event:** Missed check-in (severity 2) — a guard didn't check in\n- **Evidence Level:** E1 (something happened, intent unknown)\n- **Prior:** P(real) = 0.3, but n=0 — this is a hand-set prior with zero observations behind it. Very weak.\n- **Precedents:** None — this is a novel combination for this site.\n- **Board Load:** 0/10min — operator is free, no flood concerns.\n- **Guards available:** 3 guards on shift, all with reasonable ack rates.\n\n**Analysis:**\nA missed check-in from a guard is concerning. It could be:\n1. The guard forgot or had a technical issue (benign)\n2. The guard is in trouble (real threat)\n\nWith n=0, the prior of 0.3 is just an assumption. Since there are no precedents (novelty), and the board load is low, I should investigate further before committing. The cheapest, most informative action is to ask the guard on radio — we have guards available with decent response times.\n\nLet me ask the guard to confirm their status.",
+  "toolCalls": [
+    {
+      "id": "call_00_JwowSthXOqqYWcKpRV6Q1347",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"investigate\", \"action_id\": \"ask_guard_radio\", \"prior_adjustment_log_odds\": 0.0, \"adjustment_reasons\": [\"Hand-set prior with n=0 — no real data behind it\", \"Novel event — no precedents to learn from\", \"Board load is low, investigation is cheap\"], \"novelty_flag\": true, \"confidence_p_real\": 0.3, \"what_would_change_my_mind\": \"If the guard responds on radio and confirms they're okay (benign), I'd suppress. If no response or a distress signal, I'd escalate to dispatch_backup.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2623,
+    "completionTokens": 510,
+    "totalTokens": 3133
+  },
+  "latencyMs": 5942,
+  "model": "deepseek-chat",
+  "costUsd": 0.00032641
+}

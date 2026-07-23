@@ -1,0 +1,37 @@
+{
+  "text": "# Starting analysis of inc-00127\n\nLet me gather all the context systematically.",
+  "toolCalls": [
+    {
+      "id": "call_00_LXJF2BChcDqVtsj8X2Lk0609",
+      "type": "function",
+      "function": {
+        "name": "get_incident_context",
+        "arguments": "{}"
+      }
+    },
+    {
+      "id": "call_01_3flMO9qe17dryo7ypV239614",
+      "type": "function",
+      "function": {
+        "name": "get_board_load",
+        "arguments": "{}"
+      }
+    },
+    {
+      "id": "call_02_aQJMFn7QyKtyJWy1SopR2921",
+      "type": "function",
+      "function": {
+        "name": "get_active_rules",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 1871,
+    "completionTokens": 193,
+    "totalTokens": 2064
+  },
+  "latencyMs": 2426,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0013215
+}

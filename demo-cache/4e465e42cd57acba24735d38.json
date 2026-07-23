@@ -1,0 +1,21 @@
+{
+  "text": "I'll start by gathering the full context for this incident. Board load is critically high at 20 (threshold 6) — I need to move fast and minimize operator burden.",
+  "toolCalls": [
+    {
+      "id": "call_00_1MmexPnawGIZxQ68Ce9e7902",
+      "type": "function",
+      "function": {
+        "name": "get_incident_context",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 1871,
+    "completionTokens": 120,
+    "totalTokens": 1991
+  },
+  "latencyMs": 2010,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0011755
+}

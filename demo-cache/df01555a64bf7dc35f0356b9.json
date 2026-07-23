@@ -1,0 +1,21 @@
+{
+  "text": "",
+  "toolCalls": [
+    {
+      "id": "call_00_cvK8ys6tUfhHWDBrjLaU3615",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"commit\", \"action_id\": \"suppress\", \"prior_adjustment_log_odds\": -1.8, \"adjustment_reasons\": [\"geofence_exit from guard source with background:true flag — likely pocket dial / benign movement\", \"n=0 hand-set prior carries no empirical weight — free to adjust\", \"Board load at 20 items — flood conditions; rule R-004 directs suppress E0-E1\"], \"novelty_flag\": true, \"confidence_p_real\": 0.08, \"what_would_change_my_mind\": \"Confirmation from the guard that they were on patrol near the geofence boundary, or a second correlated sensor event indicating actual perimeter breach.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2634,
+    "completionTokens": 1057,
+    "totalTokens": 3691
+  },
+  "latencyMs": 11179,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.003431
+}

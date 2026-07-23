@@ -1,0 +1,29 @@
+{
+  "text": "Board load is 20 — that's a flood condition. Let me get the prior and precedents.",
+  "toolCalls": [
+    {
+      "id": "call_00_Emafouzv4iuUnkEHGLta9447",
+      "type": "function",
+      "function": {
+        "name": "get_site_prior",
+        "arguments": "{\"event_type\": \"robot_thermal_anomaly\"}"
+      }
+    },
+    {
+      "id": "call_01_VGQZhY7mK3TaQYeIPOVV9855",
+      "type": "function",
+      "function": {
+        "name": "find_precedent",
+        "arguments": "{\"k\": 5}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2091,
+    "completionTokens": 104,
+    "totalTokens": 2195
+  },
+  "latencyMs": 1466,
+  "model": "deepseek-chat",
+  "costUsd": 0.00017549000000000002
+}

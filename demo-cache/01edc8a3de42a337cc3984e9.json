@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze this carefully.\n\n**Incident Summary:**\n- **Site:** site-006, zone-6-0\n- **Event:** `robot_motion_anomaly` — a single event, severity 2, background data\n- **Evidence Level:** E0 (nothing to act on)\n- **Prior:** P(real) = 0.10, but n=0 — this is a hand-set assumption with zero observations behind it\n- **Precedents:** None — this is novel for this site\n- **Board Load:** 0/10min — very low, operator is not under pressure\n- **Guards available:** 2 guards on shift\n\n**Analysis:**\n- E0 means \"nothing to act on\" — this is the lowest evidence level. The raw data says `background: true`, suggesting it's a routine robot motion pattern, not an intrusion.\n- n=0 means the prior is a hand-set assumption with no real data behind it. I should be free to adjust.\n- No precedents exist — this is a novel event type for this site.\n- Board load is 0 — no flood conditions, so no need to suppress.\n- The event is a single `robot_motion_anomaly` with `background: true` — this looks like a routine robot patrol pattern that triggered a minor anomaly flag.\n\nGiven E0 (nothing to act on), a single event with background data, and the fact that this is a novel event with no prior data... I think the right move is to **investigate** with a cheap question to gather more context before committing. Since board load is low, we have the bandwidth.\n\nActually, let me reconsider. E0 means \"nothing to act on.\" The event is a robot motion anomaly with background data. This is likely a false alarm / equipment quirk. But since n=0 and no precedents, this is a learning opportunity. Let me ask a cheap question to gather evidence.\n\nLet me ask for a photo or check with the guard.",
+  "toolCalls": [
+    {
+      "id": "call_00_OXTph8woa1crWvqUlA6h0656",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"investigate\", \"action_id\": \"ask_guard_radio\", \"prior_adjustment_log_odds\": -1.0, \"adjustment_reasons\": [\"n=0 — hand-set prior with no observations, weak starting point\", \"background=true suggests routine robot patrol, not intrusion\", \"no precedents at this site — novel event needs more data\"], \"novelty_flag\": true, \"confidence_p_real\": 0.04, \"what_would_change_my_mind\": \"If the guard confirms the robot was on a scheduled patrol route and the anomaly was a sensor glitch, I'd suppress. If the guard reports something unusual (e.g., robot detected unexpected motion), I'd escalate.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2588,
+    "completionTokens": 675,
+    "totalTokens": 3263
+  },
+  "latencyMs": 7708,
+  "model": "deepseek-chat",
+  "costUsd": 0.0003701600000000001
+}

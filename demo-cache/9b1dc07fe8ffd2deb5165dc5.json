@@ -1,0 +1,29 @@
+{
+  "text": "Board load is 20 — that's a flood condition. Let me gather more context.",
+  "toolCalls": [
+    {
+      "id": "call_00_IrzbW8OWy55O6psFWjNc1846",
+      "type": "function",
+      "function": {
+        "name": "get_site_prior",
+        "arguments": "{\"event_type\": \"plate_read_unknown\"}"
+      }
+    },
+    {
+      "id": "call_01_hxPLzS3xA3louPsKoG7t9798",
+      "type": "function",
+      "function": {
+        "name": "find_precedent",
+        "arguments": "{\"k\": 5}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2085,
+    "completionTokens": 98,
+    "totalTokens": 2183
+  },
+  "latencyMs": 1572,
+  "model": "deepseek-chat",
+  "costUsd": 0.00017339000000000002
+}

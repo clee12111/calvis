@@ -1,0 +1,21 @@
+{
+  "text": "Now let me analyze this carefully.\n\n**Context:** Guard Sofia Martinez didn't show for their scheduled shift at site-005. E2 — human confirmed absent, intent unknown. The prior is 0.70 but it's a hand-set prior with **n=0** (zero observations behind it — a guess, not learned data). There are **zero precedents** — this exact situation has never happened at this site before.\n\nBoard load is **0/10min** — operator has plenty of bandwidth. I have three guards available, including two others (Patricia, Natalia) who could be asked.\n\nSince the prior has no data behind it and there are no precedents, this is genuinely novel. A no-show could be a benign scheduling hiccup (guard overslept) or could be security-relevant (guard prevented from arriving). The best move is to investigate cheaply before committing resources.",
+  "toolCalls": [
+    {
+      "id": "call_00_YZXIDiLtqLk9WRfEAI880923",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"investigate\", \"action_id\": \"ask_guard_radio\", \"prior_adjustment_log_odds\": -1.0, \"adjustment_reasons\": [\"Hand-set prior (n=0) has no real data behind it — weak starting point\", \"No precedents at this site — no local signal that no-shows are security-relevant\", \"Guard no-shows are often benign (scheduling, personal) before proven otherwise\"], \"novelty_flag\": true, \"confidence_p_real\": 0.45, \"what_would_change_my_mind\": \"A radio check confirming Sofia is unreachable and no one has heard from her would raise concern. Conversely, if another guard says 'she mentioned car trouble last night' or 'she called in sick', that's clear E0-E1. Also, if this was a high-security-threat site with active tensions, I'd be more concerned.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2640,
+    "completionTokens": 1428,
+    "totalTokens": 4068
+  },
+  "latencyMs": 16838,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.004176
+}

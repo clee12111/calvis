@@ -1,0 +1,21 @@
+{
+  "text": "Now let me compile all the information and make a decision.",
+  "toolCalls": [
+    {
+      "id": "call_00_CinTq7huzFmxI4j9G1xs5586",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"investigate\", \"action_id\": \"ask_guard_radio\", \"prior_adjustment_log_odds\": -0.3, \"adjustment_reasons\": [\"Hand-set prior with n=0 — no learned weight, free to adjust\", \"Zero precedents — novel pattern means higher uncertainty\", \"Raw data shows 'background: true' flag, suggesting possible benign radio chatter\"], \"novelty_flag\": true, \"confidence_p_real\": 0.35, \"what_would_change_my_mind\": \"If the guard confirms the flag was just background chatter/routine transmission, I'd adjust downward and suppress. If the guard reports something unusual (sounds, voices, activity), I'd commit to notify_guard or escalate.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2589,
+    "completionTokens": 1335,
+    "totalTokens": 3924
+  },
+  "latencyMs": 15728,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0039645
+}

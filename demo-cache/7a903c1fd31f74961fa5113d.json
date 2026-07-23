@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze this carefully.\n\n**Incident Summary:**\n- Site: site-002, zone-2-1\n- Event: `robot_motion_anomaly` — a robot detected a motion anomaly (severity 2)\n- Evidence level: E0 (nothing to act on)\n- Prior: P(real) = 0.1, but n=0 — this is a hand-set assumption with zero observations\n- Precedents: None — this is novel for this site\n- Board load: 0/10min — operator is free\n- 5 questions already asked, all answered\n\n**Analysis:**\n- E0 means \"nothing to act on\" — this is the lowest evidence level\n- The event is a robot motion anomaly — a robot sensor triggered, but the raw data says `background: true`, suggesting it's a background/nominal reading\n- n=0 means the prior is a hand-set assumption, not learned from data\n- No precedents exist — this is novel\n- Board load is 0 — operator has bandwidth\n\n**Decision:**\nAt E0 with a hand-set prior of 0.1 and zero precedents, and the raw data showing `background: true`, this looks like a benign sensor reading. However, since it's novel (no precedents) and the prior has no data behind it, I should be cautious but not wasteful. The operator is free, so I can afford to investigate with a cheap question.\n\nActually, 5 questions have already been asked and answered. Let me think about what's appropriate.\n\nGiven E0 (nothing to act on), `background: true` in raw data, and the fact that 5 questions have already been asked... this seems like a benign event. I'll suppress it with a note to recheck if needed, since the board is clear and we can afford to log it.\n\nWait — let me reconsider. E0 means \"nothing to act on.\" The prior is 0.1 (hand-set, n=0). No precedents. Raw data says `background: true`. This is likely a false alarm from a robot sensor. I'll suppress it.\n\nActually, since it's novel (no precedents) and the prior has no data behind it, I should lean toward investigating slightly more. But 5 questions have already been asked. Let me go with a mild adjustment downward and suppress.\n\nLet me set a small negative adjustment since the raw data says `background: true` and E0 means nothing to act on.",
+  "toolCalls": [
+    {
+      "id": "call_00_VqQ34o1LNdxCdbEOQotO3321",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"commit\", \"action_id\": \"suppress\", \"prior_adjustment_log_odds\": -0.5, \"adjustment_reasons\": [\"Raw data shows 'background: true' — benign sensor reading\", \"E0 evidence level — nothing to act on\", \"5 questions already asked and answered with no escalation\"], \"novelty_flag\": true, \"confidence_p_real\": 0.05, \"what_would_change_my_mind\": \"If the robot reported a non-background anomaly, or if a guard reported seeing something unusual in that zone, I would escalate.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2627,
+    "completionTokens": 749,
+    "totalTokens": 3376
+  },
+  "latencyMs": 8305,
+  "model": "deepseek-chat",
+  "costUsd": 0.00039361
+}

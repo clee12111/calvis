@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze what I've gathered:\n\n**Incident Context:**\n- Site 008, Zone 8-3\n- Single event: `robot_thermal_anomaly` (severity 3)\n- Raw data notes `\"background\": true` — this is a background thermal reading from a robot\n- E1 level — something happened, intent unknown\n\n**Prior:**\n- P(real) = 0.25, but n=0 — this is a hand-set prior with zero observations. It's a starting assumption, not learned data. I should adjust freely.\n\n**Precedents:**\n- Zero precedents — this is genuinely novel for this site/event-type combination. Set novelty_flag = true.\n\n**Board Load:**\n- 0 items/10min — operator is not under load. No flood condition.\n\n**Guards:**\n- Andre Thomas (armed, 97.8% ack rate, ~9 min avg response) — very reliable\n- Jamal Lopez (unarmed, 79.2% ack rate, ~9 min avg response)\n\n**Analysis:**\n- This is a robot thermal anomaly with `\"background\": true` — likely a routine thermal reading, not a focused hot spot. The robot's thermal camera picked up something in the background.\n- Severity 3 is moderately high, but the background flag suggests it's not a targeted reading.\n- No precedents, hand-set prior of 0.25 with n=0 — I should be somewhat skeptical but not dismissive.\n- Board load is low, so I have room to investigate.\n\nGiven the novelty (no precedents), the background flag (suggesting low concern), and the hand-set prior with n=0, I think the best move is to **investigate** — ask a cheap question to gather more evidence before committing. A photo request from the robot would help clarify what the thermal anomaly actually is.\n\nLet me ask for a photo from the robot to see what's happening.",
+  "toolCalls": [
+    {
+      "id": "call_00_TeFLl1glIjNYAJzPTMav5563",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"investigate\", \"action_id\": \"request_photo\", \"prior_adjustment_log_odds\": -0.5, \"adjustment_reasons\": [\"Background flag suggests non-targeted thermal reading, not a focused hot spot\", \"Hand-set prior with n=0 — weak starting point, no learned data behind it\", \"No precedents at this site for this event type — genuine novelty\"], \"novelty_flag\": true, \"confidence_p_real\": 0.18, \"what_would_change_my_mind\": \"A photo showing a clear hot spot (person, fire, equipment overheating) would raise this to E2/E3. If the photo shows nothing unusual or a known benign heat source, I'd suppress. If the robot can't provide a photo, that's also information.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2596,
+    "completionTokens": 686,
+    "totalTokens": 3282
+  },
+  "latencyMs": 7669,
+  "model": "deepseek-chat",
+  "costUsd": 0.0003738000000000001
+}

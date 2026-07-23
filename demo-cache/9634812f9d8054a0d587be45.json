@@ -1,0 +1,21 @@
+{
+  "text": "Let me assess the situation:\n\n1. **Event**: `plate_read_unknown` - a license plate read that didn't match any known plate. Severity 2, from a robot patrol. Background reading.\n2. **Prior**: P(real) = 0.15, but n=0 — this is a hand-set assumption with zero observations. Very weak prior.\n3. **Precedents**: None — this is novel for this site/zone.\n4. **Board load**: 20 items/10min — this is a **flood** condition (threshold is 6). Rule R-004 says: \"Under flood conditions (>6/10min), suppress E0-E1 to manage operator load.\"\n5. **Evidence level**: E1 — something happened, intent unknown.\n\nThe event is a single unknown plate read from a robot patrol. No other corroborating events. The board is severely overloaded (20 vs threshold of 6). The active rules explicitly say to suppress E0-E1 under flood conditions.\n\nThis is a clear case for suppression. The prior is weak (n=0), there's no precedent, and the operator is drowning in alerts. A single unknown plate read with no other context is almost certainly benign.",
+  "toolCalls": [
+    {
+      "id": "call_00_R8JYzkam6NA1VIpNCOoM5831",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"commit\", \"action_id\": \"suppress\", \"prior_adjustment_log_odds\": -1.5, \"adjustment_reasons\": [\"Board load at 20 (flood) — R-004 mandates suppress E0-E1\", \"Single unknown plate read, no corroborating events\", \"Hand-set prior with n=0 — no real data behind it\"], \"novelty_flag\": true, \"confidence_p_real\": 0.05, \"what_would_change_my_mind\": \"If this plate read was accompanied by other events (motion, door alarm, etc.) at the same zone/time, or if the guard on site reported something unusual nearby.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2454,
+    "completionTokens": 503,
+    "totalTokens": 2957
+  },
+  "latencyMs": 5984,
+  "model": "deepseek-chat",
+  "costUsd": 0.00031262
+}

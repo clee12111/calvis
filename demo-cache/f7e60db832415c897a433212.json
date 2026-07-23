@@ -1,0 +1,29 @@
+{
+  "text": "Let me look at the available guards and active rules to round out context.",
+  "toolCalls": [
+    {
+      "id": "call_00_8UaLUL5jHTJcJO6cGsfk4757",
+      "type": "function",
+      "function": {
+        "name": "get_available_guards",
+        "arguments": "{}"
+      }
+    },
+    {
+      "id": "call_01_wUIFkW9W4EnmXiebAMQk0458",
+      "type": "function",
+      "function": {
+        "name": "get_active_rules",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2285,
+    "completionTokens": 806,
+    "totalTokens": 3091
+  },
+  "latencyMs": 10125,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0027545
+}

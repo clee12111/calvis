@@ -1,0 +1,29 @@
+{
+  "text": "Let me start by pulling in the full picture. I need context, priors, precedents, and board load to make a good decision.",
+  "toolCalls": [
+    {
+      "id": "call_00_fOQJfDzi4qTSfi4m44cl2079",
+      "type": "function",
+      "function": {
+        "name": "get_incident_context",
+        "arguments": "{}"
+      }
+    },
+    {
+      "id": "call_01_syCBiek99GUeBFshEkkU0238",
+      "type": "function",
+      "function": {
+        "name": "get_board_load",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 1871,
+    "completionTokens": 86,
+    "totalTokens": 1957
+  },
+  "latencyMs": 1882,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0011075
+}

@@ -1,0 +1,29 @@
+{
+  "text": "I'll start gathering context on this incident. The board load is critically high (20 vs threshold of 6), which is a flood condition.",
+  "toolCalls": [
+    {
+      "id": "call_00_saaV54WTWcBoxhGRfMzb1580",
+      "type": "function",
+      "function": {
+        "name": "get_incident_context",
+        "arguments": "{}"
+      }
+    },
+    {
+      "id": "call_01_RBU4N8xSD7yPy9fuOTUL7488",
+      "type": "function",
+      "function": {
+        "name": "get_board_load",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 1871,
+    "completionTokens": 147,
+    "totalTokens": 2018
+  },
+  "latencyMs": 2294,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0012295
+}

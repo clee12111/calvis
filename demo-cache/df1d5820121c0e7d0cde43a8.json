@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze what I've gathered:\n\n**Incident Context:**\n- Site: site-010, Zone: zone-10-4\n- Event: `robot_thermal_anomaly` (severity 3, background data)\n- E1 evidence level — something happened, intent unknown\n- Single event, no time span\n\n**Prior:** P(real) = 0.25, but n=0 — this is a hand-set assumption with zero observations. Very weak prior.\n\n**Precedents:** Zero precedents. This is genuinely novel — no similar thermal anomaly has been seen at this site before.\n\n**Board Load:** 0 items/10min — operator is free. No flood conditions.\n\n**Available Guards:** Two guards on shift. Tyler Rodriguez has excellent stats (91% ack, ~2.8min response). Michael Johnson is armed but slower.\n\n**Analysis:**\n- n=0 means the 0.25 prior is a pure assumption, not learned. With no data behind it, I should be freer in my adjustment.\n- Zero precedents = novelty_flag = true.\n- Board load is 0 — operator has bandwidth. This is the time to investigate properly.\n- A thermal anomaly from a robot at night could be anything from a sensor glitch to an actual heat source (fire, equipment failure, intruder with heat signature).\n- Since it's novel and the prior is unweighted (n=0), I should investigate to gather more evidence before committing.\n\nLet me ask for a photo to see what the robot sees.",
+  "toolCalls": [
+    {
+      "id": "call_00_Wvru1ytVMmcj5rN2qWTq7088",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"investigate\", \"action_id\": \"request_photo\", \"prior_adjustment_log_odds\": 0.0, \"adjustment_reasons\": [\"n=0 prior is unweighted hand-set assumption, no data behind it\", \"Zero precedents — genuinely novel event at this site\", \"Board load is 0, operator has bandwidth to investigate\"], \"novelty_flag\": true, \"confidence_p_real\": 0.25, \"what_would_change_my_mind\": \"A photo showing a visible heat source or human presence would raise this to E2/E3. If the robot's thermal sensor is in a known failure pattern, I'd suppress. If the guard confirms nothing unusual on patrol, I'd log and watch.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2595,
+    "completionTokens": 583,
+    "totalTokens": 3178
+  },
+  "latencyMs": 6737,
+  "model": "deepseek-chat",
+  "costUsd": 0.00034489
+}

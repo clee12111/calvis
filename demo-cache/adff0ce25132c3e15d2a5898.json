@@ -1,0 +1,21 @@
+{
+  "text": "Good — I have the full picture. Let me think through this systematically.\n\n**Context:** A guard \"no_show_at_shift_start\" at site-011, zone-11-4. E2 evidence level — human presence confirmed, intent unknown. This is a single event, severity 3. The raw data shows `{\"background\": true}`.\n\n**Prior:** P(real)=0.70, but **n=0** — this is a hand-set assumption, not learned from data. That prior is essentially an untested guess.\n\n**Precedents:** None. Zero. This combination has never been seen at this site — genuinely novel.\n\n**Board load:** 0 items/10min. Operator has bandwidth to handle this.\n\n**Guards available:** Lucia Martin (armed, 92.9% ack) and Brianna Martin (unarmed, 89% ack). Either could be the no-show or could be contacted to investigate.\n\n**My reasoning:** A no-show at shift start at 2am is concerning but often mundane — oversleeping, transportation issues, miscommunication. The hand-set prior of 0.70 seems too high for this being a *security threat* — most no-shows are operational hiccups. With zero precedents and n=0, I should adjust freely downward. But we have capacity (low board load) and it's novel, so let's investigate with a cheap question before committing.",
+  "toolCalls": [
+    {
+      "id": "call_00_ucwqBAnnpA5VJwW4HzxQ8693",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"investigate\", \"action_id\": \"ask_guard_radio\", \"prior_adjustment_log_odds\": -0.5, \"adjustment_reasons\": [\"n=0 hand-set prior — weak starting point, free to adjust\", \"No-show events are often mundane operational issues (oversleep, transport) not security threats\", \"No precedents at this site — genuine novelty warrants further investigation before committing\"], \"novelty_flag\": true, \"confidence_p_real\": 0.55, \"what_would_change_my_mind\": \"If the guard on radio reports the missing guard is unreachable by phone AND the client confirms they were expected on shift, I'd escalate to commit. If the guard reports the missing guard called in sick or had a car issue, I'd suppress/log.\\\"\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2603,
+    "completionTokens": 1648,
+    "totalTokens": 4251
+  },
+  "latencyMs": 17485,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0045975
+}

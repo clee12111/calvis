@@ -1,0 +1,29 @@
+{
+  "text": "Incident inc-00009 is at E2 with a board load of 21 — well above threshold 6. Let me gather the full context systematically.",
+  "toolCalls": [
+    {
+      "id": "call_00_93O9WD8QlLzUxx9nwwAG9679",
+      "type": "function",
+      "function": {
+        "name": "get_incident_context",
+        "arguments": "{}"
+      }
+    },
+    {
+      "id": "call_01_2WGk2prtGJTzvb4BITAm1057",
+      "type": "function",
+      "function": {
+        "name": "get_board_load",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 1871,
+    "completionTokens": 120,
+    "totalTokens": 1991
+  },
+  "latencyMs": 1675,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0011755
+}

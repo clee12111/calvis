@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze this situation:\n\n**Incident Summary:**\n- **Site:** site-009, zone-9-0\n- **Event:** robot_thermal_anomaly (severity 3)\n- **Evidence Level:** E1 (something happened, intent unknown)\n- **Prior:** P(real) = 0.25, but n=0 — this is a hand-set assumption with zero observations behind it\n- **Precedents:** Zero — this is a novel event type at this site\n- **Board Load:** 0 items/10min — very low, operator has bandwidth\n- **Guards:** 2 available (Rosa Smith, Ashley Davis) — both have ~78-80% ack rates\n\n**Key observations:**\n1. **n=0** means the prior is a pure assumption, not learned. I should be free to adjust.\n2. **Novelty flag** should be true — find_precedent returned zero precedents. This is genuinely novel.\n3. Board load is 0 — no flood concerns, so no need to suppress.\n4. A thermal anomaly from a robot at severity 3 is worth investigating further. With no precedents and a hand-set prior, I need more info before committing.\n\n**My move:** Investigate. I'll ask the guard to check on the robot's thermal reading. This is a cheap question that could clarify whether this is a real thermal event or a sensor glitch.\n\nLet me think about the adjustment. The prior is 0.25 with n=0 — a hand-set assumption. Given it's a thermal anomaly from a robot (could be a sensor glitch or actual heat), and there's no history, I'll adjust slightly downward from the hand-set prior since robot thermal anomalies often have false triggers, but not too far since severity 3 is notable.\n\nActually, let me adjust slightly upward — severity 3 is notable, and with no history to say otherwise, I should give it a small nudge toward investigation-worthiness. But I'm investigating, not committing, so the adjustment matters less for the immediate action.\n\nLet me set a modest positive adjustment to reflect that severity 3 + novelty warrants attention, but I'm investigating first.",
+  "toolCalls": [
+    {
+      "id": "call_00_68OEn7UTycf7NNlrvRyc1019",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"investigate\", \"action_id\": \"ask_guard_radio\", \"prior_adjustment_log_odds\": 0.3, \"adjustment_reasons\": [\"Severity 3 thermal anomaly is notable\", \"n=0 prior is hand-set assumption, not learned\", \"Novel event at this site — no precedents to anchor on\"], \"novelty_flag\": true, \"confidence_p_real\": 0.35, \"what_would_change_my_mind\": \"If the guard confirms the robot is running hot or there's visible heat/smoke, I'd escalate. If the guard reports the robot is idle and the sensor is known to glitch, I'd suppress or log-and-watch. A second thermal reading from a different sensor would also increase confidence.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2595,
+    "completionTokens": 727,
+    "totalTokens": 3322
+  },
+  "latencyMs": 8665,
+  "model": "deepseek-chat",
+  "costUsd": 0.00038521000000000003
+}

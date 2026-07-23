@@ -1,15 +1,8 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
-import { ReplayControls } from "@/components/dispatch/replay-controls";
 import { IncidentQueue } from "@/components/dispatch/incident-queue";
 import { IncidentDetail } from "@/components/dispatch/incident-detail";
-import { SitePanel } from "@/components/dispatch/site-panel";
-import { BoardLoad } from "@/components/dispatch/board-load";
-import { ArmSelector } from "@/components/dispatch/arm-selector";
-import { SessionMetrics } from "@/components/dispatch/session-metrics";
-import { LearningPanel } from "@/components/dispatch/learning-panel";
-import { HelpButton } from "@/components/dispatch/help-overlay";
 import type { ArmMetrics } from "@/lib/engine/incident-cache";
 
 interface SimState {
@@ -20,204 +13,96 @@ interface SimState {
   totalEvents: number;
 }
 
+function formatClock(ms: number): string {
+  const totalSeconds = Math.floor(ms / 1000);
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const displayHour = (20 + hours) % 24;
+  return `${String(displayHour).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+}
+
 export default function DispatchPage() {
   const [simState, setSimState] = useState<SimState>({
-    time: 0,
-    speed: 10,
-    running: false,
-    eventsIngested: 0,
-    totalEvents: 0,
+    time: 0, speed: 10, running: false, eventsIngested: 0, totalEvents: 0,
   });
   const [allIncidents, setAllIncidents] = useState<any[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [sites, setSites] = useState<any[]>([]);
-  const [boardLoad, setBoardLoad] = useState(0);
   const [activeArm, setActiveArm] = useState("agent");
-  const [availableArms, setAvailableArms] = useState<string[]>([]);
   const [armMetrics, setArmMetrics] = useState<Record<string, ArmMetrics>>({});
-  const [agentError, setAgentError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const eventSourceRef = useRef<EventSource | null>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const recentIncidentTimestamps = useRef<number[]>([]);
 
-  // Progressive reveal: filter incidents by sim clock time
+  // Progressive reveal
   const visibleIncidents = useMemo(() => {
     if (simState.time === 0 && !simState.running) return allIncidents;
     return allIncidents.filter((inc) => inc.createdAt <= simState.time);
   }, [allIncidents, simState.time, simState.running]);
 
-  // Extract unique sites from visible incidents
-  useEffect(() => {
-    const siteMap = new Map<string, any>();
-    for (const inc of visibleIncidents) {
-      if (inc.site) {
-        const siteId = inc.site.id ?? inc.siteId;
-        const existing = siteMap.get(siteId);
-        siteMap.set(siteId, {
-          id: siteId,
-          name: inc.site.name ?? siteId,
-          criticalityTier: inc.site.criticalityTier ?? 1,
-          activeIncidents: (existing?.activeIncidents ?? 0) + (inc.status === "open" ? 1 : 0),
-          guardCount: 0,
-        });
-      }
-    }
-    setSites(Array.from(siteMap.values()));
-  }, [visibleIncidents]);
-
-  // Board load: count incidents surfaced in the last 10-min sim window
-  useEffect(() => {
-    const windowMs = 10 * 60 * 1000;
-    const cutoff = simState.time - windowMs;
-    const count = visibleIncidents.filter(
-      (inc) => inc.createdAt >= cutoff && inc.createdAt <= simState.time && (inc.tier ?? 0) >= 1
-    ).length;
-    setBoardLoad(count);
-  }, [visibleIncidents, simState.time]);
-
-  // Fetch incidents from cache
   const fetchIncidents = useCallback(async () => {
     try {
       const res = await fetch("/api/incidents");
       if (res.ok) {
         const data = await res.json();
-        if (Array.isArray(data)) {
-          setAllIncidents(data);
-        }
+        if (Array.isArray(data)) setAllIncidents(data);
       }
-    } catch (_e) {
-      // Ignore fetch errors during startup
-    }
+    } catch (_e) { /* ignore */ }
   }, []);
 
-  // Fetch arm metrics
   const fetchMetrics = useCallback(async () => {
     try {
       const res = await fetch("/api/incidents?view=metrics");
       if (res.ok) {
         const data = await res.json();
         setArmMetrics(data.metrics ?? {});
-        setAvailableArms(data.availableArms ?? []);
         setActiveArm(data.activeArm ?? "agent");
       }
-    } catch {
-      // Ignore
-    }
+    } catch (_e) { /* ignore */ }
   }, []);
 
-  // Connect to SSE
   const connectSSE = useCallback(() => {
-    if (eventSourceRef.current) {
-      eventSourceRef.current.close();
-    }
-
+    if (eventSourceRef.current) eventSourceRef.current.close();
     const es = new EventSource("/api/events/stream");
     eventSourceRef.current = es;
-
     es.onmessage = (event) => {
       const data = JSON.parse(event.data);
-
       if (data.type === "tick") {
         setSimState((prev) => ({ ...prev, time: data.time }));
-      } else if (data.type === "event") {
-        setSimState((prev) => ({
-          ...prev,
-          eventsIngested: prev.eventsIngested + 1,
-        }));
       } else if (data.type === "incident") {
         fetchIncidents();
       } else if (data.type === "init") {
-        setSimState((prev) => ({
-          ...prev,
-          time: data.time,
-          speed: data.speed,
-        }));
+        setSimState((prev) => ({ ...prev, time: data.time, speed: data.speed }));
       }
     };
-
-    es.onerror = (_e) => {
-      es.close();
-      setTimeout(connectSSE, 2000);
-    };
-
-    return () => {
-      es.close();
-    };
+    es.onerror = () => { es.close(); setTimeout(connectSSE, 2000); };
   }, [fetchIncidents]);
 
-  // Start simulation
+  // Start
   const handleStart = async () => {
     try {
-      const speed = simState.speed || 10;
+      setLoading(true);
       if (eventSourceRef.current) eventSourceRef.current.close();
       if (pollRef.current) clearInterval(pollRef.current);
-
       const res = await fetch("/api/sim", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "start", seed: 42, speed }),
+        body: JSON.stringify({ action: "start", seed: 42, speed: 100 }),
       });
       const data = await res.json();
       if (data.ok) {
-        setSimState((prev) => ({
-          ...prev,
-          running: true,
-          totalEvents: data.totalEvents,
-          speed,
-        }));
+        setSimState((prev) => ({ ...prev, running: true, totalEvents: data.totalEvents, speed: 100 }));
         setActiveArm(data.activeArm ?? "agent");
-        setAvailableArms(data.availableArms ?? []);
-        if (data.agentError) {
-          setAgentError(data.agentError);
-        }
         fetchIncidents();
         fetchMetrics();
         connectSSE();
         if (pollRef.current) clearInterval(pollRef.current);
         pollRef.current = setInterval(fetchIncidents, 1000);
       }
-    } catch (err) {
-      console.error("Start sim error:", err);
-    }
-  };
-
-  const handlePause = async () => {
-    try {
-      await fetch("/api/sim", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "pause" }),
-      });
-      setSimState((prev) => ({ ...prev, running: false }));
     } catch (_e) { /* ignore */ }
+    finally { setLoading(false); }
   };
 
-  const handleResume = async () => {
-    try {
-      await fetch("/api/sim", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "resume", speed: simState.speed }),
-      });
-      setSimState((prev) => ({ ...prev, running: true }));
-      connectSSE();
-      if (pollRef.current) clearInterval(pollRef.current);
-      pollRef.current = setInterval(fetchIncidents, 1000);
-    } catch (_e) { /* ignore */ }
-  };
-
-  const handleSpeedChange = async (speed: number) => {
-    try {
-      await fetch("/api/sim", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "speed", speed }),
-      });
-      setSimState((prev) => ({ ...prev, speed }));
-    } catch (_e) { /* ignore */ }
-  };
-
-  // Arm switching
+  // Arm switch
   const handleArmSwitch = async (arm: string) => {
     try {
       const res = await fetch("/api/sim", {
@@ -234,65 +119,54 @@ export default function DispatchPage() {
     } catch (_e) { /* ignore */ }
   };
 
-  // Keyboard navigation
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // Don't intercept if user is typing in an input
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+  // Speed
+  const handleSpeed = async (speed: number) => {
+    try {
+      await fetch("/api/sim", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "speed", speed }),
+      });
+      setSimState((prev) => ({ ...prev, speed }));
+    } catch (_e) { /* ignore */ }
+  };
 
+  // Keyboard nav
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
       if (e.key === "j" || e.key === "ArrowDown") {
         e.preventDefault();
         setSelectedId((prev) => {
           const idx = visibleIncidents.findIndex((i: any) => i.id === prev);
-          const next = Math.min(idx + 1, visibleIncidents.length - 1);
-          return visibleIncidents[next]?.id ?? prev;
+          return visibleIncidents[Math.min(idx + 1, visibleIncidents.length - 1)]?.id ?? prev;
         });
       } else if (e.key === "k" || e.key === "ArrowUp") {
         e.preventDefault();
         setSelectedId((prev) => {
           const idx = visibleIncidents.findIndex((i: any) => i.id === prev);
-          const next = Math.max(idx - 1, 0);
-          return visibleIncidents[next]?.id ?? prev;
+          return visibleIncidents[Math.max(idx - 1, 0)]?.id ?? prev;
         });
-      } else if (e.key === "a") {
-        // Quick approve
-        if (selectedId) {
-          fetch("/api/override", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ incidentId: selectedId, action: "approve" }),
-          });
-        }
       }
     };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [visibleIncidents]);
 
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [visibleIncidents, selectedId]);
-
-  // On mount: check if sim is already running
+  // On mount
   useEffect(() => {
     (async () => {
       try {
         const res = await fetch("/api/sim");
         const data = await res.json();
         if (data.running || data.totalEvents > 0) {
-          setSimState({
-            time: data.time ?? 0,
-            speed: data.speed ?? 10,
-            running: data.running ?? false,
-            eventsIngested: data.eventsIngested ?? 0,
-            totalEvents: data.totalEvents ?? 0,
-          });
-          fetchIncidents();
-          fetchMetrics();
-          connectSSE();
+          setSimState({ time: data.time ?? 0, speed: data.speed ?? 10, running: data.running ?? false, eventsIngested: data.eventsIngested ?? 0, totalEvents: data.totalEvents ?? 0 });
+          fetchIncidents(); fetchMetrics(); connectSSE();
           if (pollRef.current) clearInterval(pollRef.current);
           pollRef.current = setInterval(fetchIncidents, 1000);
         }
-      } catch (_e) { /* no sim running */ }
+      } catch (_e) { /* no sim */ }
     })();
-
     return () => {
       if (eventSourceRef.current) eventSourceRef.current.close();
       if (pollRef.current) clearInterval(pollRef.current);
@@ -300,61 +174,100 @@ export default function DispatchPage() {
   }, []);
 
   const selectedIncident = visibleIncidents.find((i: any) => i.id === selectedId) ?? null;
-  const currentMetrics = armMetrics[activeArm] ?? null;
+  const agentMetrics = armMetrics["agent"];
+  const rulesMetrics = armMetrics["rules-only"];
+  const nightProgress = Math.min(100, (simState.time / (10 * 3600 * 1000)) * 100);
+  const hasStarted = simState.totalEvents > 0;
 
+  // ═══════════════════════════════════════════════════════════════
+  // WELCOME SCREEN — before simulation starts
+  // ═══════════════════════════════════════════════════════════════
+  if (!hasStarted) {
+    return (
+      <main className="flex flex-col items-center justify-center h-screen bg-zinc-950 text-zinc-100 px-8">
+        <div className="max-w-lg text-center space-y-6">
+          <h1 className="text-2xl font-mono font-bold tracking-tight text-zinc-200">
+            Calvis
+          </h1>
+          <p className="text-sm font-mono text-zinc-400 leading-relaxed">
+            An AI agent that watches security events from 40+ sites overnight
+            and decides what needs human attention. It checks priors, searches
+            past incidents, adjusts probabilities, and explains its reasoning.
+          </p>
+          <p className="text-sm font-mono text-zinc-500 leading-relaxed">
+            Click below to simulate a 10-hour night shift.
+            273 incidents will stream in — the agent triages each one.
+            Click any incident to see how it thinks.
+          </p>
+          <button
+            onClick={handleStart}
+            disabled={loading}
+            className="px-6 py-3 text-sm font-mono font-bold uppercase tracking-wider bg-orange-600 hover:bg-orange-500 text-white rounded-lg transition-colors disabled:opacity-50"
+          >
+            {loading ? "Setting up night..." : "Run Demo Night"}
+          </button>
+          {loading && (
+            <p className="text-[11px] font-mono text-zinc-600">
+              Generating events, running agent on each incident... ~4 seconds
+            </p>
+          )}
+        </div>
+      </main>
+    );
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // DISPATCH CONSOLE — after simulation starts
+  // ═══════════════════════════════════════════════════════════════
   return (
     <main className="flex flex-col h-screen bg-zinc-950 text-zinc-100">
       {/* Top bar */}
-      <div className="flex items-center justify-between px-4 py-2 border-b border-zinc-800 bg-zinc-950">
-        <div className="flex items-center gap-3">
-          <h1 className="text-sm font-mono font-bold uppercase tracking-widest text-zinc-300">
-            Calvis Dispatch
-          </h1>
-          <span className="text-[9px] font-mono text-zinc-600 uppercase">F4.6 Console</span>
-        </div>
+      <div className="flex items-center justify-between px-4 py-2 border-b border-zinc-800">
         <div className="flex items-center gap-4">
-          <ArmSelector
-            activeArm={activeArm}
-            availableArms={availableArms}
-            onSwitch={handleArmSwitch}
-          />
-          <BoardLoad load={boardLoad} threshold={6} />
-          <HelpButton />
+          <h1 className="text-sm font-mono font-bold tracking-tight text-zinc-300">
+            Calvis
+          </h1>
+
+          {/* Night progress */}
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] font-mono text-zinc-400 tabular-nums">
+              {formatClock(simState.time)}
+            </span>
+            <div className="w-24 h-1 bg-zinc-800 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-orange-500/60 rounded-full transition-all duration-300"
+                style={{ width: `${nightProgress}%` }}
+              />
+            </div>
+          </div>
+
+          {/* Speed */}
+          <div className="flex items-center gap-1">
+            {[10, 100, 1000].map((s) => (
+              <button
+                key={s}
+                onClick={() => handleSpeed(s)}
+                className={`px-1.5 py-0.5 text-[10px] font-mono rounded transition-colors ${
+                  simState.speed === s
+                    ? "bg-orange-600/30 text-orange-400 border border-orange-600/50"
+                    : "text-zinc-600 hover:text-zinc-400"
+                }`}
+              >
+                {s}x
+              </button>
+            ))}
+          </div>
         </div>
+
+        {/* Incident count */}
+        <span className="text-[10px] font-mono text-zinc-600">
+          {visibleIncidents.length > 0 ? `${visibleIncidents.length} incidents` : ""}
+        </span>
       </div>
 
-      {/* Agent error banner */}
-      {agentError && (
-        <div className="px-4 py-2 bg-red-900/30 border-b border-red-800/50 text-[11px] font-mono text-red-400">
-          Agent arm failed: {agentError}
-        </div>
-      )}
-
-      {/* Replay controls */}
-      <ReplayControls
-        time={simState.time}
-        speed={simState.speed}
-        running={simState.running}
-        eventsIngested={simState.eventsIngested}
-        totalEvents={simState.totalEvents}
-        onStart={handleStart}
-        onPause={handlePause}
-        onResume={handleResume}
-        onSpeedChange={handleSpeedChange}
-      />
-
-      {/* Session metrics strip */}
-      <SessionMetrics
-        metrics={currentMetrics}
-        activeArm={activeArm}
-        boardLoad={boardLoad}
-        boardThreshold={6}
-        visibleCount={visibleIncidents.filter((i: any) => (i.tier ?? 0) >= 1).length}
-      />
-
-      {/* Three-zone layout */}
+      {/* Two-column layout */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Left: Ranked queue */}
+        {/* Left: Queue */}
         <div className="w-80 border-r border-zinc-800 flex flex-col shrink-0">
           <IncidentQueue
             incidents={visibleIncidents}
@@ -363,17 +276,9 @@ export default function DispatchPage() {
           />
         </div>
 
-        {/* Center: Incident detail */}
+        {/* Right: Incident detail */}
         <div className="flex-1 flex flex-col min-w-0">
           <IncidentDetail incident={selectedIncident} />
-        </div>
-
-        {/* Right: Sites/coverage + Learning */}
-        <div className="w-64 border-l border-zinc-800 flex flex-col shrink-0">
-          <div className="flex-1 overflow-y-auto">
-            <SitePanel sites={sites} />
-          </div>
-          <LearningPanel />
         </div>
       </div>
     </main>

@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze this carefully.\n\n**Context:**\n- **Event**: Missed check-in at site-000, zone-0-2. Single event, severity 2.\n- **Prior**: P(real) = 0.3, but n=0 — this is a hand-set assumption with zero observations. Very weak prior.\n- **Precedents**: Zero precedents. This is **novel** — no missed check-in has ever been seen at this site before.\n- **Board Load**: 20 items/10min — this is **FLOOD** conditions (threshold is 6). Rule R-004 says suppress E0-E1 under flood conditions.\n- **Evidence Level**: E1 — something happened, intent unknown.\n- **Guards available**: 3 guards on shift, all with reasonable ack rates (75-88%).\n\n**Decision logic:**\n- Board load is 20 — well into flood territory. Rule R-004 explicitly says suppress E0-E1 under flood conditions.\n- This is E1 (something happened, intent unknown). A missed check-in could be a guard forgetting, a technical glitch, or something real. But with n=0 prior and no precedents, we have very little to go on.\n- Under flood conditions, the operator is already overwhelmed. Surfacing a low-confidence E1 missed check-in would cost attention that's better spent on higher-severity items.\n- The prior is hand-set (n=0), so I should adjust it downward given the flood conditions and the fact that missed check-ins are often benign (guard forgot, walked to the bathroom, etc.).\n\nLet me adjust the prior downward. The hand-set prior of 0.3 with n=0 is very weak. Given flood conditions and the common benign nature of missed check-ins, I'll adjust downward.\n\n**Decision**: Suppress this E1 under flood conditions per R-004.",
+  "toolCalls": [
+    {
+      "id": "call_00_zl8xV8C5Ox2COSddTAAM5944",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"commit\", \"action_id\": \"suppress\", \"prior_adjustment_log_odds\": -1.5, \"adjustment_reasons\": [\"Board load at 20 (flood conditions) — R-004 directs suppress E0-E1\", \"Hand-set prior with n=0 — no learned data behind it\", \"Missed check-in often benign (guard distraction, system glitch) — no precedents to suggest otherwise\"], \"novelty_flag\": true, \"confidence_p_real\": 0.12, \"what_would_change_my_mind\": \"If the guard radioed in with a concern, or if a second event (e.g., door forced) correlated with this missed check-in, I'd escalate. Also if board load drops below flood threshold.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2623,
+    "completionTokens": 661,
+    "totalTokens": 3284
+  },
+  "latencyMs": 7328,
+  "model": "deepseek-chat",
+  "costUsd": 0.0003686900000000001
+}

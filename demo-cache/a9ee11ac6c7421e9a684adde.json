@@ -1,0 +1,21 @@
+{
+  "text": "Let me analyze this carefully.\n\n**Context:**\n- **Site:** site-006, zone-6-0\n- **Event:** `robot_thermal_anomaly` — a security robot detected a thermal anomaly (severity 3 out of 5)\n- **Evidence level:** E1 (something happened, intent unknown)\n- **Prior:** P(real) = 0.25, but n=0 — this is a hand-set prior with NO real data behind it. Very weak starting point.\n- **Precedents:** Zero — this is a **novel** event type at this site. No history to learn from.\n- **Board load:** 0 items/10min — operator is free, no flood conditions.\n- **Guards available:** David Martinez (armed, 94% ack rate) and Omar Lopez (unarmed, 82% ack rate).\n\n**Analysis:**\n- n=0 means the prior of 0.25 is a pure assumption. With no data and no precedents, I should be open to adjusting.\n- A thermal anomaly from a security robot at night is potentially significant — it could be a fire, a person, or equipment malfunction.\n- The board is clear (0 items), so the operator has bandwidth.\n- This is a novel event (no precedents), so I should flag it for learning.\n\n**Decision:**\nSince the prior is a hand-set assumption (n=0) with no precedents, and the board is clear, I think the best move is to **investigate** — ask a cheap question to gather more evidence before committing resources. A robot thermal anomaly could be anything from a warm pipe to an intruder. Let me ask the robot for a photo or more detail.\n\nActually, let me think about this more carefully. The event is E1 — something happened, intent unknown. The robot detected a thermal anomaly. With no precedents and a weak prior, I should investigate to gather more evidence. A `request_photo` from the robot would be a cheap, free question.\n\nLet me set a moderate positive adjustment since thermal anomalies at night (background: true) on a security robot are worth taking seriously, but the prior is hand-set with no data.",
+  "toolCalls": [
+    {
+      "id": "call_00_IEQceF2FhLziSjMApVFX8216",
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "arguments": "{\"chosen_move\": \"investigate\", \"action_id\": \"request_photo\", \"prior_adjustment_log_odds\": 0.5, \"adjustment_reasons\": [\"Hand-set prior with n=0 — no real data behind it, so adjustment is freer\", \"Thermal anomaly at night (background: true) on security robot warrants attention\", \"No precedents at this site — novelty means we should gather more evidence\"], \"novelty_flag\": true, \"confidence_p_real\": 0.35, \"what_would_change_my_mind\": \"A photo showing a clear false alarm source (e.g., hot exhaust pipe, known equipment) would lower confidence. A photo showing a human figure or fire source would raise it to E2/E3 and trigger dispatch. Silence from the robot (no photo available) would also be informative.\"}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2595,
+    "completionTokens": 740,
+    "totalTokens": 3335
+  },
+  "latencyMs": 8533,
+  "model": "deepseek-chat",
+  "costUsd": 0.00038885000000000005
+}

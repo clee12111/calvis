@@ -1,0 +1,45 @@
+{
+  "text": "Board load is 20 — way over the flood threshold of 6. Let me gather more context quickly before deciding.",
+  "toolCalls": [
+    {
+      "id": "call_00_YLra2pr9MB1vn69MBX4p7063",
+      "type": "function",
+      "function": {
+        "name": "get_site_prior",
+        "arguments": "{\"event_type\": \"radio_transcript_flag\"}"
+      }
+    },
+    {
+      "id": "call_01_Y2N9ZQy9OtUqnM34D0Sj9021",
+      "type": "function",
+      "function": {
+        "name": "find_precedent",
+        "arguments": "{\"k\": 5}"
+      }
+    },
+    {
+      "id": "call_02_jMNuA8mYB2Z5QfsI5FUO4280",
+      "type": "function",
+      "function": {
+        "name": "get_active_rules",
+        "arguments": "{}"
+      }
+    },
+    {
+      "id": "call_03_hjPp4j2VvNwGyH5OYUNE5439",
+      "type": "function",
+      "function": {
+        "name": "get_board_load",
+        "arguments": "{}"
+      }
+    }
+  ],
+  "usage": {
+    "promptTokens": 2001,
+    "completionTokens": 297,
+    "totalTokens": 2298
+  },
+  "latencyMs": 3420,
+  "model": "deepseek-reasoner",
+  "costUsd": 0.0015945
+}
