@@ -84,7 +84,7 @@ Events (seed) → Ingest → Correlate → LoopEngine
 | `src/lib/eval/metrics.ts` | Cost model: response + harm + flood |
 | `src/lib/engine/baseline-scorer.ts` | Rules-only scorer |
 | `src/components/dispatch/` | UI components (timeline, queue, override) |
-| `demo-cache/` | 1,586 committed LLM traces for keyless demo |
+| `demo-cache/` | 2,724 committed LLM traces for keyless demo |
 | `docs/DECISION.md` | 35+ decisions with rationale |
 | `docs/PROGRESS.md` | Phase checklist with executed evidence |
 | `WRITEUP.md` | Technical writeup (point of view, results, limitations) |

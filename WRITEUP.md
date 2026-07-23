@@ -55,7 +55,7 @@ Paired bootstrap CIs over 10 seeds isolate signal from noise. The trace cache ma
 
 **Confounded F2 arm.** The agent-with-memory arm ran the scripted decider with learned priors, not the LLM agent with learned priors (D-037). This was a cost decision — regenerating traces across 40 seeds with the updated tool schema would have cost ~$16. The learning experiment isolates whether priors help, but "LLM + memory" was never measured as a combination.
 
-**N=10, not larger.** The eval ran 10 seeds with bootstrap CIs. Published best practice (Kapoor et al., 2024) shows N=3 produces score ranges of ~19 percentage points; N=10 is the minimum for stable estimates. Larger N would tighten the confidence intervals but was not run due to API cost.
+**N=1 for the agent arm.** The agent-vs-scripted headline number ($1,235 vs. $2,453) comes from a single seed. The N=10 run (PROGRESS.md F1.5.7) was not completed due to API cost (~$4, ~60 min). The scripted-vs-rules comparison did run at N=10 with bootstrap CIs ($2,483 vs. $5,495, CI [-$6,060, -$336]). Published best practice (Kapoor et al., 2024) shows N=3 produces score ranges of ~19 percentage points — the single-seed agent result is suggestive, not conclusive.
 
 **Regex-based override validation.** Incoherent overrides (false-alarm reason + escalation) are detected by pattern matching, not semantic classification. The regex catches obvious cases but misses rephrasings like "this was nothing."
 
