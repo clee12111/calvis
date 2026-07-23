@@ -109,8 +109,10 @@ function buildAgentCache(
     const state = loopResult.finalStates.get(incident.id);
     const decisions = agentDecisions.get(incident.id) ?? [];
 
-    // Find the terminal decision (the one with make_decision)
-    const terminalDecision = decisions.length > 0 ? decisions[decisions.length - 1] : null;
+    // Find the decision where the LLM actually ran (has real reasoning)
+    // Fall back to the last decision if no LLM decision exists
+    const llmDecision = decisions.find((d) => d.llmCalls > 0 && d.adjustmentReasons.length > 0 && !d.adjustmentReasons[0]?.startsWith("system-question") && !d.adjustmentReasons[0]?.startsWith("waiting"));
+    const terminalDecision = llmDecision ?? (decisions.length > 0 ? decisions[decisions.length - 1] : null);
     const committedLevel = state?.committedLevel ?? 0;
 
     committedTiers.set(incident.id, committedLevel);
