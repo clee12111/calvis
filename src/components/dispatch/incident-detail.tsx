@@ -15,7 +15,7 @@ interface IncidentDetailData {
   createdAt: number;
   events: any[];
   decisions: any[];
-  site?: { name: string; criticalityTier: number } | null;
+  site?: { name: string; criticalityTier: number; address?: string; zonesJson?: string } | null;
   trace?: AgentTrace | null;
 }
 
@@ -68,12 +68,24 @@ const MOVE_LABELS: Record<string, string> = {
   recheck_5min: "Recheck in 5 min", suppress_ttl: "Suppress (TTL)",
 };
 
+/** Resolve zone ID to name from site data */
+function getZoneName(zoneId: string | null, site: any): string {
+  if (!zoneId || !site?.zonesJson) return zoneId ? `zone ${zoneId.split("-").pop()}` : "";
+  try {
+    const zones = JSON.parse(site.zonesJson);
+    const zone = zones.find((z: any) => z.id === zoneId);
+    if (zone) return zone.name;
+  } catch {}
+  return `zone ${zoneId.split("-").pop()}`;
+}
+
 /** Human-readable event description */
-function describeEvent(e: any): string {
+function describeEvent(e: any, site?: any): string {
   const source = e.sourceType === "guard" ? `Guard ${e.sourceId?.split("-").pop() ?? ""}` :
     e.sourceType === "robot" ? `Robot ${e.sourceId?.split("-").pop() ?? ""}` :
     e.sourceType === "sensor" ? "Sensor" : e.sourceType;
-  const zone = e.zoneId ? ` in zone ${e.zoneId.split("-").pop()}` : "";
+  const zoneName = e.zoneId ? getZoneName(e.zoneId, site) : "";
+  const zone = zoneName ? ` in ${zoneName}` : "";
 
   const descriptions: Record<string, string> = {
     panic_button: `${source} triggered panic button${zone}`,
@@ -93,7 +105,7 @@ function describeEvent(e: any): string {
 }
 
 /** Build a unified timeline: events + agent steps interleaved by timestamp */
-function buildTimeline(incident: IncidentDetailData) {
+function buildTimeline(incident: IncidentDetailData & { site?: any }) {
   const items: Array<{
     time: number;
     type: "event" | "investigate" | "commit" | "defer" | "agent-reasoning";
@@ -122,7 +134,7 @@ function buildTimeline(incident: IncidentDetailData) {
         items.push({
           time: e.timestamp,
           type: "event",
-          label: describeEvent(e),
+          label: describeEvent(e, incident.site),
           detail: EVENT_LABELS[e.type] ?? e.type,
           severity: e.severity,
           source: e.sourceType,
@@ -157,17 +169,34 @@ function buildTimeline(incident: IncidentDetailData) {
     }
   }
 
-  // Add agent investigation steps
+  // Add agent steps — skip rote system questions (same for every incident),
+  // only show: commits, defers, human questions, and steps that changed evidence
+  const ROTE_SYSTEM_CHECKS = new Set([
+    "Check delivery schedule",
+    "Check plate against site allowlist",
+    "Retrieve P(real) prior for this context",
+    "Retrieve similar past incidents",
+    "Check camera coverage for zone",
+  ]);
+
   if (incident.trace?.steps) {
     for (const step of incident.trace.steps) {
+      const isRoteCheck = step.moveType === "investigate" && ROTE_SYSTEM_CHECKS.has(step.actionName);
+      const levelChanged = step.evidenceBefore !== step.evidenceAfter;
+
+      // Skip rote checks unless they changed the evidence level
+      if (isRoteCheck && !levelChanged) continue;
+
       items.push({
         time: step.timestamp,
         type: step.moveType as any,
         label: step.moveType === "commit"
           ? `Decision: ${step.actionName}`
           : step.moveType === "investigate"
-            ? `Checked: ${step.actionName}`
-            : step.actionName,
+            ? step.actionName
+            : step.moveType === "defer"
+              ? "Deferred — rechecking later"
+              : step.actionName,
         detail: step.reason,
         evidenceBefore: step.evidenceBefore,
         evidenceAfter: step.evidenceAfter,
@@ -241,7 +270,7 @@ export function IncidentDetail({ incident }: { incident: IncidentDetailData | nu
     <div className="flex flex-col h-full overflow-y-auto">
       {/* ═══ HEADER ═══ */}
       <div className="px-4 py-3 border-b border-zinc-800">
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center justify-between mb-1">
           <span className="text-xs font-mono text-zinc-300">
             {incident.site?.name ?? incident.siteId}
           </span>
@@ -249,10 +278,24 @@ export function IncidentDetail({ incident }: { incident: IncidentDetailData | nu
             {EVIDENCE_LABELS[evidenceLevel]}
           </span>
         </div>
+        {/* Site context */}
+        <div className="text-[10px] font-mono text-zinc-600 mb-2">
+          {incident.site?.address && <span>{incident.site.address}</span>}
+          {incident.zoneId && incident.site?.zonesJson && (() => {
+            try {
+              const zones = JSON.parse(incident.site.zonesJson);
+              const zone = zones.find((z: any) => z.id === incident.zoneId);
+              if (zone) return <span> · {zone.name} (exposure {zone.exposure}/5)</span>;
+            } catch {}
+            return null;
+          })()}
+          {incident.site?.criticalityTier && (
+            <span> · Criticality {incident.site.criticalityTier}/5</span>
+          )}
+        </div>
         <div className="flex items-center gap-3 text-[10px] font-mono text-zinc-500">
           <span>{formatTime(incident.createdAt)}</span>
           <span>{incident.events?.length ?? 0} event{(incident.events?.length ?? 0) !== 1 ? "s" : ""}</span>
-          <span>{trace?.steps?.length ?? 0} agent actions</span>
           {trace?.pReal ? (
             <span>P(real): <span className="text-zinc-300">{Math.round(trace.pReal * 100)}%</span></span>
           ) : null}

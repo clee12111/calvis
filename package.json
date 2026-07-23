@@ -15,6 +15,7 @@
     "eval": "tsx scripts/eval.ts",
     "gen:nights": "tsx scripts/gen-nights.ts",
     "learn": "tsx scripts/learn.ts",
+    "seed:neon": "tsx scripts/seed-neon.ts",
     "test": "vitest run --config config/vitest.config.ts",
     "test:watch": "vitest --config config/vitest.config.ts"
   },
