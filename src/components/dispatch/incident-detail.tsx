@@ -68,6 +68,30 @@ const MOVE_LABELS: Record<string, string> = {
   recheck_5min: "Recheck in 5 min", suppress_ttl: "Suppress (TTL)",
 };
 
+/** Human-readable event description */
+function describeEvent(e: any): string {
+  const source = e.sourceType === "guard" ? `Guard ${e.sourceId?.split("-").pop() ?? ""}` :
+    e.sourceType === "robot" ? `Robot ${e.sourceId?.split("-").pop() ?? ""}` :
+    e.sourceType === "sensor" ? "Sensor" : e.sourceType;
+  const zone = e.zoneId ? ` in zone ${e.zoneId.split("-").pop()}` : "";
+
+  const descriptions: Record<string, string> = {
+    panic_button: `${source} triggered panic button${zone}`,
+    door_forced: `Door forced open detected${zone} by ${source}`,
+    plate_read_unknown: `Unknown license plate flagged${zone} by ${source}`,
+    robot_motion_anomaly: `Motion anomaly detected${zone} by ${source}`,
+    robot_thermal_anomaly: `Thermal anomaly detected${zone} by ${source}`,
+    geofence_exit: `${source} left designated area${zone}`,
+    missed_check_in: `${source} missed scheduled check-in`,
+    no_show_at_shift_start: `${source} did not show for shift start`,
+    radio_transcript_flag: `Flagged keyword in radio transcript from ${source}`,
+    robot_offline: `${source} went offline${zone}`,
+    client_inbound_message: `Inbound message from client${zone}`,
+    area_advisory: `Area advisory issued${zone}`,
+  };
+  return descriptions[e.type] ?? `${EVENT_LABELS[e.type] ?? e.type}${zone} from ${source}`;
+}
+
 /** Build a unified timeline: events + agent steps interleaved by timestamp */
 function buildTimeline(incident: IncidentDetailData) {
   const items: Array<{
@@ -81,16 +105,56 @@ function buildTimeline(incident: IncidentDetailData) {
     source?: string;
   }> = [];
 
-  // Add events
+  // Add events with rich descriptions — collapse duplicates
+  const eventsByType = new Map<string, any[]>();
   for (const e of incident.events ?? []) {
-    items.push({
-      time: e.timestamp,
-      type: "event",
-      label: EVENT_LABELS[e.type] ?? e.type,
-      detail: `Severity ${e.severity} from ${e.sourceType}`,
-      severity: e.severity,
-      source: e.sourceType,
-    });
+    const key = `${e.type}-${e.sourceId}-${e.zoneId}`;
+    const group = eventsByType.get(key) ?? [];
+    group.push(e);
+    eventsByType.set(key, group);
+  }
+
+  for (const [, group] of eventsByType) {
+    const first = group[0];
+    if (group.length <= 3) {
+      // Show each individually
+      for (const e of group) {
+        items.push({
+          time: e.timestamp,
+          type: "event",
+          label: describeEvent(e),
+          detail: EVENT_LABELS[e.type] ?? e.type,
+          severity: e.severity,
+          source: e.sourceType,
+        });
+      }
+    } else {
+      // Collapse: show first, summary, last
+      items.push({
+        time: first.timestamp,
+        type: "event",
+        label: describeEvent(first),
+        detail: EVENT_LABELS[first.type] ?? first.type,
+        severity: first.severity,
+        source: first.sourceType,
+      });
+      items.push({
+        time: first.timestamp + 1,
+        type: "event",
+        label: `... ${group.length - 2} more ${EVENT_LABELS[first.type] ?? first.type} events from same source`,
+        severity: 0,
+        source: first.sourceType,
+      });
+      const last = group[group.length - 1];
+      items.push({
+        time: last.timestamp,
+        type: "event",
+        label: describeEvent(last),
+        detail: EVENT_LABELS[last.type] ?? last.type,
+        severity: last.severity,
+        source: last.sourceType,
+      });
+    }
   }
 
   // Add agent investigation steps
@@ -157,6 +221,17 @@ export function IncidentDetail({ incident }: { incident: IncidentDetailData | nu
   const trace = incident.trace;
   const evidenceLevel = trace?.evidenceLevel ?? incident.tier ?? 0;
   const timeline = buildTimeline(incident);
+
+  // Parse guard data from tool call results
+  let guards: Array<{ name: string; armed: boolean; ackRate: number; avgResponseSec: number }> = [];
+  const guardCall = trace?.toolCalls?.find((tc) => tc.name === "get_available_guards");
+  if (guardCall?.result) {
+    try {
+      const parsed = JSON.parse(guardCall.result);
+      guards = parsed.guards ?? [];
+    } catch { /* no guard data */ }
+  }
+
   const hasRealReasoning = trace?.adjustmentReasons?.length
     && !trace.adjustmentReasons[0]?.startsWith("system-question")
     && !trace.adjustmentReasons[0]?.startsWith("waiting")
@@ -184,6 +259,24 @@ export function IncidentDetail({ incident }: { incident: IncidentDetailData | nu
           <span className="text-zinc-600">{incident.id}</span>
         </div>
       </div>
+
+      {/* ═══ GUARDS ON SITE ═══ */}
+      {guards.length > 0 && (
+        <div className="px-4 py-2 border-b border-zinc-800/50 flex items-center gap-4">
+          <span className="text-[9px] font-mono text-zinc-600 uppercase tracking-wider shrink-0">On site</span>
+          {guards.map((g, idx) => (
+            <div key={idx} className="flex items-center gap-1.5 text-[10px] font-mono">
+              <span className={g.armed ? "text-orange-400" : "text-zinc-400"}>
+                {g.armed ? "●" : "○"}
+              </span>
+              <span className="text-zinc-300">{g.name}</span>
+              <span className={`text-[9px] ${g.ackRate >= 0.9 ? "text-emerald-500" : g.ackRate >= 0.7 ? "text-yellow-400" : "text-red-400"}`}>
+                {Math.round(g.ackRate * 100)}%
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* ═══ TIMELINE — the full story ═══ */}
       <div className="px-4 py-3 border-b border-zinc-800">
@@ -234,11 +327,8 @@ export function IncidentDetail({ incident }: { incident: IncidentDetailData | nu
                         <span className={`text-[10px] font-mono font-bold ${SEVERITY_COLORS[item.severity ?? 1]}`}>
                           S{item.severity}
                         </span>
-                        <span className="text-[11px] font-mono text-zinc-300">
+                        <span className="text-[11px] font-mono text-zinc-200">
                           {item.label}
-                        </span>
-                        <span className="text-[9px] font-mono text-zinc-600">
-                          {item.source}
                         </span>
                       </>
                     ) : isCommit ? (

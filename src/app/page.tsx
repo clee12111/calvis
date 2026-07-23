@@ -33,23 +33,59 @@ export default function DispatchPage() {
   const eventSourceRef = useRef<EventSource | null>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Progressive reveal + dynamic sort by evidence level (highest first)
+  // Progressive reveal with time-based state transitions
   const visibleIncidents = useMemo(() => {
-    const filtered = simState.time === 0 && !simState.running
-      ? allIncidents
-      : allIncidents.filter((inc) => inc.createdAt <= simState.time);
+    const now = simState.time;
+    const notStarted = now === 0 && !simState.running;
 
-    // Sort: active (E1+) first by evidence desc, then resolved (E0)
-    return [...filtered].sort((a, b) => {
-      const eA = a.trace?.evidenceLevel ?? a.tier ?? 0;
-      const eB = b.trace?.evidenceLevel ?? b.tier ?? 0;
-      // Active before resolved
-      if (eA > 0 && eB === 0) return -1;
-      if (eA === 0 && eB > 0) return 1;
-      // Within active: higher evidence first
-      if (eA !== eB) return eB - eA;
-      // Same evidence: more recent first
-      return b.createdAt - a.createdAt;
+    const filtered = notStarted
+      ? allIncidents
+      : allIncidents.filter((inc) => inc.createdAt <= now);
+
+    // For each incident, compute its current state based on sim clock
+    const withLiveState = filtered.map((inc) => {
+      if (notStarted) return inc;
+
+      // Find the commit step's timestamp — that's when it resolves
+      const commitStep = inc.trace?.steps?.find((s: any) => s.moveType === "commit");
+      const commitTime = commitStep?.timestamp ?? null;
+
+      // If clock hasn't reached the commit yet, incident is still being investigated
+      const isStillActive = commitTime === null || now < commitTime;
+
+      // Current evidence level: if still active, use the evidence BEFORE commit
+      // If resolved, use the final evidence level
+      let currentEvidence = inc.trace?.evidenceLevel ?? inc.tier ?? 0;
+      if (isStillActive && inc.trace?.steps) {
+        // Find the latest step that has happened by now
+        const stepsBeforeNow = inc.trace.steps.filter((s: any) => s.timestamp <= now);
+        if (stepsBeforeNow.length > 0) {
+          currentEvidence = stepsBeforeNow[stepsBeforeNow.length - 1].evidenceAfter;
+        } else {
+          // No steps yet — use initial evidence from event types
+          currentEvidence = inc.trace?.evidenceLevel ?? inc.tier ?? 0;
+        }
+      }
+
+      return {
+        ...inc,
+        _liveActive: isStillActive,
+        _liveEvidence: currentEvidence,
+        _commitTime: commitTime,
+      };
+    });
+
+    // Sort: active first by evidence desc, then resolved by commit time desc
+    return withLiveState.sort((a: any, b: any) => {
+      if (a._liveActive && !b._liveActive) return -1;
+      if (!a._liveActive && b._liveActive) return 1;
+      if (a._liveActive && b._liveActive) {
+        // Both active: higher evidence first
+        if (a._liveEvidence !== b._liveEvidence) return b._liveEvidence - a._liveEvidence;
+        return b.createdAt - a.createdAt;
+      }
+      // Both resolved: most recently resolved first
+      return (b._commitTime ?? 0) - (a._commitTime ?? 0);
     });
   }, [allIncidents, simState.time, simState.running]);
 

@@ -43,7 +43,7 @@ An AI agent that triages 273 security incidents across a 10-hour night shift. Fo
 
 The queue is the centerpiece. It's not a static list — it's a live priority stack that reorders as the night unfolds.
 
-**How incidents enter:** Sensor events stream in throughout the night — motion anomalies, door forced alerts, panic buttons, geofence exits, unknown license plates. The correlator groups events at the same site and zone within a 3-minute window into a single incident. A door forced event followed by an unknown plate read in the same loading dock becomes one incident, not two.
+**How incidents enter:** Sensor events stream in throughout the night — motion anomalies, door forced alerts, panic buttons, geofence exits, unknown license plates. The correlator groups events at the same site and zone within a 5-minute window into a single incident when the event types are related (door forced + unknown plate = one break-in) or within 3 minutes at the same exact zone regardless of type. A door forced event followed by an unknown plate read in the same loading dock becomes one incident, not two.
 
 **How they're ranked:** Active incidents float to the top, sorted by severity. A panic button (E4 — threat to life) sits above a missed check-in (E2 — human presence confirmed) which sits above a robot motion anomaly (E1 — something happened). Resolved incidents drop below a divider.
 

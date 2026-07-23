@@ -66,9 +66,9 @@ export function IncidentQueue({
     }
   }, [selectedId]);
 
-  // Group: active (E1+) at top, resolved/suppressed at bottom
-  const active = incidents.filter((i) => (i.trace?.evidenceLevel ?? i.tier ?? 0) >= 1);
-  const resolved = incidents.filter((i) => (i.trace?.evidenceLevel ?? i.tier ?? 0) === 0);
+  // Group using live state from page.tsx (_liveActive) or fall back to evidence level
+  const active = incidents.filter((i: any) => i._liveActive ?? ((i.trace?.evidenceLevel ?? i.tier ?? 0) >= 1));
+  const resolved = incidents.filter((i: any) => !(i._liveActive ?? ((i.trace?.evidenceLevel ?? i.tier ?? 0) >= 1)));
 
   return (
     <div className="flex flex-col h-full">
@@ -135,8 +135,9 @@ const QueueItem = forwardRef<HTMLButtonElement, {
   isSelected: boolean;
   onSelect: (id: string) => void;
 }>(({ incident, isSelected, onSelect }, ref) => {
-  const evidenceLevel = incident.trace?.evidenceLevel ?? incident.tier ?? 0;
-  const isResolved = evidenceLevel === 0;
+  const inc = incident as any;
+  const evidenceLevel = inc._liveEvidence ?? incident.trace?.evidenceLevel ?? incident.tier ?? 0;
+  const isResolved = !(inc._liveActive ?? (evidenceLevel >= 1));
   const move = incident.trace?.move;
   const moveLabel = move ? MOVE_SHORT[move] ?? move : null;
 
